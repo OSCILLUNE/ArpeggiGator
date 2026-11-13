@@ -17,7 +17,8 @@ use core::sync::atomic::{AtomicBool, AtomicI64, AtomicU32, Ordering};
 
 use mpc_sample_sdk::{
     ButtonEvent, ButtonFlow, Mod, PadAction, PadEvent, PadFlow, PaintEvent, SurfaceEvent, draw,
-    event::button, platform::clock,
+    event::button,
+    platform::{clock, lighting},
 };
 
 /// Confirmed control-surface values: B1=12, B2=13, B3=14.
@@ -27,6 +28,8 @@ const BUTTON_B3: u32 = 14;
 static DASHBOARD_REFRESH_UNTIL_MS: AtomicI64 = AtomicI64::new(0);
 const PREVIEW_ENABLED: u32 = 1 << 16;
 const PAD_MASK: u32 = PREVIEW_ENABLED - 1;
+const HOLD_ENABLED: u32 = 1 << 17;
+static PHYSICAL_PADS: AtomicU32 = AtomicU32::new(0);
 static PREVIEW_STATE: AtomicU32 = AtomicU32::new(0);
 static SHIFT_ACTIVE: AtomicBool = AtomicBool::new(false);
 
@@ -57,23 +60,31 @@ fn observe_surface(event: SurfaceEvent) {
     let bit = 1_u32 << pad;
     match (event.kind, event.velocity) {
         (0x90, 1..) => {
-            let _ = PREVIEW_STATE.fetch_update(Ordering::AcqRel, Ordering::Acquire, |state| {
-                (state & PREVIEW_ENABLED != 0).then_some(state | bit)
-            });
-        }
-        (0x80, _) | (0x90, 0) => {
-            let previous =
-                PREVIEW_STATE.fetch_update(Ordering::AcqRel, Ordering::Acquire, |state| {
-                    (state & PREVIEW_ENABLED != 0).then_some(state & !bit)
+            let was_down = PHYSICAL_PADS.fetch_or(bit, Ordering::AcqRel) & bit != 0;
+            if !was_down {
+                let _ = PREVIEW_STATE.fetch_update(Ordering::AcqRel, Ordering::Acquire, |state| {
+                    (state & PREVIEW_ENABLED != 0).then_some(if state & HOLD_ENABLED != 0 {
+                        state ^ bit
+                    } else {
+                        state | bit
+                    })
                 });
-            if let Ok(previous) = previous
-                && previous & PAD_MASK == bit
-            {
-                DASHBOARD_REFRESH_UNTIL_MS.store(clock::now_ms() + 400, Ordering::Release);
             }
         }
-        _ => {}
+        (0x80, _) | (0x90, 0) => {
+            PHYSICAL_PADS.fetch_and(!bit, Ordering::AcqRel);
+            let _ = PREVIEW_STATE.fetch_update(Ordering::AcqRel, Ordering::Acquire, |state| {
+                (state & PREVIEW_ENABLED != 0).then_some(if state & HOLD_ENABLED != 0 {
+                    state
+                } else {
+                    state & !bit
+                })
+            });
+        }
+        _ => return,
     }
+    // Also repaint after the last latched pad is toggled off.
+    DASHBOARD_REFRESH_UNTIL_MS.store(clock::now_ms() + 400, Ordering::Release);
 }
 
 #[derive(Default)]
@@ -83,12 +94,16 @@ struct ArpeggiGator {
     in_16_levels: bool,
     additional_notes: u8,
     consumed_buttons: u8,
+    consumed_data: bool,
+    led_mask: u32,
+    splash_until_ms: i64,
 }
 
 impl Mod for ArpeggiGator {
     fn on_start(&mut self) {
         DASHBOARD_REFRESH_UNTIL_MS.store(0, Ordering::Release);
         PREVIEW_STATE.store(0, Ordering::Release);
+        PHYSICAL_PADS.store(0, Ordering::Release);
         SHIFT_ACTIVE.store(false, Ordering::Release);
         tempo::start_monitor();
         // SAFETY: repaint_component returns only the live component last
@@ -103,7 +118,27 @@ impl Mod for ArpeggiGator {
             DASHBOARD_REFRESH_UNTIL_MS.store(clock::now_ms() + 500, Ordering::Release);
         }
 
-        let flow = if event.code == button::LEVELS && event.pressed {
+        let flow = if event.code == button::DATA && !event.pressed && self.consumed_data {
+            self.consumed_data = false;
+            ButtonFlow::Consume
+        } else if event.code == button::DATA
+            && event.pressed
+            && self.enabled
+            && self.in_16_levels
+            && !event.shift
+        {
+            self.consumed_data = true;
+            let _ = PREVIEW_STATE.fetch_update(Ordering::AcqRel, Ordering::Acquire, |state| {
+                (state & PREVIEW_ENABLED != 0).then_some(if state & HOLD_ENABLED != 0 {
+                    // Disabling HOLD removes all latched pads.
+                    PREVIEW_ENABLED
+                } else {
+                    state | HOLD_ENABLED
+                })
+            });
+            action = 7;
+            ButtonFlow::Consume
+        } else if event.code == button::LEVELS && event.pressed {
             self.in_16_levels = !self.in_16_levels;
             action = if self.in_16_levels { 4 } else { 5 };
             if !self.in_16_levels {
@@ -199,13 +234,35 @@ impl Mod for ArpeggiGator {
         if event.sample_page {
             probe::on_paint();
         }
+        let now = clock::now_ms();
+        if self.splash_until_ms == 0 {
+            self.splash_until_ms = now + 2_000;
+            DASHBOARD_REFRESH_UNTIL_MS.store(now + 2_400, Ordering::Release);
+        }
+        if now < self.splash_until_ms {
+            // SAFETY: the SDK invokes this callback with the live UI graphics.
+            unsafe { splash::draw_boot_splash(graphics) };
+            return;
+        }
+        let preview = PREVIEW_STATE.load(Ordering::Acquire);
+        let active = preview & PAD_MASK;
+        let changed = self.led_mask ^ active;
+        for pad in 0..16 {
+            if changed & (1 << pad) != 0 {
+                if active & (1 << pad) != 0 {
+                    let _ = lighting::send_pad_light(pad as u8, 0x00ff00, 1.0);
+                } else {
+                    lighting::restore_pad_rgb(pad as u8);
+                }
+            }
+        }
+        self.led_mask = active;
         let shift_active = SHIFT_ACTIVE.load(Ordering::Acquire);
         let show_shift_menu = self.in_16_levels && shift_active;
         let show_mascot = self.in_16_levels && self.enabled;
         if !show_shift_menu && !show_mascot {
             return;
         }
-        let now = clock::now_ms();
         // SAFETY: on_paint supplies the live Graphics object on the app's
         // paint path. The overlay only paints the three SHIFT labels and the
         // mascot after the user explicitly enables ARP in 16 Levels.
@@ -216,7 +273,7 @@ impl Mod for ArpeggiGator {
                 self.enabled,
                 self.engine.pattern().label(),
                 self.additional_notes,
-                (PREVIEW_STATE.load(Ordering::Acquire) & PAD_MASK).count_ones() as u8,
+                (active.count_ones() as u8, preview & HOLD_ENABLED != 0),
                 now as u64,
             )
         }
@@ -246,6 +303,7 @@ mod animation_input_tests {
         PREVIEW_STATE.store(0, Ordering::Release);
         observe_surface(surface(0, 0x99, 100));
         assert_eq!(PREVIEW_STATE.load(Ordering::Acquire) & PAD_MASK, 0);
+        observe_surface(surface(0, 0x89, 0));
 
         PREVIEW_STATE.store(PREVIEW_ENABLED, Ordering::Release);
         observe_surface(surface(0, 0x99, 100));
@@ -266,6 +324,15 @@ mod animation_input_tests {
         observe_surface(surface(15, 0x99, 127));
         observe_surface(surface(15, 0x89, 0));
         assert_eq!(PREVIEW_STATE.load(Ordering::Acquire) & PAD_MASK, 0);
+        PREVIEW_STATE.store(PREVIEW_ENABLED | HOLD_ENABLED, Ordering::Release);
+        for pad in 0..4 {
+            observe_surface(surface(pad, 0x99, 100));
+            observe_surface(surface(pad, 0x89, 0));
+        }
+        assert_eq!(PREVIEW_STATE.load(Ordering::Acquire) & PAD_MASK, 0b1111);
+        observe_surface(surface(1, 0x99, 100));
+        observe_surface(surface(1, 0x89, 0));
+        assert_eq!(PREVIEW_STATE.load(Ordering::Acquire) & PAD_MASK, 0b1101);
         PREVIEW_STATE.store(0, Ordering::Release);
     }
 }

@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.0.1.2
+
+- Add DATA-controlled HOLD for the visual preview, with green active pads and individual pad toggles.
+- Improve the control labels and replace the animated note with two red beamed notes.
+- Show a two-second vaporwave ArpeggiGator splash when the app starts.
+- Generated note playback remains disabled; HOLD currently controls the visual preview.
+
 ## 0.0.1.1
 
 - Redesign the animated gator with red headphones and moving water.

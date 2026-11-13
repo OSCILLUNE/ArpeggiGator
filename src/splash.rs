@@ -23,23 +23,82 @@ pub unsafe fn draw_arp_overlay(
     enabled: bool,
     pattern: &str,
     additional_notes: u8,
-    held_pads: u8,
+    preview: (u8, bool),
     now_ms: u64,
 ) {
+    let (held_pads, hold) = preview;
     // SAFETY: the caller owns the live Graphics handle for this paint.
     unsafe {
         if show_shift_menu {
             draw_shift_labels(graphics, enabled, pattern, additional_notes);
         }
         if enabled {
+            graphics.colour(0xffd56aff);
+            graphics.text("PRESS DATA", 189, 77, 125, 18, 14.0);
+            graphics.colour(if hold { LIME } else { 0xffff4053 });
+            graphics.text(
+                if hold { "HOLD: ON" } else { "HOLD: OFF" },
+                189,
+                96,
+                125,
+                18,
+                14.0,
+            );
             let phase = if held_pads > 0 { (now_ms / 150) % 8 } else { 0 };
             let chewing = held_pads > 0 && (3..=5).contains(&phase);
-            draw_gator(graphics, chewing, phase, held_pads > 0);
+            draw_gator(graphics, chewing, phase, held_pads > 0, 0);
             if held_pads > 0 {
                 let note_x = 264 - ((now_ms / 65) % 76) as i32;
                 draw_note(graphics, note_x, chewing);
             }
         }
+    }
+}
+
+/// Draw the startup scene on the live app paint path.
+///
+/// # Safety
+/// The graphics handle must belong to the active paint callback.
+pub unsafe fn draw_boot_splash(graphics: &mut Graphics) {
+    unsafe {
+        // Sunset sky and a stepped, striped vaporwave sun.
+        graphics.colour(0xff1c0737);
+        graphics.rect(0, 0, 320, 240);
+        graphics.colour(0xff370c5c);
+        graphics.rect(0, 43, 320, 95);
+        graphics.colour(0xffa52e89);
+        graphics.rect(118, 50, 84, 8);
+        graphics.rect(106, 58, 108, 12);
+        graphics.colour(0xffff8951);
+        graphics.rect(100, 70, 120, 16);
+        graphics.colour(0xffffa94d);
+        graphics.rect(98, 86, 124, 18);
+        graphics.colour(0xfff36367);
+        graphics.rect(101, 104, 118, 12);
+        graphics.colour(0xffdc468e);
+        graphics.rect(108, 118, 104, 7);
+        graphics.rect(120, 129, 80, 5);
+        // Perspective grid on the lower horizon.
+        graphics.colour(0xff210734);
+        graphics.rect(0, 145, 320, 95);
+        graphics.colour(0xff6a258e);
+        for y in [150, 158, 168, 182, 201, 226] {
+            graphics.rect(0, y, 320, 1);
+        }
+        for row in 0..19 {
+            let y = 145 + row * 5;
+            for slope in [-6, -4, -2, 0, 2, 4, 6] {
+                let x = 160 + slope * row;
+                if (0..320).contains(&x) {
+                    graphics.rect(x, y, 2, 5);
+                }
+            }
+        }
+        graphics.colour(INK);
+        graphics.text("ArpeggiGator", 27, 10, 268, 30, 23.0);
+        graphics.colour(0xffff99ed);
+        graphics.text("ArpeggiGator", 25, 8, 268, 30, 23.0);
+        draw_gator(graphics, false, 0, false, 30);
     }
 }
 
@@ -57,11 +116,11 @@ unsafe fn draw_shift_labels(
         label_cell(graphics, 219, 5, 88, BG);
 
         graphics.colour(if enabled { INK } else { PINK });
-        graphics.text("ARP", 17, 12, 80, 12, 9.0);
+        graphics.text("ARP", 17, 8, 80, 19, 15.0);
         graphics.colour(CREAM);
-        graphics.text(pattern, 115, 12, 90, 12, 8.0);
+        graphics.text(pattern, 115, 8, 90, 19, 13.0);
         graphics.colour(GOLD);
-        graphics.text(&format!("+{additional_notes}"), 223, 12, 80, 12, 9.0);
+        graphics.text(&format!("+{additional_notes}"), 223, 8, 80, 19, 15.0);
     }
 }
 
@@ -82,10 +141,16 @@ unsafe fn scene_rect(graphics: &mut Graphics, x: i32, y: i32, width: i32, height
     unsafe { graphics.rect(25 + (x - 25) * 2, 45 + (y - 103) * 2, width * 2, height * 2) };
 }
 
-unsafe fn draw_gator(graphics: &mut Graphics, chewing: bool, phase: u64, moving: bool) {
+unsafe fn draw_gator(
+    graphics: &mut Graphics,
+    chewing: bool,
+    phase: u64,
+    moving: bool,
+    offset: i32,
+) {
     // The water is a small irregular silhouette, not a panel over the waveform.
     // Idle is always phase zero; animation moves only while a pad is held.
-    let x = 25;
+    let x = 25 + offset;
     let bob = if moving {
         [0, -1, -2, -1, 0, 1, 2, 1][phase as usize]
     } else {
@@ -209,17 +274,43 @@ unsafe fn draw_gator(graphics: &mut Graphics, chewing: bool, phase: u64, moving:
 }
 
 unsafe fn draw_note(graphics: &mut Graphics, x: i32, chewing: bool) {
-    let y = 120;
+    let y = 115;
     unsafe {
-        graphics.colour(PINK);
-        graphics.rect(x + 6, y, 3, 13);
-        graphics.rect(x + 6, y, 9, 3);
-        graphics.colour(GOLD);
-        graphics.rect(x, y + 11, 8, 5);
-        graphics.rect(x + 11, y + 7, 8, 5);
-        if chewing {
+        // Two beamed eighth notes: a dark outline and highlights make the
+        // red shape readable against both the waveform and the mascot.
+        graphics.colour(INK);
+        graphics.rect(x + 8, y + 4, 6, 19);
+        graphics.rect(x + 24, y + 1, 6, 19);
+        graphics.rect(x + 8, y + 3, 21, 6);
+        graphics.rect(x + 2, y + 17, 12, 9);
+        graphics.rect(x, y + 19, 16, 5);
+        graphics.rect(x + 18, y + 14, 12, 9);
+        graphics.rect(x + 16, y + 16, 16, 5);
+
+        graphics.colour(0xff990f22);
+        graphics.rect(x + 4, y + 23, 8, 2);
+        graphics.rect(x + 20, y + 20, 8, 2);
+        graphics.rect(x + 11, y + 8, 2, 12);
+        graphics.rect(x + 27, y + 5, 2, 12);
+
+        graphics.colour(0xffed3043);
+        graphics.rect(x + 10, y + 6, 3, 15);
+        graphics.rect(x + 26, y + 3, 3, 15);
+        graphics.rect(x + 10, y + 5, 17, 3);
+        graphics.rect(x + 3, y + 19, 10, 5);
+        graphics.rect(x + 2, y + 20, 12, 3);
+        graphics.rect(x + 19, y + 16, 10, 5);
+        graphics.rect(x + 18, y + 17, 12, 3);
+
+        graphics.colour(0xffff8580);
+        graphics.rect(x + 11, y + 6, 1, 10);
+        graphics.rect(x + 27, y + 4, 1, 9);
+        graphics.rect(x + 4, y + 19, 5, 2);
+        graphics.rect(x + 20, y + 16, 5, 2);
+
+        if chewing && x < 205 {
             graphics.colour(CREAM);
-            graphics.rect(187, y - 9, 3, 3);
+            graphics.rect(187, y - 3, 2, 2);
         }
     }
 }
