@@ -97,7 +97,9 @@ pub fn capture_and_schedule(event: PadEvent) {
     g_probe
         .pad_thread_id
         .store(current_thread_fingerprint(), Ordering::Release);
-    g_probe.input_ptr.store(event.input as u64, Ordering::Release);
+    g_probe
+        .input_ptr
+        .store(event.input as u64, Ordering::Release);
     g_probe
         .properties_ptr
         .store(event.properties as u64, Ordering::Release);
@@ -163,18 +165,15 @@ pub fn capture_and_schedule(event: PadEvent) {
 
 /// Track release of the physical source pad.
 pub fn source_pad_released(event: PadEvent) {
-    if event.action == PadAction::Release
-        && g_probe.pad.load(Ordering::Acquire) == event.pad
-    {
+    if event.action == PadAction::Release && g_probe.pad.load(Ordering::Acquire) == event.pad {
         SOURCE_PAD_HELD.store(false, Ordering::Release);
     }
 }
 
 /// Called from the SDK's native Sample-page paint hook.
 pub fn on_paint() {
-    g_probe
-        .paint_thread_id
-        .store(current_thread_fingerprint(), Ordering::Release);
+    let paint_thread = current_thread_fingerprint();
+    g_probe.paint_thread_id.store(paint_thread, Ordering::Release);
 
     if REQUEST_NOTE_ON.swap(false, Ordering::AcqRel) {
         let input = g_probe.input_ptr.load(Ordering::Acquire) as usize;
@@ -184,7 +183,14 @@ pub fn on_paint() {
         let velocity = f32::from_bits(g_probe.velocity_bits.load(Ordering::Acquire));
 
         g_probe.note_on_attempts.fetch_add(1, Ordering::AcqRel);
-        if input == 0 || properties == 0 || !(0..16).contains(&pad) || !sites::notes_ready() {
+        let pad_thread = g_probe.pad_thread_id.load(Ordering::Acquire);
+        if input == 0
+            || properties == 0
+            || !(0..16).contains(&pad)
+            || pad_thread != paint_thread
+            || !SOURCE_PAD_HELD.load(Ordering::Acquire)
+            || !sites::notes_ready()
+        {
             g_probe.invalid_contexts.fetch_add(1, Ordering::AcqRel);
             NOTE_ON_COMPLETED.store(true, Ordering::Release);
         } else {
@@ -192,12 +198,10 @@ pub fn on_paint() {
             // the original PadEvent, but are deliberately reused 250 ms later.
             // The experiment exists to test their lifetime and callback thread.
             // Never ship this call without a passing emulator probe and review.
-            let sent = unsafe {
-                sites::send_note_on(input, source, pad, properties, velocity)
-            };
+            let sent = unsafe { sites::send_note_on(input, source, pad, properties, velocity) };
             g_probe
                 .note_on_succeeded
-                .store(u32::from(sent), Ordering::Release);
+                .fetch_add(u32::from(sent), Ordering::AcqRel);
             NOTE_ON_COMPLETED.store(true, Ordering::Release);
         }
     }
@@ -207,11 +211,19 @@ pub fn on_paint() {
         let source = g_probe.source.load(Ordering::Acquire);
         let pad = g_probe.pad.load(Ordering::Acquire);
 
-        if input != 0 && (0..16).contains(&pad) && sites::notes_ready() {
+        let pad_thread = g_probe.pad_thread_id.load(Ordering::Acquire);
+        let paint_thread = g_probe.paint_thread_id.load(Ordering::Acquire);
+        if input != 0
+            && (0..16).contains(&pad)
+            && pad_thread == paint_thread
+            && sites::notes_ready()
+        {
             g_probe.note_off_attempts.fetch_add(1, Ordering::AcqRel);
             // SAFETY (EMULATOR-ONLY EXPERIMENT): matching note-off is invoked
             // from the native paint callback using the captured input object.
             unsafe { sites::send_note_off(input, source, pad) };
+        } else {
+            g_probe.invalid_contexts.fetch_add(1, Ordering::AcqRel);
         }
         NOTE_OFF_COMPLETED.store(true, Ordering::Release);
     }
