@@ -60,7 +60,7 @@ print(pathlib.Path(sdk["manifest_path"]).parent)
     exit 1
 }
 
-exec "$SDK_DIR/build-mod.sh" \
+"$SDK_DIR/build-mod.sh" \
     --manifest-path "$ROOT/Cargo.toml" \
     --package arpeggigator \
     --name arpeggigator \
@@ -69,3 +69,12 @@ exec "$SDK_DIR/build-mod.sh" \
     --require-symbol g_probe \
     --firmware-sha256 44507c7a7d3029c411b2e3780ea286ca3e08b7e3ffd7b5047d52f73bf5299d1f \
     --display-name "ArpeggiGator"
+
+# Keep the running emulator's existing autorun card in sync with each build.
+# The sync checks the mounted card and exact autorun script before changing it.
+# A machine without the emulator can still build; the warning makes the missing
+# installation explicit rather than silently leaving an old build on the card.
+if ! python3 "$ROOT/scripts/sync-emulator-autorun.py"; then
+    echo "WARNING: build succeeded, but the emulator autorun card was not updated." >&2
+    echo "With the emulator and its ArpeggiGator card running, retry: python3 scripts/sync-emulator-autorun.py" >&2
+fi

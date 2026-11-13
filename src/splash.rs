@@ -32,10 +32,11 @@ pub unsafe fn draw_arp_overlay(
             draw_shift_labels(graphics, enabled, pattern, additional_notes);
         }
         if enabled {
-            let chewing = held_pads > 0 && (now_ms / 130).is_multiple_of(2);
-            draw_gator(graphics, chewing);
+            let phase = if held_pads > 0 { (now_ms / 150) % 8 } else { 0 };
+            let chewing = held_pads > 0 && (3..=5).contains(&phase);
+            draw_gator(graphics, chewing, phase, held_pads > 0);
             if held_pads > 0 {
-                let note_x = 182 - ((now_ms / 65) % 76) as i32;
+                let note_x = 264 - ((now_ms / 65) % 76) as i32;
                 draw_note(graphics, note_x, chewing);
             }
         }
@@ -76,69 +77,139 @@ unsafe fn label_cell(graphics: &mut Graphics, x: i32, y: i32, width: i32, fill: 
     }
 }
 
-unsafe fn draw_gator(graphics: &mut Graphics, chewing: bool) {
-    // Compact pixel mascot; it appears only after ARP is enabled.
+// Scale the mascot into the central display area while leaving the softkeys clear.
+unsafe fn scene_rect(graphics: &mut Graphics, x: i32, y: i32, width: i32, height: i32) {
+    unsafe { graphics.rect(25 + (x - 25) * 2, 45 + (y - 103) * 2, width * 2, height * 2) };
+}
+
+unsafe fn draw_gator(graphics: &mut Graphics, chewing: bool, phase: u64, moving: bool) {
+    // The water is a small irregular silhouette, not a panel over the waveform.
+    // Idle is always phase zero; animation moves only while a pad is held.
     let x = 25;
-    let y = 103;
+    let bob = if moving {
+        [0, -1, -2, -1, 0, 1, 2, 1][phase as usize]
+    } else {
+        0
+    };
+    let y = 103 + bob;
+    let wave = if moving { (phase % 3) as i32 - 1 } else { 0 };
+    const DEEP: u32 = 0xff07536c;
+    const WATER: u32 = 0xff088ba3;
+    const FOAM: u32 = 0xff6be5d5;
+    const SHADOW: u32 = 0xff075c39;
+    const MID: u32 = 0xff18a852;
+    const HIGHLIGHT: u32 = 0xffa8ed67;
     unsafe {
+        // Layered ripples leave the native screen visible around their edges.
+        graphics.colour(DEEP);
+        scene_rect(graphics, x + 3, 161, 83, 4);
+        scene_rect(graphics, x + 10, 165, 70, 4);
+        scene_rect(graphics, x + 20, 169, 49, 3);
+        graphics.colour(WATER);
+        scene_rect(graphics, x + 5 + wave, 159, 32, 3);
+        scene_rect(graphics, x + 54 - wave, 160, 32, 3);
+        scene_rect(graphics, x + 11, 165, 63, 2);
+        graphics.colour(FOAM);
+        scene_rect(graphics, x + 3 + wave, 158, 15, 2);
+        scene_rect(graphics, x + 69 - wave, 159, 16, 2);
+        scene_rect(graphics, x + 20 - wave, 168, 17, 1);
+        scene_rect(graphics, x + 57 + wave, 167, 15, 1);
+
+        // Tail, body and face have a dark silhouette with stepped contours.
         graphics.colour(INK);
-        graphics.rect(x + 3, y + 11, 14, 31);
-        graphics.rect(x + 14, y + 3, 49, 12);
-        graphics.rect(x + 14, y + 12, 53, 34);
-        graphics.rect(x + 35, y + 39, 40, 19);
-
-        graphics.colour(PINK);
-        graphics.rect(x + 4, y + 14, 11, 25);
-        graphics.rect(x + 18, y + 4, 39, 5);
-        graphics.rect(x + 57, y + 8, 7, 5);
-        graphics.colour(PURPLE);
-        graphics.rect(x + 7, y + 18, 6, 17);
-
+        scene_rect(graphics, x + 3, y + 37, 15, 6);
+        scene_rect(graphics, x + 10, y + 31, 15, 16);
+        scene_rect(graphics, x + 19, y + 23, 34, 31);
+        scene_rect(graphics, x + 26, y + 16, 24, 10);
+        scene_rect(graphics, x + 43, y + 24, 27, 24);
+        scene_rect(graphics, x + 61, y + 30, 23, 16);
+        scene_rect(graphics, x + 29, y + 48, 33, 13);
+        graphics.colour(SHADOW);
+        scene_rect(graphics, x + 13, y + 35, 15, 8);
+        scene_rect(graphics, x + 21, y + 27, 29, 24);
+        scene_rect(graphics, x + 32, y + 47, 28, 10);
+        scene_rect(graphics, x + 47, y + 29, 32, 14);
+        graphics.colour(MID);
+        scene_rect(graphics, x + 20, y + 30, 30, 15);
+        scene_rect(graphics, x + 28, y + 20, 19, 10);
+        scene_rect(graphics, x + 46, y + 27, 21, 13);
+        scene_rect(graphics, x + 62, y + 33, 19, 7);
+        scene_rect(graphics, x + 33, y + 45, 22, 7);
         graphics.colour(GREEN);
-        graphics.rect(x + 17, y + 13, 39, 27);
-        graphics.rect(x + 42, y + 20, 29, 17);
-        graphics.rect(x + 61, y + 25, 21, 12);
-        graphics.rect(x + 28, y + 48, 31, 16);
-        graphics.rect(x + 21, y + 57, 16, 8);
-        graphics.rect(x + 52, y + 57, 14, 8);
+        scene_rect(graphics, x + 22, y + 29, 18, 7);
+        scene_rect(graphics, x + 29, y + 19, 14, 6);
+        scene_rect(graphics, x + 49, y + 27, 14, 5);
+        scene_rect(graphics, x + 64, y + 32, 12, 3);
+        graphics.colour(HIGHLIGHT);
+        scene_rect(graphics, x + 24, y + 28, 13, 2);
+        scene_rect(graphics, x + 29, y + 20, 10, 2);
+        scene_rect(graphics, x + 52, y + 27, 8, 2);
+        scene_rect(graphics, x + 69, y + 33, 6, 2);
 
-        graphics.colour(LIME);
-        graphics.rect(x + 20, y + 15, 24, 3);
-        graphics.rect(x + 47, y + 23, 20, 3);
-        graphics.rect(x + 64, y + 27, 13, 3);
-
+        // Oversized over-ear headphones move with the head in every frame.
+        // The stepped arch and ear cup use separate shadows and highlights.
         graphics.colour(INK);
-        graphics.rect(x + 22, y + 20, 16, 11);
-        graphics.rect(x + 41, y + 20, 16, 11);
-        graphics.rect(x + 37, y + 24, 5, 3);
-        graphics.rect(x + 42, y + 36, 37, 7);
+        scene_rect(graphics, x + 20, y + 15, 7, 16);
+        scene_rect(graphics, x + 23, y + 10, 8, 7);
+        scene_rect(graphics, x + 29, y + 8, 18, 6);
+        scene_rect(graphics, x + 45, y + 11, 7, 9);
+        scene_rect(graphics, x + 49, y + 16, 6, 8);
+        scene_rect(graphics, x + 13, y + 22, 14, 24);
+        scene_rect(graphics, x + 16, y + 19, 9, 30);
+        graphics.colour(0xffa30f26);
+        scene_rect(graphics, x + 22, y + 15, 4, 13);
+        scene_rect(graphics, x + 26, y + 11, 6, 4);
+        scene_rect(graphics, x + 31, y + 10, 15, 3);
+        scene_rect(graphics, x + 46, y + 14, 4, 7);
+        scene_rect(graphics, x + 15, y + 24, 10, 20);
+        scene_rect(graphics, x + 18, y + 21, 6, 26);
+        graphics.colour(0xffef3043);
+        scene_rect(graphics, x + 24, y + 15, 3, 9);
+        scene_rect(graphics, x + 28, y + 11, 16, 2);
+        scene_rect(graphics, x + 17, y + 24, 7, 19);
+        graphics.colour(0xffff7a73);
+        scene_rect(graphics, x + 18, y + 25, 2, 11);
+        scene_rect(graphics, x + 29, y + 11, 10, 1);
+
+        // Sunglasses, glint, nostril and a small toothy jaw.
+        graphics.colour(INK);
+        scene_rect(graphics, x + 26, y + 24, 12, 9);
+        scene_rect(graphics, x + 40, y + 24, 12, 9);
+        scene_rect(graphics, x + 37, y + 26, 4, 2);
+        scene_rect(graphics, x + 67, y + 35, 3, 2);
+        scene_rect(graphics, x + 49, y + 39, 32, 3);
         graphics.colour(VIOLET);
-        graphics.rect(x + 24, y + 22, 11, 7);
-        graphics.rect(x + 43, y + 22, 11, 7);
+        scene_rect(graphics, x + 28, y + 26, 8, 5);
+        scene_rect(graphics, x + 42, y + 26, 8, 5);
         graphics.colour(CREAM);
-        graphics.rect(x + 27, y + 23, 3, 2);
-        graphics.rect(x + 46, y + 23, 3, 2);
-
-        graphics.colour(GOLD);
+        scene_rect(graphics, x + 29, y + 26, 3, 1);
+        scene_rect(graphics, x + 43, y + 26, 3, 1);
+        scene_rect(graphics, x + 54, y + 40, 3, 3);
+        scene_rect(graphics, x + 65, y + 40, 3, 3);
+        scene_rect(graphics, x + 75, y + 40, 3, 3);
         if chewing {
-            graphics.rect(x + 44, y + 45, 32, 9);
+            graphics.colour(INK);
+            scene_rect(graphics, x + 50, y + 43, 28, 5);
+            graphics.colour(PINK);
+            scene_rect(graphics, x + 55, y + 45, 15, 2);
+            graphics.colour(MID);
+            scene_rect(graphics, x + 50, y + 48, 27, 3);
         } else {
-            graphics.rect(x + 44, y + 42, 35, 8);
+            graphics.colour(MID);
+            scene_rect(graphics, x + 50, y + 43, 29, 3);
         }
-        graphics.colour(INK);
-        graphics.rect(x + 44, y + 37, 35, 4);
-        graphics.colour(CREAM);
-        graphics.rect(x + 49, y + 38, 3, 5);
-        graphics.rect(x + 60, y + 38, 3, 5);
-        graphics.rect(x + 71, y + 38, 3, 5);
+        // Little forearms rest on the surface.
+        graphics.colour(SHADOW);
+        scene_rect(graphics, x + 24, y + 51, 13, 6);
+        scene_rect(graphics, x + 48, y + 51, 13, 6);
         graphics.colour(GREEN);
-        graphics.rect(x + 25, y + 61, 12, 8);
-        graphics.rect(x + 52, y + 61, 13, 8);
+        scene_rect(graphics, x + 24, y + 51, 11, 3);
+        scene_rect(graphics, x + 49, y + 51, 10, 3);
     }
 }
 
 unsafe fn draw_note(graphics: &mut Graphics, x: i32, chewing: bool) {
-    let y = 141;
+    let y = 120;
     unsafe {
         graphics.colour(PINK);
         graphics.rect(x + 6, y, 3, 13);
@@ -148,7 +219,7 @@ unsafe fn draw_note(graphics: &mut Graphics, x: i32, chewing: bool) {
         graphics.rect(x + 11, y + 7, 8, 5);
         if chewing {
             graphics.colour(CREAM);
-            graphics.rect(106, y - 9, 3, 3);
+            graphics.rect(187, y - 9, 3, 3);
         }
     }
 }

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.0.1.1
+
+- Redesign the animated gator with red headphones and moving water.
+- Synchronize the running emulator's matching autorun card after builds, with a warning when synchronization fails.
+- Generated note playback remains disabled.
+
 ## 0.0.1.0
 
 - Start the existing gator animation while physical pads are held and return to the idle pose after the last pad is released.

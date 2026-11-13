@@ -61,6 +61,11 @@ This produces `build/arpeggigator.zip`, a firmware-guarded SD autorun package. T
 loads it on each boot while that card remains inserted. The library itself is copied to
 `/run`, so it does not modify the verified firmware.
 
+When the virtual MPC is running with the matching ArpeggiGator autorun card,
+the build also updates its module on that card. If the card is unavailable,
+the build prints a warning; run `python3 scripts/sync-emulator-autorun.py`
+after starting the emulator to update it. Restart the MPC to load the update.
+
 ## Technical notes
 
 - docs/RESEARCH.md — verified API contracts
