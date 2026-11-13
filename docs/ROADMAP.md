@@ -2,27 +2,28 @@
 
 ## Increment 0 — repository bootstrap
 - [x] Pin the target firmware and SDK revision.
-- [x] Add the first splash artwork and native pixel-art startup mark.
-- [x] Implement the host-testable eight-pattern engine.
+- [x] Add splash artwork and native pixel-art startup mark.
+- [x] Implement the eight-pattern held-pad engine.
 - [x] Bind SHIFT+B1 and SHIFT+B2 in 16 Levels.
-- [ ] Host CI and compile verification.
+- [x] Add read-only current-sequence/global BPM parser and host tests.
+- [x] Host CI: formatting, unit tests and Clippy.
 
-## Increment 1 — playback
-- [ ] Prove the lifetime and thread contract for the live pad input/properties objects.
-- [ ] Identify a project-tempo / sequencer-clock source on firmware 1.3.0.12.
-- [ ] Add a non-blocking scheduler driven by the verified clock.
+## Increment 1 — audible playback
+- [ ] Verify that the temporary project file follows unsaved tempo edits on device.
+- [ ] Prove the lifetime and thread contract for live pad input/properties objects.
+- [ ] Find a reliable transport phase or beat clock, not just BPM.
+- [ ] Add a non-blocking scheduler without NOTE REPEAT.
 - [ ] Trigger and release pads through the native note path.
-- [ ] Handle release, disable, transport stop and mod unload without stuck notes.
+- [ ] Guarantee note-off on pad release, disable, transport stop and unload.
 
 ## Increment 2 — performance controls
 - [ ] Rate: 1/4, 1/8, 1/8T, 1/16, 1/16T, 1/32.
 - [ ] Gate length.
-- [ ] Octave range (only if the selected 16 Levels instrument supports it safely).
-- [ ] Display active state and pattern in a compact native overlay.
+- [ ] Octave span where the active 16 Levels mapping supports it.
+- [ ] Refine the compact status overlay.
 
 ## Increment 3 — release
-- [ ] Run host tests and Clippy.
-- [ ] Build with the SDK's canonical script.
+- [ ] Build through the SDK's canonical script.
 - [ ] Load in the virtual MPC Sample emulator.
 - [ ] Test on physical MPC Sample 1.3.0.12.
-- [ ] Publish an SD-card ZIP only after all checks pass.
+- [ ] Publish a device-installable ZIP only after all checks pass.
