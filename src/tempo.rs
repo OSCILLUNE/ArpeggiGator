@@ -122,7 +122,8 @@ mod tests {
     fn reads_json_after_the_acvs_gzip_header() {
         let json = br#"{"data":{"masterTempoEnabled":true,"masterTempo":126.0,"currentSequence":0,"sequences":[]}}"#;
         let mut encoder = GzEncoder::new(Vec::new(), Compression::default());
-        encoder.write_all(b"ACVS\n1.3.0.12\nSerialisableProjectData\njson\nLinux\n")
+        encoder
+            .write_all(b"ACVS\n1.3.0.12\nSerialisableProjectData\njson\nLinux\n")
             .expect("write ACVS header");
         encoder.write_all(json).expect("write project JSON");
         let compressed = encoder.finish().expect("finish gzip project");
