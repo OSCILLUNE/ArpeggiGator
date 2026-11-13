@@ -6,6 +6,7 @@
 
 mod arp;
 mod splash;
+mod tempo;
 
 pub use arp::{ArpEngine, Pattern, Step};
 
@@ -39,6 +40,7 @@ struct ArpeggiGator {
 impl Mod for ArpeggiGator {
     fn on_start(&mut self) {
         SPLASH_UNTIL_MS.store(clock::now_ms() + 2_200, Ordering::Release);
+        tempo::start_monitor();
         draw::show_toast("ArpeggiGator");
         // SAFETY: splash_component returns only the live component last
         // recorded by the SDK paint hook, or zero when none is available.
@@ -112,11 +114,10 @@ impl Mod for ArpeggiGator {
             return;
         }
         if self.enabled && self.in_16_levels {
-            let line = format!(
-                "ARP  {}  {} PADS",
-                self.engine.pattern().label(),
-                self.engine.held_count()
-            );
+            let tempo = tempo::current_bpm()
+                .map(|bpm| format!("{bpm:.1}"))
+                .unwrap_or_else(|| "--.-".to_string());
+            let line = format!("ARP {} {} BPM", self.engine.pattern().label(), tempo);
             // SAFETY: this is the live Graphics handle from on_paint.
             unsafe {
                 graphics.colour(0xdd12072b);
