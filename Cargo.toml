@@ -1,0 +1,20 @@
+[package]
+name = "arpeggigator"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.97"
+description = "Standalone arpeggiator mod for the AKAI MPC Sample"
+license = "MIT"
+repository = "https://github.com/OSCILLUNE/ArpeggiGator"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+mpc-sample-sdk = { git = "https://github.com/ioma8/mpc-sample-sdk", rev = "87d3ec20e6b8d46b0580a4fd7f0f39ca3fcd7caf" }
+
+[profile.release]
+panic = "abort"
+lto = true
+codegen-units = 1
+strip = true
