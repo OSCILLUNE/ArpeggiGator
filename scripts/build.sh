@@ -1,6 +1,20 @@
 #!/bin/sh
 # Build and package ArpeggiGator through the SDK's canonical build script.
 set -eu
+
+# Non-interactive shells launched through "sh" do not necessarily load rustup's
+# PATH setup. Load it explicitly so cargo is available to the metadata step.
+if [ -f "$HOME/.cargo/env" ]; then
+    . "$HOME/.cargo/env"
+elif [ -d "$HOME/.cargo/bin" ]; then
+    PATH="$HOME/.cargo/bin:$PATH"
+    export PATH
+fi
+
+if ! command -v cargo >/dev/null 2>&1; then
+    echo "cargo not found. Install Rust with rustup or add ~/.cargo/bin to PATH." >&2
+    exit 127
+fi
 ROOT=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 cd "$ROOT"
 
