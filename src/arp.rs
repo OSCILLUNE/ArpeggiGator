@@ -256,15 +256,13 @@ fn bounce_up(position: usize, count: usize) -> usize {
     }
     let period = 2 * count - 2;
     let step = position % period;
-    if step < count {
-        step
-    } else {
-        period - step
-    }
+    if step < count { step } else { period - step }
 }
 
 fn bounce_down(position: usize, count: usize) -> usize {
-    if count <= 1 { return 0; }
+    if count <= 1 {
+        return 0;
+    }
     let period = 2 * count - 2;
     let step = position % period;
     if step < count {
