@@ -32,15 +32,17 @@ pub fn start_monitor() {
 
     let result = thread::Builder::new()
         .name("arpeggigator-tempo".to_string())
-        .spawn(|| loop {
-            match read_current_project_bpm() {
-                Some(bpm) => {
-                    BPM_BITS.store(bpm.to_bits(), Ordering::Release);
-                    BPM_VALID.store(true, Ordering::Release);
+        .spawn(|| {
+            loop {
+                match read_current_project_bpm() {
+                    Some(bpm) => {
+                        BPM_BITS.store(bpm.to_bits(), Ordering::Release);
+                        BPM_VALID.store(true, Ordering::Release);
+                    }
+                    None => BPM_VALID.store(false, Ordering::Release),
                 }
-                None => BPM_VALID.store(false, Ordering::Release),
+                thread::sleep(Duration::from_millis(500));
             }
-            thread::sleep(Duration::from_millis(500));
         });
 
     if result.is_err() {
@@ -81,9 +83,9 @@ fn parse_project_document(document: &Value) -> Option<f32> {
     } else {
         let current_sequence = data.get("currentSequence")?.as_u64()?;
         let sequences = data.get("sequences")?.as_array()?;
-        let sequence = sequences.iter().find(|entry| {
-            entry.get("key").and_then(Value::as_u64) == Some(current_sequence)
-        })?;
+        let sequence = sequences
+            .iter()
+            .find(|entry| entry.get("key").and_then(Value::as_u64) == Some(current_sequence))?;
         sequence.get("value")?.get("bpm")?.as_f64()?
     };
 
