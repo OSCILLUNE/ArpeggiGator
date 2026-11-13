@@ -12,6 +12,8 @@ use crate::{ArpEngine, Step};
 pub enum StepRate {
     /// One step per quarter note.
     Quarter,
+    /// Quarter-note triplet (three steps per two quarter notes).
+    QuarterTriplet,
     /// Two steps per quarter note.
     Eighth,
     /// Three steps per quarter note.
@@ -23,29 +25,47 @@ pub enum StepRate {
     SixteenthTriplet,
     /// Eight steps per quarter note.
     ThirtySecond,
+    /// Twelve steps per quarter note.
+    ThirtySecondTriplet,
+    /// Sixteen steps per quarter note.
+    SixtyFourth,
 }
 
 impl StepRate {
-    /// Rates in the order intended for the future device control.
-    pub const ALL: [Self; 6] = [
+    /// Available rates from the slowest to the fastest.
+    pub const ALL: [Self; 9] = [
         Self::Quarter,
+        Self::QuarterTriplet,
         Self::Eighth,
         Self::EighthTriplet,
         Self::Sixteenth,
         Self::SixteenthTriplet,
         Self::ThirtySecond,
+        Self::ThirtySecondTriplet,
+        Self::SixtyFourth,
     ];
 
-    /// Number of steps in one quarter note.
-    const fn subdivisions(self) -> u64 {
+    /// Step duration as a rational fraction of one quarter note.
+    const fn quarter_fraction(self) -> (u64, u64) {
         match self {
-            Self::Quarter => 1,
-            Self::Eighth => 2,
-            Self::EighthTriplet => 3,
-            Self::Sixteenth => 4,
-            Self::SixteenthTriplet => 6,
-            Self::ThirtySecond => 8,
+            Self::Quarter => (1, 1),
+            Self::QuarterTriplet => (2, 3),
+            Self::Eighth => (1, 2),
+            Self::EighthTriplet => (1, 3),
+            Self::Sixteenth => (1, 4),
+            Self::SixteenthTriplet => (1, 6),
+            Self::ThirtySecond => (1, 8),
+            Self::ThirtySecondTriplet => (1, 12),
+            Self::SixtyFourth => (1, 16),
         }
+    }
+
+    /// Move by encoder detents, stopping at either end of the rate list.
+    #[must_use]
+    pub fn shifted(self, delta: i32) -> Self {
+        let index = Self::ALL.iter().position(|&rate| rate == self).unwrap_or(0);
+        let next = (index as i64 + i64::from(delta)).clamp(0, (Self::ALL.len() - 1) as i64);
+        Self::ALL[next as usize]
     }
 
     /// Short label for the device UI.
@@ -53,11 +73,14 @@ impl StepRate {
     pub const fn label(self) -> &'static str {
         match self {
             Self::Quarter => "1/4",
+            Self::QuarterTriplet => "1/4T",
             Self::Eighth => "1/8",
             Self::EighthTriplet => "1/8T",
             Self::Sixteenth => "1/16",
             Self::SixteenthTriplet => "1/16T",
             Self::ThirtySecond => "1/32",
+            Self::ThirtySecondTriplet => "1/32T",
+            Self::SixtyFourth => "1/64",
         }
     }
 }
@@ -246,9 +269,10 @@ impl ArpScheduler {
         // Keep the ideal grid phase but skip any deadlines already in the past.
         // Only the step actually emitted advances the pattern engine.
         let elapsed = now_us.saturating_sub(self.anchor_us);
-        let latest_due =
-            u64::try_from((u128::from(elapsed) * u128::from(self.denominator())) / STEP_NUMERATOR)
-                .unwrap_or(u64::MAX);
+        let latest_due = u64::try_from(
+            (u128::from(elapsed) * u128::from(self.denominator())) / self.step_numerator(),
+        )
+        .unwrap_or(u64::MAX);
         self.next_step_index = latest_due
             .saturating_add(1)
             .max(due_index.saturating_add(1));
@@ -257,11 +281,15 @@ impl ArpScheduler {
     }
 
     fn denominator(self) -> u64 {
-        self.bpm_milli * self.rate.subdivisions()
+        self.bpm_milli * self.rate.quarter_fraction().1
+    }
+
+    fn step_numerator(self) -> u128 {
+        STEP_NUMERATOR * u128::from(self.rate.quarter_fraction().0)
     }
 
     fn deadline_us(self, index: u64) -> u64 {
-        let offset = (u128::from(index) * STEP_NUMERATOR) / u128::from(self.denominator());
+        let offset = (u128::from(index) * self.step_numerator()) / u128::from(self.denominator());
         let offset = u64::try_from(offset).unwrap_or(u64::MAX);
         self.anchor_us.saturating_add(offset)
     }
@@ -338,11 +366,14 @@ mod tests {
     fn all_rates_have_the_expected_120_bpm_step_length() {
         let cases = [
             (StepRate::Quarter, 500_000),
+            (StepRate::QuarterTriplet, 333_333),
             (StepRate::Eighth, 250_000),
             (StepRate::EighthTriplet, 166_666),
             (StepRate::Sixteenth, 125_000),
             (StepRate::SixteenthTriplet, 83_333),
             (StepRate::ThirtySecond, 62_500),
+            (StepRate::ThirtySecondTriplet, 41_666),
+            (StepRate::SixtyFourth, 31_250),
         ];
 
         for (rate, expected_us) in cases {
@@ -358,6 +389,34 @@ mod tests {
                 "{} did not fire at {expected_us} us",
                 rate.label()
             );
+        }
+    }
+
+    #[test]
+    fn encoder_rate_selection_is_ordered_bounded_and_handles_large_deltas() {
+        for pair in StepRate::ALL.windows(2) {
+            assert_eq!(pair[0].shifted(1), pair[1]);
+            assert_eq!(pair[1].shifted(-1), pair[0]);
+        }
+        assert_eq!(StepRate::Quarter.shifted(i32::MIN), StepRate::Quarter);
+        assert_eq!(
+            StepRate::SixtyFourth.shifted(i32::MAX),
+            StepRate::SixtyFourth
+        );
+    }
+
+    #[test]
+    fn triplet_and_straight_deadlines_follow_bpm() {
+        for (rate, bpm, expected) in [
+            (StepRate::Eighth, 60.0, 500_000),
+            (StepRate::Eighth, 120.0, 250_000),
+            (StepRate::Eighth, 240.0, 125_000),
+            (StepRate::QuarterTriplet, 120.0, 333_333),
+            (StepRate::SixteenthTriplet, 120.0, 83_333),
+        ] {
+            let mut scheduler = ArpScheduler::new(rate, 50);
+            assert!(scheduler.start(0, bpm));
+            assert_eq!(scheduler.deadline_us(1), expected);
         }
     }
 

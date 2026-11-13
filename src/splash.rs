@@ -23,10 +23,10 @@ pub unsafe fn draw_arp_overlay(
     enabled: bool,
     pattern: &str,
     additional_notes: u8,
-    preview: (u8, bool),
+    preview: (u8, bool, &str),
     now_ms: u64,
 ) {
-    let (held_pads, hold) = preview;
+    let (held_pads, hold, rate) = preview;
     // SAFETY: the caller owns the live Graphics handle for this paint.
     unsafe {
         if show_shift_menu {
@@ -44,6 +44,8 @@ pub unsafe fn draw_arp_overlay(
                 18,
                 14.0,
             );
+            graphics.colour(0xff63ddec);
+            graphics.text(rate, 194, 151, 116, 24, 19.0);
             let phase = if held_pads > 0 { (now_ms / 150) % 8 } else { 0 };
             let chewing = held_pads > 0 && (3..=5).contains(&phase);
             draw_gator(graphics, chewing, phase, held_pads > 0, 0);

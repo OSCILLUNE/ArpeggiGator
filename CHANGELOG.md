@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.0.1.3
+
+- Select the arpeggiator step rate with the DATA encoder, with a visible rate label.
+- Support 1/4 through 1/64 including quarter, eighth, sixteenth and thirty-second triplets.
+- Calculate scheduler step deadlines from BPM; audio playback remains unconnected.
+
 ## 0.0.1.2
 
 - Add DATA-controlled HOLD for the visual preview, with green active pads and individual pad toggles.

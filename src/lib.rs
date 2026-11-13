@@ -16,7 +16,8 @@ pub use scheduler::{ArpScheduler, ScheduledEvent, StepRate};
 use core::sync::atomic::{AtomicBool, AtomicI64, AtomicU32, Ordering};
 
 use mpc_sample_sdk::{
-    ButtonEvent, ButtonFlow, Mod, PadAction, PadEvent, PadFlow, PaintEvent, SurfaceEvent, draw,
+    ButtonEvent, ButtonFlow, EncoderEvent, EncoderFlow, Mod, PadAction, PadEvent, PadFlow,
+    PaintEvent, SurfaceEvent, draw,
     event::button,
     platform::{clock, lighting},
 };
@@ -90,6 +91,7 @@ fn observe_surface(event: SurfaceEvent) {
 #[derive(Default)]
 struct ArpeggiGator {
     engine: ArpEngine,
+    scheduler: ArpScheduler,
     enabled: bool,
     in_16_levels: bool,
     additional_notes: u8,
@@ -199,6 +201,17 @@ impl Mod for ArpeggiGator {
         flow
     }
 
+    fn on_encoder(&mut self, event: EncoderEvent) -> EncoderFlow {
+        if !self.enabled || !self.in_16_levels || SHIFT_ACTIVE.load(Ordering::Acquire) {
+            return EncoderFlow::Forward;
+        }
+        let rate = self.scheduler.rate().shifted(event.delta);
+        if self.scheduler.set_rate(rate) {
+            DASHBOARD_REFRESH_UNTIL_MS.store(clock::now_ms() + 500, Ordering::Release);
+        }
+        EncoderFlow::Consume
+    }
+
     fn surface_observer(&self) -> Option<fn(SurfaceEvent)> {
         Some(observe_surface)
     }
@@ -273,7 +286,11 @@ impl Mod for ArpeggiGator {
                 self.enabled,
                 self.engine.pattern().label(),
                 self.additional_notes,
-                (active.count_ones() as u8, preview & HOLD_ENABLED != 0),
+                (
+                    active.count_ones() as u8,
+                    preview & HOLD_ENABLED != 0,
+                    self.scheduler.rate().label(),
+                ),
                 now as u64,
             )
         }
@@ -296,6 +313,28 @@ mod animation_input_tests {
             note: 0,
             velocity,
         }
+    }
+
+    #[test]
+    fn encoder_controls_rate_only_in_active_arp_without_shift() {
+        let mut module = ArpeggiGator::default();
+        let turn = EncoderEvent {
+            surface: 0,
+            delta: 1,
+        };
+        SHIFT_ACTIVE.store(false, Ordering::Release);
+        assert_eq!(module.on_encoder(turn), EncoderFlow::Forward);
+        assert_eq!(module.scheduler.rate(), StepRate::Sixteenth);
+        module.enabled = true;
+        module.in_16_levels = true;
+        assert_eq!(module.on_encoder(turn), EncoderFlow::Consume);
+        assert_eq!(module.scheduler.rate(), StepRate::SixteenthTriplet);
+        SHIFT_ACTIVE.store(true, Ordering::Release);
+        assert_eq!(module.on_encoder(turn), EncoderFlow::Forward);
+        assert_eq!(module.scheduler.rate(), StepRate::SixteenthTriplet);
+        SHIFT_ACTIVE.store(false, Ordering::Release);
+        module.in_16_levels = false;
+        assert_eq!(module.on_encoder(turn), EncoderFlow::Forward);
     }
 
     #[test]
