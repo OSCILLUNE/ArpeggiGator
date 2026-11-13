@@ -7,7 +7,7 @@
 
 use std::{
     fs::{self, File},
-    io::Read,
+    io::{Read, Write},
     sync::atomic::{AtomicBool, AtomicU32, Ordering},
     thread,
     time::{Duration, SystemTime},
@@ -73,7 +73,11 @@ pub fn current_bpm() -> Option<f32> {
 
 fn read_current_project_bpm() -> Option<f32> {
     let file = File::open(CURRENT_PROJECT).ok()?;
-    let mut decoder = GzDecoder::new(file);
+    parse_compressed_project(file)
+}
+
+fn parse_compressed_project(reader: impl Read) -> Option<f32> {
+    let mut decoder = GzDecoder::new(reader);
     let mut bytes = Vec::new();
     decoder.read_to_end(&mut bytes).ok()?;
 
@@ -109,9 +113,22 @@ fn parse_project_document(document: &Value) -> Option<f32> {
 
 #[cfg(test)]
 mod tests {
+    use flate2::{Compression, write::GzEncoder};
     use serde_json::json;
 
-    use super::parse_project_document;
+    use super::{parse_compressed_project, parse_project_document};
+
+    #[test]
+    fn reads_json_after_the_acvs_gzip_header() {
+        let json = br#"{"data":{"masterTempoEnabled":true,"masterTempo":126.0,"currentSequence":0,"sequences":[]}}"#;
+        let mut encoder = GzEncoder::new(Vec::new(), Compression::default());
+        encoder.write_all(b"ACVS\n1.3.0.12\nSerialisableProjectData\njson\nLinux\n")
+            .expect("write ACVS header");
+        encoder.write_all(json).expect("write project JSON");
+        let compressed = encoder.finish().expect("finish gzip project");
+
+        assert_eq!(parse_compressed_project(compressed.as_slice()), Some(126.0));
+    }
 
     #[test]
     fn current_sequence_is_selected_by_key_not_array_position() {
