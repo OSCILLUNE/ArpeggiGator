@@ -85,8 +85,10 @@ validation and, if required, SDK/firmware research.
 
 The pinned SDK provides a route from a worker repaint request to an `on_paint` callback on the main/UI thread in the virtual MPC. The pad hook ran on a different audio-processing thread in the measured run, and callback timing varied. The safe probe does not retain pointers or call native note hooks. Consequently, there is not yet a verified way to dispatch native note-on/note-off at future step times while satisfying the SDK's pointer lifetime and thread contracts.
 
-The next investigation should inspect the firmware's supported input/event dispatch path and determine whether audio-thread input context can be represented without retaining raw `PadEvent` pointers. Any candidate must verify pointer lifetime, re-entrancy, matched note-off, mode exit and unload. Do not add speculative cross-thread native calls or new firmware offsets as an interim solution.
+A static audit of the exact firmware binary found that the engine dispatcher routes a type-3 event with zero velocity to its Note Off path. The pinned SDK MIDI parser independently identifies the same encoding. This narrows the event representation, but does not establish which voice the source/note pair releases or the follow-up recorder/listener effects. The SDK's `send_note_on/off` hooks are a separate input layer with live-object and UI-thread requirements. See [NATIVE-DISPATCH-RESEARCH.md](NATIVE-DISPATCH-RESEARCH.md) for offsets, evidence and unresolved risks.
+
+Before any playback experiment, establish the complete event fields, voice matching, recording side effects, object lifetime, audio-render synchronization, re-entrancy and teardown behavior. Do not add speculative cross-thread native calls or use raw `PadEvent` pointers after their callback. A transport-aligned clock with adequate timing is also still missing.
 
 ## Test status
 
-Source/documentation inspection, host-side scheduler unit tests, and one safe repaint-cadence run on the virtual MPC Sample emulator. No physical MPC or audio assertion was part of the investigation. The timing engine is not connected to native playback; no audible arpeggiator behavior is claimed as working.
+Host-side scheduler tests, a bounded JUCE Timer observer, safe repaint-cadence runs, and static disassembly of the firmware 1.3.0.12 binary. No native note was dispatched; there was no physical MPC test or audio assertion. The timing engine is not connected to native playback, and no audible arpeggiator behavior is claimed as working.

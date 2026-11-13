@@ -14,6 +14,7 @@
 - [x] Add host-tested, platform-independent rate/gate timing engine (not yet connected to MPC).
 - [ ] Find a reliable transport phase or beat clock, not just BPM.
 - [x] Measure repaint callback timing and thread IDs in the emulator; `on_pad` ran on the audio-processing thread and `on_paint` on the process leader (see [PLAYBACK-RESEARCH.md](PLAYBACK-RESEARCH.md)).
+- [x] Audit the AM MOD native event and Note Off paths against firmware 1.3.0.12; record the unresolved voice matching, recording, pointer-lifetime and audio-lock risks (see [NATIVE-DISPATCH-RESEARCH.md](NATIVE-DISPATCH-RESEARCH.md)).
 - [ ] Verify a supported native note dispatch path and safe context handoff from the audio-processing thread.
 - [ ] Trigger and release pads through the native note path.
 - [ ] Guarantee note-off on pad release, disable, transport stop and unload.
