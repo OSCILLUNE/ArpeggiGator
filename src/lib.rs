@@ -1,14 +1,16 @@
 //! ArpeggiGator — standalone arpeggiator mod for AKAI MPC Sample 1.3.0.12.
 //!
 //! The first development increment wires native controls and the startup mark,
-//! and adds a host-testable pattern engine. Automatic pad triggering remains
-//! gated until the live-input lifetime and project-tempo source are validated.
+//! and adds host-testable pattern and timing engines. Automatic pad triggering
+//! remains gated until live-input lifetime and UI-thread dispatch are validated.
 
 mod arp;
+mod scheduler;
 mod splash;
 mod tempo;
 
 pub use arp::{ArpEngine, Pattern, Step};
+pub use scheduler::{ArpScheduler, ScheduledEvent, StepRate};
 
 use core::sync::atomic::{AtomicI64, Ordering};
 
