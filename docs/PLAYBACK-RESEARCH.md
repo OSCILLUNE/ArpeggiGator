@@ -34,10 +34,19 @@ mutex. The audio contract allows atomics and lock-free state, but prohibits
 allocation, locks, drawing, toasts and blocking. It does not authorize calling
 the native UI pad hooks from the audio thread.
 
+### UI scheduling boundary
+
+The pinned SDK's `Task<T>` runs work on a worker and exposes `take()` as a
+non-blocking poll; it does not post a closure to the UI thread. The drawing
+helper `repaint_painted()` requests a repaint of the last painted component.
+The SDK exposes no general `callAsync`, message-queue, or arbitrary UI-callback
+dispatcher. In the emulator, a repaint request did reach `on_paint` on the main
+thread, but this repaint-specific wakeup has no transport timing guarantee.
+
 The SDK repaint pump runs on its own worker thread and invokes the app's
 repaint function for a component. It is specifically a repaint mechanism, not
-a general UI callback dispatcher. It must not be repurposed to call
-`send_note_on/off`.
+a general UI callback dispatcher. It can wake `on_paint` in the measured
+emulator, but does not supply a future-event queue or a transport clock.
 
 ### Repaint-to-paint handoff candidate
 
