@@ -4,16 +4,14 @@
 //! stores or dereferences PadEvent.input / PadEvent.properties and never calls
 //! sites::send_note_on or sites::send_note_off. It is not a playback test.
 
-use core::sync::atomic::{
-    AtomicBool, AtomicI32, AtomicI64, AtomicU32, AtomicU64, Ordering,
-};
+use core::sync::atomic::{AtomicBool, AtomicI32, AtomicI64, AtomicU32, AtomicU64, Ordering};
 use std::{
     hash::{Hash, Hasher},
     thread,
     time::{Duration, Instant},
 };
 
-use mpc_sample_sdk::{draw, platform::clock, PadAction, PadEvent};
+use mpc_sample_sdk::{PadAction, PadEvent, draw, platform::clock};
 
 /// Exported diagnostics read by scripts/emulator_repaint_observer.py.
 #[repr(C)]
@@ -152,9 +150,10 @@ pub fn on_paint() {
         g_probe
             .paint_thread_id
             .store(current_thread_fingerprint(), Ordering::Release);
-        g_probe
-            .callback_latency_ms
-            .store(i32::try_from(latency).unwrap_or(i32::MAX), Ordering::Release);
+        g_probe.callback_latency_ms.store(
+            i32::try_from(latency).unwrap_or(i32::MAX),
+            Ordering::Release,
+        );
         g_probe.repaint_callbacks.fetch_add(1, Ordering::AcqRel);
         PAINT_COMPLETED.store(true, Ordering::Release);
     }
