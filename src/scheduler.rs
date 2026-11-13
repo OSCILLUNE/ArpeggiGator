@@ -188,11 +188,7 @@ impl ArpScheduler {
     /// The first slot is always processed before the second. A tick may return
     /// NoteOff followed by NoteOn when a new step is due. It never returns more
     /// than one NoteOn, even after a long scheduling delay.
-    pub fn tick(
-        &mut self,
-        now_us: u64,
-        engine: &mut ArpEngine,
-    ) -> [Option<ScheduledEvent>; 2] {
+    pub fn tick(&mut self, now_us: u64, engine: &mut ArpEngine) -> [Option<ScheduledEvent>; 2] {
         let mut events = [None, None];
         let mut event_count = 0;
 
@@ -251,10 +247,9 @@ impl ArpScheduler {
         // Keep the ideal grid phase but skip any deadlines already in the past.
         // Only the step actually emitted advances the pattern engine.
         let elapsed = now_us.saturating_sub(self.anchor_us);
-        let latest_due = u64::try_from(
-            (u128::from(elapsed) * u128::from(self.denominator())) / STEP_NUMERATOR,
-        )
-        .unwrap_or(u64::MAX);
+        let latest_due =
+            u64::try_from((u128::from(elapsed) * u128::from(self.denominator())) / STEP_NUMERATOR)
+                .unwrap_or(u64::MAX);
         self.next_step_index = latest_due
             .saturating_add(1)
             .max(due_index.saturating_add(1));
@@ -358,7 +353,9 @@ mod tests {
             let _ = scheduler.tick(0, &mut engine);
             let next = scheduler.tick(expected_us, &mut engine);
             assert!(
-                next.into_iter().flatten().any(|event| matches!(event, ScheduledEvent::NoteOn(_))),
+                next.into_iter()
+                    .flatten()
+                    .any(|event| matches!(event, ScheduledEvent::NoteOn(_))),
                 "{} did not fire at {expected_us} us",
                 rate.label()
             );
@@ -447,10 +444,7 @@ mod tests {
         assert!(scheduler.start(0, 120.0));
         let _ = scheduler.tick(0, &mut engine);
 
-        assert_eq!(
-            scheduler.stop(),
-            Some(ScheduledEvent::NoteOff { pad: 2 })
-        );
+        assert_eq!(scheduler.stop(), Some(ScheduledEvent::NoteOff { pad: 2 }));
         assert!(!scheduler.is_running());
         assert_eq!(scheduler.stop(), None);
     }
