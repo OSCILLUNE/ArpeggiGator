@@ -12,8 +12,7 @@ pub use arp::{ArpEngine, Pattern, Step};
 use core::sync::atomic::{AtomicI64, Ordering};
 
 use mpc_sample_sdk::{
-    ButtonEvent, ButtonFlow, Mod, PadAction, PadEvent, PadFlow, PaintEvent, draw,
-    event::button,
+    ButtonEvent, ButtonFlow, Mod, PadAction, PadEvent, PadFlow, PaintEvent, draw, event::button,
     platform::clock,
 };
 
@@ -113,7 +112,11 @@ impl Mod for ArpeggiGator {
             return;
         }
         if self.enabled && self.in_16_levels {
-            let line = format!("ARP  {}  {} PADS", self.engine.pattern().label(), self.engine.held_count());
+            let line = format!(
+                "ARP  {}  {} PADS",
+                self.engine.pattern().label(),
+                self.engine.held_count()
+            );
             // SAFETY: this is the live Graphics handle from on_paint.
             unsafe {
                 graphics.colour(0xdd12072b);
