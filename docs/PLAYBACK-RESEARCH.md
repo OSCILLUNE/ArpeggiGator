@@ -43,9 +43,11 @@ a general UI callback dispatcher. It must not be repurposed to call
 
 The SDK repaint pump runs a worker that periodically calls the app repaint function. The SDK drawing documentation says `on_paint` receives a live Graphics object on the UI thread, and the Task example requests a repaint from a worker after its job completes. This suggests a possible handoff: a timer worker publishes due events through atomics, requests a repaint, and the native paint callback consumes the events on the app thread. However, the inspected source does not establish that the repaint function always marshals painting to the owning UI thread, nor does it establish callback timing or maximum useful frequency. This is a candidate for an emulator probe, not a verified scheduler.
 
-One safe emulator run issued 128 repaint requests at 4 ms intervals, then observed callbacks for a 750 ms drain period. It recorded 239 `on_paint` calls and 238 intervals: 327 us minimum, 2,216.8 us mean, and 9,896 us maximum. The callback counter includes every paint during the active window and can exceed the request count, so this does not show a one-to-one request/callback mapping. The `on_pad` and `on_paint` thread fingerprints differed in this run. The test did not retain native pointers or call either note hook.
+Safe emulator runs issued 128 repaint requests at 4 ms intervals, then observed callbacks for a 750 ms drain period. The first recorded 239 `on_paint` calls and 238 intervals: 327 us minimum, 2,216.8 us mean, and 9,896 us maximum. A later run recorded 248 calls and 247 intervals: 580 us minimum, 2,145 us mean, and 5,004 us maximum. The callback counter includes every paint during the active window and can exceed the request count, so this does not show a one-to-one request/callback mapping.
 
-These measurements show repeated paint callbacks in this emulator session, but they do not identify a 4 ms clock, establish phase lock, or prove that the paint callback is the thread required by the native note hooks. The built-in repaint pump ticks every 60 ms, which is too coarse to assume accurate 1/16 or faster playback. A higher-rate notifier would still need testing for repaint coalescing, UI load and jitter, with its native dispatch thread identified independently.
+The later run recorded `on_pad` on TID 1188 (`Audio Processin`), `on_paint` on TID 1150 (`MPC Sample Main`), and the repaint worker on TID 1288. The paint TID matched the process leader, consistent with the SDK's UI-thread paint contract; the `on_pad` callback came from a different, audio-processing thread. The worker also differed from the paint thread, so the repaint request did not invoke `on_paint` inline on its caller in this run. The probe did not retain native pointers or call either note hook.
+
+These measurements show that repaint requests reach the main/UI paint thread in this emulator session. They do not identify a 4 ms clock or establish phase lock. Since the input hook ran on the audio-processing thread while the paint hook ran on the process leader, the `PadEvent.input` and `properties` addresses must not be carried across to `on_paint` without a separate lifetime and ownership contract. The built-in repaint pump ticks every 60 ms, which is too coarse to assume accurate 1/16 or faster playback. A higher-rate notifier would still need testing for repaint coalescing, UI load and jitter.
 
 ### MIDI replay
 
@@ -72,9 +74,9 @@ validation and, if required, SDK/firmware research.
 
 ## Current conclusion
 
-The pinned SDK provides repaint callbacks, but the observed thread fingerprints differ from the pad hook and callback timing is variable. The safe probe does not retain pointers or call native note hooks. Consequently, there is not yet a verified way to dispatch native note-on/note-off at future step times while satisfying the SDK's pointer lifetime and thread contracts.
+The pinned SDK provides a route from a worker repaint request to an `on_paint` callback on the main/UI thread in the virtual MPC. The pad hook ran on a different audio-processing thread in the measured run, and callback timing varied. The safe probe does not retain pointers or call native note hooks. Consequently, there is not yet a verified way to dispatch native note-on/note-off at future step times while satisfying the SDK's pointer lifetime and thread contracts.
 
-The next investigation should identify the owning UI thread independently and inspect the firmware's supported input/event dispatch path. Any candidate must verify pointer lifetime, re-entrancy, matched note-off, mode exit and unload. Do not add speculative cross-thread native calls or new firmware offsets as an interim solution.
+The next investigation should inspect the firmware's supported input/event dispatch path and determine whether audio-thread input context can be represented without retaining raw `PadEvent` pointers. Any candidate must verify pointer lifetime, re-entrancy, matched note-off, mode exit and unload. Do not add speculative cross-thread native calls or new firmware offsets as an interim solution.
 
 ## Test status
 

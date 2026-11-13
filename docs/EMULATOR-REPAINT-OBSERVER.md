@@ -7,7 +7,7 @@ This branch contains a deliberately limited runtime probe.
 - A panel-driven pad press reaches the mod callback.
 - A worker can request 128 repaints through the SDK helper at 4 ms intervals.
 - The Sample-page on_paint callback runs repeatedly during the request burst.
-- First callback latency, inter-paint intervals and thread fingerprints can be recorded.
+- First callback latency, inter-paint intervals, and pad/worker/paint thread fingerprints can be recorded.
 - The MPC process and ac50 service remain alive during the observation.
 
 The callback counter records every on_paint call during the active measurement
@@ -37,14 +37,24 @@ fixed at 128 calls, followed by a 750 ms drain period. The Python runner can
 read either the autorun path (`/run/arpeggigator.so`) or the emulator preload
 path (`/run/mpclab-preload/arpeggigator.so`).
 
+On AArch64 Linux, the probe records kernel thread IDs. Host unit tests use
+hashed Rust thread IDs. The pad, worker and paint IDs are diagnostic; equality
+with the process leader is also reported but is not a safety proof.
+
 ## Recorded run
 
-On 2026-11-13, one virtual MPC run received 128 repaint requests and recorded
-239 paint callbacks with 238 intervals: 327 us minimum, 2,216.8 us mean and
-9,896 us maximum. The pad and paint thread fingerprints differed. The MPC PID
-stayed 417, the service remained active, and the systemd restart count stayed
-at zero during the measurement. This run does not attribute each callback to
-one request; it also provides no evidence of native note playback.
+On 2026-11-13, an initial virtual MPC run received 128 repaint requests and
+recorded 239 paint callbacks with 238 intervals: 327 us minimum, 2,216.8 us
+mean and 9,896 us maximum. The pad and paint thread fingerprints differed.
+
+A later run recorded kernel thread IDs: `on_pad` ran on TID 1188 (`Audio
+Processin`), `on_paint` on TID 1150 (`MPC Sample Main`), and the repaint worker
+on TID 1288. The paint TID matched the process leader. That run received 128
+requests and recorded 248 callbacks with 247 intervals: 580 us minimum,
+2,145 us mean, and 5,004 us maximum. The service remained active and the
+systemd restart count did not change during either measurement. These runs do
+not attribute each callback to one request and provide no evidence of native
+note playback.
 
 This is an emulator-only diagnostic. Do not install this branch on physical
 hardware. A passing result is evidence only for repaint callback cadence in

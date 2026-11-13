@@ -16,12 +16,12 @@ import urllib.request
 
 ROOT = Path(__file__).resolve().parents[1]
 PANEL_DEFAULT = "http://127.0.0.1:8765"
-PROBE_SIZE = 88
-PROBE_FORMAT = "<QQiiIIIIIIi4xQQQI4x"
+PROBE_SIZE = 96
+PROBE_FORMAT = "<QQQiiIIIIIIi4xQQQI4x"
 REPAINT_REQUESTS = 128
 REPAINT_INTERVAL_US = 4_000
 PROBE_KEYS = (
-    "pad_thread", "paint_thread", "source", "pad", "velocity_bits",
+    "pad_thread", "paint_thread", "worker_thread", "source", "pad", "velocity_bits",
     "repaint_requests", "repaint_callbacks", "worker_started",
     "worker_finished", "worker_timeouts", "callback_latency_ms",
     "paint_interval_min_us", "paint_interval_max_us",
@@ -78,6 +78,12 @@ def main():
         )
         values = struct.unpack(PROBE_FORMAT, data)
         return dict(zip(PROBE_KEYS, values))
+
+    def read_thread_name(pid, tid):
+        name = ssh(
+            f"cat /proc/{pid}/task/{int(tid)}/comm 2>/dev/null || true"
+        ).decode().strip()
+        return name or "<thread exited>"
 
     pid_before = int(ssh('pidof "MPC Sample"').decode().strip().split()[0])
     maps = ssh(f"cat /proc/{pid_before}/maps").decode().splitlines()
@@ -153,10 +159,23 @@ def main():
         and after["paint_thread"] != 0
         and after["pad_thread"] == after["paint_thread"]
     )
+    worker_paint_same_thread = (
+        after["worker_thread"] != 0
+        and after["paint_thread"] != 0
+        and after["worker_thread"] == after["paint_thread"]
+    )
+    thread_names = {
+        "pad": read_thread_name(pid_after, after["pad_thread"]),
+        "paint": read_thread_name(pid_after, after["paint_thread"]),
+        "worker": read_thread_name(pid_after, after["worker_thread"]),
+    }
     print("ArpeggiGator repaint cadence observer")
-    print(f"pad thread fingerprint:   {after['pad_thread']:#x}")
-    print(f"paint thread fingerprint: {after['paint_thread']:#x}")
-    print(f"same thread fingerprint:  {same_thread} (diagnostic only)")
+    print(f"pad thread ID/name:       {after['pad_thread']} / {thread_names['pad']}")
+    print(f"paint thread ID/name:     {after['paint_thread']} / {thread_names['paint']}")
+    print(f"worker thread ID/name:    {after['worker_thread']} / {thread_names['worker']}")
+    print(f"pad/paint thread match:   {same_thread} (diagnostic only)")
+    print(f"worker/paint thread match: {worker_paint_same_thread} (diagnostic only)")
+    print(f"paint is process leader:   {after['paint_thread'] == pid_after} (diagnostic only)")
     print(f"source/pad:               {after['source']}/{after['pad']}")
     print(
         "velocity:                 "

@@ -6,10 +6,12 @@
 
 use core::sync::atomic::{AtomicBool, AtomicI32, AtomicU32, AtomicU64, Ordering};
 use std::{
-    hash::{Hash, Hasher},
     thread,
     time::{Duration, Instant},
 };
+
+#[cfg(not(all(target_os = "linux", target_arch = "aarch64")))]
+use std::hash::{Hash, Hasher};
 
 use mpc_sample_sdk::{PadAction, PadEvent, draw};
 
@@ -18,6 +20,7 @@ use mpc_sample_sdk::{PadAction, PadEvent, draw};
 pub struct ProbeDiagnostics {
     pub pad_thread_id: AtomicU64,
     pub paint_thread_id: AtomicU64,
+    pub worker_thread_id: AtomicU64,
     pub source: AtomicI32,
     pub pad: AtomicI32,
     pub velocity_bits: AtomicU32,
@@ -38,6 +41,7 @@ impl ProbeDiagnostics {
         Self {
             pad_thread_id: AtomicU64::new(0),
             paint_thread_id: AtomicU64::new(0),
+            worker_thread_id: AtomicU64::new(0),
             source: AtomicI32::new(0),
             pad: AtomicI32::new(-1),
             velocity_bits: AtomicU32::new(0),
@@ -72,7 +76,23 @@ const REPAINT_INTERVAL: Duration = Duration::from_millis(4);
 const REPAINT_REQUESTS: u32 = 128;
 const CALLBACK_DRAIN: Duration = Duration::from_millis(750);
 
-fn current_thread_fingerprint() -> u64 {
+#[cfg(all(target_os = "linux", target_arch = "aarch64"))]
+fn current_thread_id() -> u64 {
+    let mut result = 0_usize;
+    // Linux AArch64 gettid syscall; the observer uses the ID only for logging.
+    unsafe {
+        core::arch::asm!(
+            "svc 0",
+            inlateout("x0") result,
+            in("x8") 178_usize,
+            options(nostack)
+        );
+    }
+    result as u64
+}
+
+#[cfg(not(all(target_os = "linux", target_arch = "aarch64")))]
+fn current_thread_id() -> u64 {
     let mut hasher = std::collections::hash_map::DefaultHasher::new();
     thread::current().id().hash(&mut hasher);
     hasher.finish().max(1)
@@ -104,7 +124,7 @@ pub fn capture_and_schedule(event: PadEvent) {
 
     g_probe
         .pad_thread_id
-        .store(current_thread_fingerprint(), Ordering::Release);
+        .store(current_thread_id(), Ordering::Release);
     g_probe.source.store(event.source, Ordering::Release);
     g_probe.pad.store(event.pad, Ordering::Release);
     g_probe
@@ -131,6 +151,9 @@ pub fn capture_and_schedule(event: PadEvent) {
         .name("arpeggigator-repaint-cadence".to_string())
         .spawn(|| {
             let _ = monotonic_time_ns();
+            g_probe
+                .worker_thread_id
+                .store(current_thread_id(), Ordering::Release);
             g_probe.worker_started.fetch_add(1, Ordering::AcqRel);
             thread::sleep(REQUEST_DELAY);
 
@@ -189,7 +212,7 @@ pub fn on_paint() {
     let now_ns = monotonic_time_ns();
     g_probe
         .paint_thread_id
-        .store(current_thread_fingerprint(), Ordering::Release);
+        .store(current_thread_id(), Ordering::Release);
 
     if first_request_callback {
         let requested_ns = REQUESTED_AT_NS.load(Ordering::Acquire);
@@ -227,17 +250,17 @@ pub fn on_paint() {
 #[cfg(test)]
 mod tests {
     use super::{
-        Duration, ProbeDiagnostics, REPAINT_INTERVAL, REPAINT_REQUESTS, current_thread_fingerprint,
+        Duration, ProbeDiagnostics, REPAINT_INTERVAL, REPAINT_REQUESTS, current_thread_id,
     };
 
     #[test]
-    fn thread_fingerprint_is_stable_on_one_thread() {
-        assert_eq!(current_thread_fingerprint(), current_thread_fingerprint());
+    fn thread_id_is_stable_on_one_thread() {
+        assert_eq!(current_thread_id(), current_thread_id());
     }
 
     #[test]
     fn exported_diagnostics_have_the_expected_c_layout() {
-        assert_eq!(core::mem::size_of::<ProbeDiagnostics>(), 88);
+        assert_eq!(core::mem::size_of::<ProbeDiagnostics>(), 96);
     }
 
     #[test]
