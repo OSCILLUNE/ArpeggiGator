@@ -274,7 +274,7 @@ fn bounce_down(position: usize, count: usize) -> usize {
 
 fn converge(position: usize, count: usize) -> usize {
     let slot = position % count;
-    if slot % 2 == 0 {
+    if slot.is_multiple_of(2) {
         slot / 2
     } else {
         count - 1 - slot / 2
@@ -283,13 +283,13 @@ fn converge(position: usize, count: usize) -> usize {
 
 fn diverge(position: usize, count: usize) -> usize {
     let slot = position % count;
-    if count % 2 == 1 {
+    if !count.is_multiple_of(2) {
         let centre = count / 2;
         if slot == 0 {
             centre
         } else {
             let distance = slot.div_ceil(2);
-            if slot % 2 == 1 {
+            if !slot.is_multiple_of(2) {
                 centre - distance
             } else {
                 centre + distance
@@ -298,7 +298,7 @@ fn diverge(position: usize, count: usize) -> usize {
     } else {
         let left = count / 2 - 1;
         let distance = slot / 2;
-        if slot % 2 == 0 {
+        if slot.is_multiple_of(2) {
             left - distance
         } else {
             left + 1 + distance
