@@ -15,46 +15,46 @@ In 16 Levels mode:
 | SHIFT + B1 | ARP on/off |
 | SHIFT + B2 | Cycle pattern |
 
-B1 and B2 are the two left soft keys above the display. The implementation uses the verified control-surface codes B1=12 and B2=13.
+B1 and B2 are the two left soft keys above the display. The implementation uses the control-surface codes B1=12 and B2=13.
 
 ## Patterns
 
 UP · DOWN · UP/DOWN · DOWN/UP · CONVERGE · DIVERGE · RANDOM · PLAYED
 
-The pure Rust engine already tracks held pads and velocity and has host-side unit tests for the pattern order.
+The pure Rust engine tracks the held-pad set and strike velocities. Unit tests cover all main pattern directions and edge cases.
 
 ## Current development status
 
-**Early prototype — no automatic retriggering yet.**
+**Early prototype — automatic note retriggering is not enabled yet.**
 
 Committed now:
-- MPC SDK integration pinned to a specific revision.
+- SDK integration pinned to a specific revision.
 - SHIFT+B1 / SHIFT+B2 handling, scoped to 16 Levels.
-- Startup toast and a small pixel-art gator splash rendered through the MPC graphics API.
-- Eight-pattern engine with tests.
-- Firmware-guarded build/package script and CI workflow.
+- Startup toast and compact pixel-art gator splash rendered through the MPC graphics API.
+- Eight-pattern engine and host tests.
+- Read-only BPM discovery from the active working project file. The overlay shows the detected BPM when the file is available.
+- Firmware-guarded build/package script and GitHub Actions CI.
 
-Not yet implemented:
-- Automatic note-on/note-off scheduling. The SDK exposes native note trigger functions, but their input/property pointers must remain valid on the UI thread.
-- Reading the active sequence BPM / sequencer clock. The public SDK currently exposes a monotonic clock, not a typed project-tempo getter.
+Still pending:
+- Automatic note-on/note-off scheduling. Native note trigger functions require live input/property objects on their owning UI thread; their lifetime beyond a physical pad callback still needs validation.
+- Validation that the temporary project file updates immediately when unsaved sequence or global tempo changes are made.
+- Hardware verification of the clock and note lifecycle.
 
-The goal remains automatic arpeggiation without holding NOTE REPEAT, synchronized to the active project tempo. The runtime playback path will not be enabled until pointer lifetime, clock source and note-off cleanup are validated.
+The goal remains an automatic arpeggiator that works without NOTE REPEAT and follows the active project tempo. No generated notes are emitted until pointer lifetime, tempo freshness and note-off cleanup are proven.
 
 **Do not install this prototype on the MPC yet.** It is not an audible arpeggiator release.
 
 ## Build
 
-The SDK requires Rust 1.97+, Zig, LLVM binutils, Python 3 and zip. The canonical SDK build script is wrapped by:
+The SDK requires Rust 1.97+, Zig, LLVM binutils, Python 3 and zip. Run:
 
     sh scripts/build.sh
 
-The generated package is not considered device-ready until the playback milestone and hardware test pass.
-
 ## Technical notes
 
-- Research and verified API contracts: docs/RESEARCH.md
-- Implementation design: docs/IMPLEMENTATION.md
-- Roadmap: docs/ROADMAP.md
+- docs/RESEARCH.md — verified API contracts
+- docs/IMPLEMENTATION.md — runtime design
+- docs/ROADMAP.md — milestones
 
 ## License
 
