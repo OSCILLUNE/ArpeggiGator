@@ -1,51 +1,48 @@
-# ArpeggiGator — implementation notes
+# ArpeggiGator implementation
 
 ## Target
 
-- Device: AKAI MPC Sample
-- Target firmware: 1.3.0.12
-- Runtime model: standalone add-in loaded by the device's supported add-in mechanism
-- Host integration: MPC SDK hooks, validated against the exact SDK revision used for each build
+- AKAI MPC Sample, firmware 1.3.0.12.
+- Standalone add-in; no SampQOL dependency.
+- Rust SDK pinned in Cargo.toml to commit 87d3ec20e6b8d46b0580a4fd7f0f39ca3fcd7caf.
 
-## Input model
+## Implemented
 
-Maintain a set of physically held 16 Levels pads. A pad enters the held-note set on key-down and leaves on key-up. Duplicate transitions must be ignored. Pad identity must be mapped through the active 16 Levels layout rather than assuming raw MIDI note numbers are fixed.
+- SHIFT+B1 toggles ARP state in 16 Levels.
+- SHIFT+B2 cycles eight patterns.
+- Pad press/release events update the held-pad set and preserve each pad's velocity.
+- The pattern engine is independent of firmware APIs and can be tested on the host.
+- A small pixel-art gator splash is rendered on the Sample page after mod startup.
 
-## Clock and scheduler
+The physical pad strike is still forwarded to MPC. The current prototype does not yet emit scheduled retriggers.
 
-The desired design is an independent scheduler synchronized to the MPC transport/project tempo. It must not require NOTE REPEAT. Prefer a host-provided beat/clock callback if the SDK exposes one. Otherwise validate a safe transport/tempo timing source before implementing a fallback. Do not guess private memory offsets or hook undocumented timing functions.
+## Playback architecture
 
-Use a monotonic clock for scheduling and derive tick duration from the verified tempo and selected rate. Handle transport start/stop, tempo changes, and host suspend/resume without leaving stuck notes.
+The intended runtime path is:
 
-## MIDI safety
+1. Capture the pad set from pad press/release callbacks.
+2. Obtain the current sequence tempo or transport tick from a verified source.
+3. Use a non-blocking scheduler to decide each step and gate time.
+4. Trigger the target pad through the SDK's native note-on path.
+5. Send the matching note-off before the next event or on any stop/disable/release path.
 
-- Emit note-off for every note-on on disable, pad release, transport stop, panic and unload.
-- Track active notes by channel and note.
-- Preserve velocity from the source pad unless user-configurable velocity behavior is later added.
-- Avoid feedback loops by distinguishing generated events from physical pad events.
-- Do not forward generated MIDI back into the input-held-pad set.
+The SDK exposes sites::send_note_on and sites::send_note_off. Both require live app input objects on their owning UI thread. A pad callback exposes an input pointer and property pointer, but their lifetime beyond the callback is not yet established. This is a hard safety gate, not a detail to work around with guessed pointers.
+
+The public SDK also exposes CLOCK_MONOTONIC time, but no typed getter for active project BPM or sequencer position. Do not claim tempo sync or ship a timer based on a guessed memory offset.
 
 ## UI
 
-In 16 Levels context only:
-- SHIFT + B1 toggles ARP.
-- SHIFT + B2 cycles pattern.
-- Do not consume the button combination outside 16 Levels.
-- When ARP is disabled, preserve stock behavior.
-- Render compact status in the screen's supported draw layer: ARP state and pattern, without replacing the device's normal UI.
+- SHIFT+B1: ARP on/off.
+- SHIFT+B2: next pattern.
+- B1/B2 shortcuts are consumed only while 16 Levels is active and SHIFT is held.
+- The normal physical pad event is currently forwarded.
+- The small status overlay shows ARP state, selected pattern and held-pad count.
 
-## Initial pattern set
+## Required safety behavior
 
-UP, DOWN, UP_DOWN, DOWN_UP, CONVERGE, DIVERGE, RANDOM, ORDER.
-
-Patterns must have deterministic behavior for a fixed held-pad set except RANDOM. RANDOM should avoid immediate repeats when more than one note is held.
-
-## Development stages
-
-1. Confirm SDK API and firmware compatibility.
-2. Implement pure Rust pattern engine and unit tests on desktop.
-3. Implement host input capture and MIDI output hooks.
-4. Implement safe transport-synced scheduler.
-5. Add top soft-key bindings and compact overlay.
-6. Add cross-compilation, packaging and checksum.
-7. Test on hardware with recovery instructions before public release.
+Before the first audible build:
+- Every generated note-on must have a matching note-off.
+- Disabling ARP, releasing its source pad, leaving 16 Levels, transport stop and unload must stop generated notes.
+- Generated notes must not be re-captured as new physical pad presses.
+- Unknown firmware must remain fail-closed.
+- The original project, samples and device firmware must remain unchanged.
