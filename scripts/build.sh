@@ -11,8 +11,30 @@ elif [ -d "$HOME/.cargo/bin" ]; then
     export PATH
 fi
 
+# Homebrew-installed rustup does not necessarily install the cargo shim in
+# ~/.cargo/bin. Ask rustup for the active toolchain's real cargo binary.
+if ! command -v cargo >/dev/null 2>&1 && command -v rustup >/dev/null 2>&1; then
+    RUSTUP_CARGO=$(rustup which cargo 2>/dev/null || true)
+    if [ -n "$RUSTUP_CARGO" ] && [ -x "$RUSTUP_CARGO" ]; then
+        PATH="$(dirname "$RUSTUP_CARGO"):$PATH"
+        export PATH
+    fi
+fi
+
+# Last-resort discovery for a toolchain installed by rustup but not selected
+# as its active default. Prefer the project's previously tested Rust 1.97.1.
 if ! command -v cargo >/dev/null 2>&1; then
-    echo "cargo not found. Install Rust with rustup or add ~/.cargo/bin to PATH." >&2
+    for CANDIDATE in "$HOME"/.rustup/toolchains/1.97.1-*/bin/cargo "$HOME"/.rustup/toolchains/stable-*/bin/cargo; do
+        if [ -x "$CANDIDATE" ]; then
+            PATH="$(dirname "$CANDIDATE"):$PATH"
+            export PATH
+            break
+        fi
+    done
+fi
+
+if ! command -v cargo >/dev/null 2>&1; then
+    echo "cargo not found. Install a Rust toolchain with rustup." >&2
     exit 127
 fi
 ROOT=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
