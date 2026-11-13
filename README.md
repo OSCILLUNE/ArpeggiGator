@@ -1,56 +1,61 @@
 # ArpeggiGator 🐊
 
-**A standalone arpeggiator mod for the AKAI MPC Sample.**
+![ArpeggiGator mascot](assets/arpeggigator-splash.svg)
 
-ArpeggiGator is an independent project targeting stock MPC Sample firmware **1.3.0.12**. It is not a SampQOL feature or extension.
+**Standalone arpeggiator mod for the AKAI MPC Sample.**
 
-> Early development: this repository currently contains project scaffolding and design notes. No installable binary is published yet.
+ArpeggiGator targets stock MPC Sample firmware **1.3.0.12**. It is independent of SampQOL.
 
-## Planned interaction
+## Controls
 
-In **16 Levels** mode:
+In 16 Levels mode:
 
-- Hold **SHIFT + B1** (top soft key 1) to toggle the arpeggiator.
-- Hold **SHIFT + B2** (top soft key 2) to cycle the arpeggiator pattern.
-- Hold two or more pads to define the active note set.
-- The arpeggiator advances automatically, synchronized to the MPC project tempo. **NOTE REPEAT is not required.**
-- Releasing the held pads stops the sequence.
+| Shortcut | Action |
+|---|---|
+| SHIFT + B1 | ARP on/off |
+| SHIFT + B2 | Cycle pattern |
 
-Planned patterns:
+B1 and B2 are the two left soft keys above the display. The implementation uses the verified control-surface codes B1=12 and B2=13.
 
-- Up
-- Down
-- Up / Down
-- Down / Up
-- Converge
-- Diverge
-- Random
-- Played order
+## Patterns
 
-Planned parameters: rate, octave span, gate and swing behavior, subject to what the MPC host APIs expose safely.
+UP · DOWN · UP/DOWN · DOWN/UP · CONVERGE · DIVERGE · RANDOM · PLAYED
 
-## Design goals
+The pure Rust engine already tracks held pads and velocity and has host-side unit tests for the pattern order.
 
-1. Standalone operation on stock firmware 1.3.0.12.
-2. No dependency on SampQOL.
-3. Non-destructive: do not alter projects, samples or user data.
-4. Fail closed on unknown firmware/API versions.
-5. Keep the normal 16 Levels behavior unchanged when the mod is disabled.
-6. Publish source and reproducible build instructions before distributing binaries.
+## Current development status
 
-## Current status
+**Early prototype — no automatic retriggering yet.**
 
-This is the initial repository bootstrap. The next engineering milestone is validating the MPC Sample SDK event and MIDI APIs on the target firmware, then implementing a clocked event scheduler with reliable note-on/note-off handling.
+Committed now:
+- MPC SDK integration pinned to a specific revision.
+- SHIFT+B1 / SHIFT+B2 handling, scoped to 16 Levels.
+- Startup toast and a small pixel-art gator splash rendered through the MPC graphics API.
+- Eight-pattern engine with tests.
+- Firmware-guarded build/package script and CI workflow.
 
-Until that work is complete, **do not install this project on a device**.
+Not yet implemented:
+- Automatic note-on/note-off scheduling. The SDK exposes native note trigger functions, but their input/property pointers must remain valid on the UI thread.
+- Reading the active sequence BPM / sequencer clock. The public SDK currently exposes a monotonic clock, not a typed project-tempo getter.
 
-## Repository layout
+The goal remains automatic arpeggiation without holding NOTE REPEAT, synchronized to the active project tempo. The runtime playback path will not be enabled until pointer lifetime, clock source and note-off cleanup are validated.
 
-- `assets/` — project artwork
-- `docs/` — design and implementation notes
-- `src/` — Rust implementation (to be added after API validation)
-- `scripts/` — reproducible build and packaging scripts (to be added)
+**Do not install this prototype on the MPC yet.** It is not an audible arpeggiator release.
+
+## Build
+
+The SDK requires Rust 1.97+, Zig, LLVM binutils, Python 3 and zip. The canonical SDK build script is wrapped by:
+
+    sh scripts/build.sh
+
+The generated package is not considered device-ready until the playback milestone and hardware test pass.
+
+## Technical notes
+
+- Research and verified API contracts: docs/RESEARCH.md
+- Implementation design: docs/IMPLEMENTATION.md
+- Roadmap: docs/ROADMAP.md
 
 ## License
 
-TBD. A license will be selected before accepting external contributions.
+The project license is still to be selected.
