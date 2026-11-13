@@ -45,7 +45,12 @@ pub unsafe fn draw(graphics: &mut Graphics) {
                     _ => continue,
                 };
                 graphics.colour(colour);
-                graphics.rect(104 + column as i32 * PIXEL, 82 + row as i32 * PIXEL, PIXEL, PIXEL);
+                graphics.rect(
+                    104 + column as i32 * PIXEL,
+                    82 + row as i32 * PIXEL,
+                    PIXEL,
+                    PIXEL,
+                );
             }
         }
 
