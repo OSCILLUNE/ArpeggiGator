@@ -66,5 +66,6 @@ exec "$SDK_DIR/build-mod.sh" \
     --name arpeggigator \
     --output-dir "$ROOT/build" \
     --pack \
+    --require-symbol g_probe \
     --firmware-sha256 44507c7a7d3029c411b2e3780ea286ca3e08b7e3ffd7b5047d52f73bf5299d1f \
     --display-name "ArpeggiGator"
