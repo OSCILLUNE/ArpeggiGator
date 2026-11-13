@@ -7,7 +7,7 @@
 
 use std::{
     fs::{self, File},
-    io::{Read, Write},
+    io::Read,
     sync::atomic::{AtomicBool, AtomicU32, Ordering},
     thread,
     time::{Duration, SystemTime},
@@ -115,6 +115,7 @@ fn parse_project_document(document: &Value) -> Option<f32> {
 mod tests {
     use flate2::{Compression, write::GzEncoder};
     use serde_json::json;
+    use std::io::Write;
 
     use super::{parse_compressed_project, parse_project_document};
 
