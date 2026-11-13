@@ -192,14 +192,13 @@ impl ArpScheduler {
         let mut events = [None, None];
         let mut event_count = 0;
 
-        if self
-            .active_note
-            .is_some_and(|active| active.off_at_us <= now_us)
-        {
-            if let Some(active) = self.active_note.take() {
+        match self.active_note {
+            Some(active) if active.off_at_us <= now_us => {
+                self.active_note = None;
                 events[event_count] = Some(ScheduledEvent::NoteOff { pad: active.pad });
                 event_count += 1;
             }
+            _ => {}
         }
 
         if !self.running {
