@@ -23,3 +23,25 @@
 - [ ] Confirm no crash, stuck notes or change to project data.
 - [ ] Test on physical firmware 1.3.0.12.
 - [ ] Publish a device-installable ZIP only after all checks pass.
+
+## Animation input investigation
+
+The pinned SDK originally dispatched surface events, pad events, and paint
+callbacks through the same non-blocking module lock. In the emulator, releasing
+the last of two physical pads reached the surface event path but did not reach
+`on_pad`, leaving the old animation state active. Observing the raw note-off
+hook was also insufficient in this 16 Levels scenario.
+
+`vendor/mpc-sample-sdk` retains the original SDK revision and adds an optional
+lock-free surface observer. The animation tracks the physical pad events there
+with an atomic bit mask, including a repaint after the final release. The
+observer uses no retained pointers, allocations, or blocking operations. The
+emulator's observed pad protocol uses MIDI channel 10 and codes 0–15; this
+assumption still needs confirmation on physical hardware. This fixes the visual
+preview state only; the existing arpeggiator engine and audio path require
+separate input-lifetime and event-delivery work.
+
+The diagnostic emulator run showed physical pad state 2 → 1 → 0 after the
+change, including a case where the normal pad callback missed the final
+release. The user confirmed the animation works on the emulator. Physical hardware
+validation remains outstanding.

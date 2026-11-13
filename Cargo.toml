@@ -10,7 +10,7 @@ repository = "https://github.com/OSCILLUNE/ArpeggiGator"
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-mpc-sample-sdk = { git = "https://github.com/ioma8/mpc-sample-sdk", rev = "87d3ec20e6b8d46b0580a4fd7f0f39ca3fcd7caf" }
+mpc-sample-sdk = { path = "vendor/mpc-sample-sdk" }
 flate2 = { version = "1.1", default-features = false, features = ["rust_backend"] }
 serde_json = "1.0"
 

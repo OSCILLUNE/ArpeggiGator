@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.0.1.0
+
+- Start the existing gator animation while physical pads are held and return to the idle pose after the last pad is released.
+- Track pad state independently of skipped SDK callbacks; keep generated note playback disabled.
+
 ## 0.0.1
 
 - Keep the native Sample and 16 Levels views visible by default.
