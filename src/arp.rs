@@ -28,8 +28,14 @@ pub enum Pattern {
 impl Pattern {
     /// All patterns in the order used by SHIFT+B2.
     pub const ALL: [Self; 8] = [
-        Self::Up, Self::Down, Self::UpDown, Self::DownUp,
-        Self::Converge, Self::Diverge, Self::Random, Self::Played,
+        Self::Up,
+        Self::Down,
+        Self::UpDown,
+        Self::DownUp,
+        Self::Converge,
+        Self::Diverge,
+        Self::Random,
+        Self::Played,
     ];
 
     /// A short label suitable for the MPC display.
@@ -95,7 +101,9 @@ pub struct ArpEngine {
 }
 
 impl Default for ArpEngine {
-    fn default() -> Self { Self::new() }
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl ArpEngine {
@@ -103,7 +111,12 @@ impl ArpEngine {
     #[must_use]
     pub const fn new() -> Self {
         Self {
-            held: [HeldPad { active: false, pad: 0, velocity: 0.0, press_order: 0 }; 16],
+            held: [HeldPad {
+                active: false,
+                pad: 0,
+                velocity: 0.0,
+                press_order: 0,
+            }; 16],
             pattern: Pattern::Up,
             cursor: 0,
             press_serial: 0,
@@ -114,7 +127,9 @@ impl ArpEngine {
 
     /// Current pattern.
     #[must_use]
-    pub const fn pattern(&self) -> Pattern { self.pattern }
+    pub const fn pattern(&self) -> Pattern {
+        self.pattern
+    }
 
     /// Set the current pattern and restart its cycle.
     pub fn set_pattern(&mut self, pattern: Pattern) {
@@ -132,9 +147,15 @@ impl ArpEngine {
     /// the pad's position in PLAYED order.
     pub fn press(&mut self, pad: u8, velocity: f32) {
         let index = usize::from(pad);
-        if index >= self.held.len() { return; }
+        if index >= self.held.len() {
+            return;
+        }
 
-        let normalised = if velocity.is_finite() { velocity.clamp(0.0, 1.0) } else { 0.0 };
+        let normalised = if velocity.is_finite() {
+            velocity.clamp(0.0, 1.0)
+        } else {
+            0.0
+        };
         if self.held[index].active {
             self.held[index].velocity = normalised;
             return;
@@ -153,7 +174,9 @@ impl ArpEngine {
     /// Remove a released pad.
     pub fn release(&mut self, pad: u8) {
         let index = usize::from(pad);
-        if index >= self.held.len() || !self.held[index].active { return; }
+        if index >= self.held.len() || !self.held[index].active {
+            return;
+        }
         self.held[index] = HeldPad::default();
         self.reset_cycle();
     }
@@ -201,7 +224,10 @@ impl ArpEngine {
         };
         self.cursor = self.cursor.wrapping_add(1);
         let selected = active[step_index];
-        Some(Step { pad: selected.pad, velocity: selected.velocity })
+        Some(Step {
+            pad: selected.pad,
+            velocity: selected.velocity,
+        })
     }
 
     fn reset_cycle(&mut self) {
@@ -225,36 +251,60 @@ impl ArpEngine {
 }
 
 fn bounce_up(position: usize, count: usize) -> usize {
-    if count <= 1 { return 0; }
+    if count <= 1 {
+        return 0;
+    }
     let period = 2 * count - 2;
     let step = position % period;
-    if step < count { step } else { period - step }
+    if step < count {
+        step
+    } else {
+        period - step
+    }
 }
 
 fn bounce_down(position: usize, count: usize) -> usize {
     if count <= 1 { return 0; }
     let period = 2 * count - 2;
     let step = position % period;
-    if step < count { count - 1 - step } else { step - (count - 1) }
+    if step < count {
+        count - 1 - step
+    } else {
+        step - (count - 1)
+    }
 }
 
 fn converge(position: usize, count: usize) -> usize {
     let slot = position % count;
-    if slot % 2 == 0 { slot / 2 } else { count - 1 - slot / 2 }
+    if slot % 2 == 0 {
+        slot / 2
+    } else {
+        count - 1 - slot / 2
+    }
 }
 
 fn diverge(position: usize, count: usize) -> usize {
     let slot = position % count;
     if count % 2 == 1 {
         let centre = count / 2;
-        if slot == 0 { centre } else {
+        if slot == 0 {
+            centre
+        } else {
             let distance = slot.div_ceil(2);
-            if slot % 2 == 1 { centre - distance } else { centre + distance }
+            if slot % 2 == 1 {
+                centre - distance
+            } else {
+                centre + distance
+            }
         }
     } else {
         let left = count / 2 - 1;
         let distance = slot / 2;
-        if slot % 2 == 0 { left - distance } else { left + 1 + distance }
+        if slot % 2 == 0 {
+            left - distance
+        } else {
+            left + 1 + distance
+        }
     }
 }
 
@@ -272,7 +322,9 @@ mod tests {
     }
 
     fn sequence(engine: &mut ArpEngine, count: usize) -> Vec<u8> {
-        (0..count).filter_map(|_| engine.next_step().map(|step| step.pad)).collect()
+        (0..count)
+            .filter_map(|_| engine.next_step().map(|step| step.pad))
+            .collect()
     }
 
     #[test]
