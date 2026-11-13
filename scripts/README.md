@@ -1,5 +1,9 @@
-# Build placeholder
+# Build
 
-ArpeggiGator is in the repository bootstrap stage. Do not run an install step yet.
+Run from the repository root:
 
-Once the host API has been verified, this directory will contain a pinned Rust toolchain, target configuration, reproducible build script and packaging process for the MPC Sample.
+    sh scripts/build.sh
+
+The wrapper resolves the SDK checkout from Cargo metadata and runs the SDK's canonical build-mod.sh with the MPC Sample 1.3.0.12 firmware hash guard.
+
+The output is written to build/. Do not install the current prototype on a device: automatic note retriggering and tempo synchronization have not yet been implemented or validated.
