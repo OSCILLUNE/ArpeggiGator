@@ -45,7 +45,7 @@ The SDK exposes native note-on/note-off functions, but they require live input/p
 - B1/B2 are consumed only while 16 Levels is active and SHIFT is held.
 - The current physical pad event is forwarded.
 - The native Sample and 16 Levels pages remain visible by default.
-- In 16 Levels, holding SHIFT replaces the three softkey captions with ARP, the current pattern, and +1/+2/+3. B1 toggles ARP, B2 changes pattern, and B3 cycles the additional-note setting.
+- In 16 Levels, holding SHIFT replaces the three softkey captions with ARP, the current pattern, and +0/+1/+2/+3 (default +0). B1 toggles ARP, B2 changes pattern, and B3 cycles the additional-note setting.
 - When ARP is enabled, a compact gator overlay appears. Holding source pads animates a note toward its mouth as a visual preview; generated notes are not connected yet.
 
 ## Required safety behavior

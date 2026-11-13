@@ -24,7 +24,7 @@
 - [ ] Gate length.
 - [ ] Octave span where the active 16 Levels mapping supports it.
 - [x] Keep native Sample and 16 Levels pages visible unless the user explicitly enables the arp.
-- [x] Show ARP, pattern and +1/+2/+3 on the native softkey row while SHIFT is held in 16 Levels.
+- [x] Show ARP, pattern and +0/+1/+2/+3 (default +0) on the native softkey row while SHIFT is held in 16 Levels.
 - [ ] Add a HOLD latch mode for source pads after note output is connected.
 - [ ] Drive the gator's chewing animation from generated arpeggio note events.
 

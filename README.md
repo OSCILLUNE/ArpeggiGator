@@ -16,7 +16,7 @@ In 16 Levels mode:
 |---|---|
 | SHIFT + B1 | ARP on/off |
 | SHIFT + B2 | Cycle pattern |
-| SHIFT + B3 | Cycle additional-note setting (+1, +2, +3) |
+| SHIFT + B3 | Cycle additional-note setting (+0, +1, +2, +3; default +0) |
 
 B1, B2 and B3 are the three soft keys above the display. Their custom labels appear only while SHIFT is held in 16 Levels. The ordinary Sample and 16 Levels screens remain visible by default.
 
@@ -41,7 +41,7 @@ Committed now:
 
 Still pending:
 - Connecting the chewing animation to actual arpeggiated note events. The current motion is a visual preview while a source pad is held; this build does not generate arpeggio notes yet.
-- Applying the +1/+2/+3 setting to generated notes; the setting currently changes its softkey label only.
+- Applying the +0/+1/+2/+3 setting to generated notes; the setting currently changes its softkey label only.
 - Adding the HOLD mode later, after the core arp output works.
 - Connecting the timing engine to native note-on/note-off. Native note trigger functions require live input/property objects on their owning UI thread; deferred properties lifetime and the repaint-to-UI-thread handoff still need emulator validation.
 - Validation that the temporary project file updates immediately when unsaved sequence or global tempo changes are made.

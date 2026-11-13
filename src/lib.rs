@@ -105,7 +105,7 @@ impl Mod for ArpeggiGator {
                 ButtonFlow::Consume
             } else {
                 self.consumed_buttons |= bit;
-                self.additional_notes = (self.additional_notes + 1) % 3;
+                self.additional_notes = (self.additional_notes + 1) % 4;
                 action = 6;
                 ButtonFlow::Consume
             }
@@ -174,7 +174,7 @@ impl Mod for ArpeggiGator {
                 show_shift_menu,
                 self.enabled,
                 self.engine.pattern().label(),
-                self.additional_notes + 1,
+                self.additional_notes,
                 self.engine.held_count() as u8,
                 now as u64,
             )
