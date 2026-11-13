@@ -43,7 +43,9 @@ a general UI callback dispatcher. It must not be repurposed to call
 
 The SDK repaint pump runs a worker that periodically calls the app repaint function. The SDK drawing documentation says `on_paint` receives a live Graphics object on the UI thread, and the Task example requests a repaint from a worker after its job completes. This suggests a possible handoff: a timer worker publishes due events through atomics, requests a repaint, and the native paint callback consumes the events on the app thread. However, the inspected source does not establish that the repaint function always marshals painting to the owning UI thread, nor does it establish callback timing or maximum useful frequency. This is a candidate for an emulator probe, not a verified scheduler.
 
-The built-in repaint pump ticks every 60 ms, which is too coarse to assume accurate 1/16 or faster playback. A higher-rate notifier would need to be tested for repaint coalescing, UI load and jitter.
+One safe emulator run issued 128 repaint requests at 4 ms intervals, then observed callbacks for a 750 ms drain period. It recorded 239 `on_paint` calls and 238 intervals: 327 us minimum, 2,216.8 us mean, and 9,896 us maximum. The callback counter includes every paint during the active window and can exceed the request count, so this does not show a one-to-one request/callback mapping. The `on_pad` and `on_paint` thread fingerprints differed in this run. The test did not retain native pointers or call either note hook.
+
+These measurements show repeated paint callbacks in this emulator session, but they do not identify a 4 ms clock, establish phase lock, or prove that the paint callback is the thread required by the native note hooks. The built-in repaint pump ticks every 60 ms, which is too coarse to assume accurate 1/16 or faster playback. A higher-rate notifier would still need testing for repaint coalescing, UI load and jitter, with its native dispatch thread identified independently.
 
 ### MIDI replay
 
@@ -70,10 +72,10 @@ validation and, if required, SDK/firmware research.
 
 ## Current conclusion
 
-The pinned SDK provides a repaint-driven callback candidate, but the thread handoff and timing characteristics have not been measured. Consequently, there is not yet a verified way to dispatch native note-on/note-off at future step times while satisfying the SDK's pointer lifetime and thread contracts.
+The pinned SDK provides repaint callbacks, but the observed thread fingerprints differ from the pad hook and callback timing is variable. The safe probe does not retain pointers or call native note hooks. Consequently, there is not yet a verified way to dispatch native note-on/note-off at future step times while satisfying the SDK's pointer lifetime and thread contracts.
 
-The next investigation should probe the repaint-to-paint handoff on the virtual MPC Sample emulator, compare `on_pad` and `on_paint` thread identity, verify delayed `input` and `properties` use, and measure notifier latency. In parallel, inspect the firmware's input/event queue for a supported enqueue/dispatch path. Any candidate must be validated for re-entrancy, note-off matching, mode exit and unload. Do not add speculative cross-thread native calls or new firmware offsets as an interim solution.
+The next investigation should identify the owning UI thread independently and inspect the firmware's supported input/event dispatch path. Any candidate must verify pointer lifetime, re-entrancy, matched note-off, mode exit and unload. Do not add speculative cross-thread native calls or new firmware offsets as an interim solution.
 
 ## Test status
 
-Source/documentation inspection and host-side scheduler unit tests only. No emulator or physical MPC runtime test has been performed as part of this investigation. The timing engine is not connected to native playback; no audible arpeggiator behavior is claimed as working.
+Source/documentation inspection, host-side scheduler unit tests, and one safe repaint-cadence run on the virtual MPC Sample emulator. No physical MPC or audio assertion was part of the investigation. The timing engine is not connected to native playback; no audible arpeggiator behavior is claimed as working.

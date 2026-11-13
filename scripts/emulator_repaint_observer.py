@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""Safe emulator-only observer for the MPC repaint-to-paint handoff.
+"""Safe emulator-only measurement of repeated MPC repaint-to-paint delivery.
 
-It requests one repaint while a pad is held, then reads scalar diagnostics.
-It does not invoke native note-on/note-off functions and does not test playback.
+It requests 128 repaints at 4 ms intervals while a pad is held, then reads
+callback timing diagnostics. It never invokes native note hooks and does not
+test playback.
 """
 import argparse
 import json
@@ -15,12 +16,16 @@ import urllib.request
 
 ROOT = Path(__file__).resolve().parents[1]
 PANEL_DEFAULT = "http://127.0.0.1:8765"
-PROBE_SIZE = 56
-PROBE_FORMAT = "<QQiiIIIIIIi4x"
+PROBE_SIZE = 88
+PROBE_FORMAT = "<QQiiIIIIIIi4xQQQI4x"
+REPAINT_REQUESTS = 128
+REPAINT_INTERVAL_US = 4_000
 PROBE_KEYS = (
     "pad_thread", "paint_thread", "source", "pad", "velocity_bits",
     "repaint_requests", "repaint_callbacks", "worker_started",
     "worker_finished", "worker_timeouts", "callback_latency_ms",
+    "paint_interval_min_us", "paint_interval_max_us",
+    "paint_interval_sum_us", "paint_interval_count",
 )
 
 
@@ -77,12 +82,12 @@ def main():
     pid_before = int(ssh('pidof "MPC Sample"').decode().strip().split()[0])
     maps = ssh(f"cat /proc/{pid_before}/maps").decode().splitlines()
     mod_mapping = next(
-        (line for line in maps if "/run/arpeggigator.so" in line),
+        (line for line in maps if "arpeggigator.so" in line),
         None,
     )
     if mod_mapping is None:
         raise RuntimeError(
-            "arpeggigator.so is not mapped; install the safe observer package first"
+            "arpeggigator.so is not mapped; preload the safe observer or install its package"
         )
     mod_base = int(mod_mapping.split()[0].split("-")[0], 16)
 
@@ -103,7 +108,7 @@ def main():
     before = read_probe(pid_before, mod_base, symbols["g_probe"])
     restarts_before = ssh("systemctl show ac50 -p NRestarts --value").decode().strip()
 
-    # Autorun restarted the app. Start from a known page and enable the observer.
+    # Start from a known page and enable the observer.
     tap("SAMPLE")
     tap("16 LEVELS")
     control("SHIFT", "press")
@@ -126,11 +131,16 @@ def main():
         "worker_finished", "worker_timeouts",
     )
     deltas = {name: after[name] - before[name] for name in delta_fields}
+    interval_count = after["paint_interval_count"]
+    interval_mean_us = (
+        after["paint_interval_sum_us"] / interval_count if interval_count else 0
+    )
 
     checks = {
         "pad_press_started_one_worker": deltas["worker_started"] == 1,
-        "one_repaint_request": deltas["repaint_requests"] == 1,
-        "requested_paint_callback_received": deltas["repaint_callbacks"] == 1,
+        "bounded_repaint_burst_completed": deltas["repaint_requests"] == REPAINT_REQUESTS,
+        "multiple_paint_callbacks_received": deltas["repaint_callbacks"] >= 2,
+        "interpaint_interval_measured": interval_count >= 1,
         "worker_finished": deltas["worker_finished"] == 1,
         "no_handoff_timeout": deltas["worker_timeouts"] == 0,
         "mpc_process_unchanged": pid_after == pid_before,
@@ -143,7 +153,7 @@ def main():
         and after["paint_thread"] != 0
         and after["pad_thread"] == after["paint_thread"]
     )
-    print("ArpeggiGator safe repaint observer")
+    print("ArpeggiGator repaint cadence observer")
     print(f"pad thread fingerprint:   {after['pad_thread']:#x}")
     print(f"paint thread fingerprint: {after['paint_thread']:#x}")
     print(f"same thread fingerprint:  {same_thread} (diagnostic only)")
@@ -152,7 +162,14 @@ def main():
         "velocity:                 "
         f"{struct.unpack('<f', struct.pack('<I', after['velocity_bits']))[0]:.3f}"
     )
-    print(f"callback latency:         {after['callback_latency_ms']} ms")
+    print(f"request cadence:          {REPAINT_INTERVAL_US / 1000:.1f} ms")
+    print(f"paint callbacks:          {deltas['repaint_callbacks']}")
+    print(f"first callback latency:   {after['callback_latency_ms']} ms")
+    print(
+        "paint intervals:          "
+        f"count={interval_count}, min={after['paint_interval_min_us']} us, "
+        f"mean={interval_mean_us:.1f} us, max={after['paint_interval_max_us']} us"
+    )
     for name, passed in checks.items():
         print(f"{'PASS' if passed else 'FAIL'}: {name}")
     print(f"counter deltas: {deltas}")
@@ -162,8 +179,9 @@ def main():
         raise SystemExit(1)
 
     print(
-        "PASS: repaint callback observed. Thread equality is diagnostic only; "
-        "pointer lifetime and note playback remain untested."
+        "PASS: repeated paint callbacks observed during the repaint burst. "
+        "Thread equality is diagnostic only; pointer lifetime and note playback "
+        "remain untested."
     )
 
 

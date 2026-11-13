@@ -4,14 +4,14 @@
 //! stores or dereferences PadEvent.input / PadEvent.properties and never calls
 //! sites::send_note_on or sites::send_note_off. It is not a playback test.
 
-use core::sync::atomic::{AtomicBool, AtomicI32, AtomicI64, AtomicU32, AtomicU64, Ordering};
+use core::sync::atomic::{AtomicBool, AtomicI32, AtomicU32, AtomicU64, Ordering};
 use std::{
     hash::{Hash, Hasher},
     thread,
     time::{Duration, Instant},
 };
 
-use mpc_sample_sdk::{PadAction, PadEvent, draw, platform::clock};
+use mpc_sample_sdk::{PadAction, PadEvent, draw};
 
 /// Exported diagnostics read by scripts/emulator_repaint_observer.py.
 #[repr(C)]
@@ -27,6 +27,10 @@ pub struct ProbeDiagnostics {
     pub worker_finished: AtomicU32,
     pub worker_timeouts: AtomicU32,
     pub callback_latency_ms: AtomicI32,
+    pub paint_interval_min_us: AtomicU64,
+    pub paint_interval_max_us: AtomicU64,
+    pub paint_interval_sum_us: AtomicU64,
+    pub paint_interval_count: AtomicU32,
 }
 
 impl ProbeDiagnostics {
@@ -43,6 +47,10 @@ impl ProbeDiagnostics {
             worker_finished: AtomicU32::new(0),
             worker_timeouts: AtomicU32::new(0),
             callback_latency_ms: AtomicI32::new(-1),
+            paint_interval_min_us: AtomicU64::new(u64::MAX),
+            paint_interval_max_us: AtomicU64::new(0),
+            paint_interval_sum_us: AtomicU64::new(0),
+            paint_interval_count: AtomicU32::new(0),
         }
     }
 }
@@ -55,16 +63,28 @@ mpc_sample_sdk::export_static!(
 static WORKER_ACTIVE: AtomicBool = AtomicBool::new(false);
 static SOURCE_PAD_HELD: AtomicBool = AtomicBool::new(false);
 static REQUEST_PENDING: AtomicBool = AtomicBool::new(false);
-static PAINT_COMPLETED: AtomicBool = AtomicBool::new(false);
-static REQUESTED_AT_MS: AtomicI64 = AtomicI64::new(0);
+static CADENCE_ACTIVE: AtomicBool = AtomicBool::new(false);
+static REQUESTED_AT_NS: AtomicU64 = AtomicU64::new(0);
+static LAST_PAINT_NS: AtomicU64 = AtomicU64::new(0);
 
 const REQUEST_DELAY: Duration = Duration::from_millis(250);
-const HANDOFF_TIMEOUT: Duration = Duration::from_secs(2);
+const REPAINT_INTERVAL: Duration = Duration::from_millis(4);
+const REPAINT_REQUESTS: u32 = 128;
+const CALLBACK_DRAIN: Duration = Duration::from_millis(750);
 
 fn current_thread_fingerprint() -> u64 {
     let mut hasher = std::collections::hash_map::DefaultHasher::new();
     thread::current().id().hash(&mut hasher);
     hasher.finish().max(1)
+}
+
+fn monotonic_time_ns() -> u64 {
+    static EPOCH: std::sync::OnceLock<Instant> = std::sync::OnceLock::new();
+    EPOCH
+        .get_or_init(Instant::now)
+        .elapsed()
+        .as_nanos()
+        .min(u128::from(u64::MAX)) as u64
 }
 
 /// Capture scalar event data and schedule one repaint request.
@@ -93,32 +113,50 @@ pub fn capture_and_schedule(event: PadEvent) {
 
     SOURCE_PAD_HELD.store(true, Ordering::Release);
     REQUEST_PENDING.store(false, Ordering::Release);
-    PAINT_COMPLETED.store(false, Ordering::Release);
-    REQUESTED_AT_MS.store(0, Ordering::Release);
+    CADENCE_ACTIVE.store(false, Ordering::Release);
+    REQUESTED_AT_NS.store(0, Ordering::Release);
+    LAST_PAINT_NS.store(0, Ordering::Release);
+    g_probe.repaint_requests.store(0, Ordering::Release);
+    g_probe.repaint_callbacks.store(0, Ordering::Release);
+    g_probe.worker_timeouts.store(0, Ordering::Release);
+    g_probe.callback_latency_ms.store(-1, Ordering::Release);
+    g_probe
+        .paint_interval_min_us
+        .store(u64::MAX, Ordering::Release);
+    g_probe.paint_interval_max_us.store(0, Ordering::Release);
+    g_probe.paint_interval_sum_us.store(0, Ordering::Release);
+    g_probe.paint_interval_count.store(0, Ordering::Release);
 
     let spawned = thread::Builder::new()
-        .name("arpeggigator-observer".to_string())
+        .name("arpeggigator-repaint-cadence".to_string())
         .spawn(|| {
+            let _ = monotonic_time_ns();
             g_probe.worker_started.fetch_add(1, Ordering::AcqRel);
             thread::sleep(REQUEST_DELAY);
 
             // The source pad must remain down for the requested observation.
             if SOURCE_PAD_HELD.load(Ordering::Acquire) {
-                PAINT_COMPLETED.store(false, Ordering::Release);
-                REQUESTED_AT_MS.store(clock::now_ms(), Ordering::Release);
-                REQUEST_PENDING.store(true, Ordering::Release);
-                g_probe.repaint_requests.fetch_add(1, Ordering::AcqRel);
+                CADENCE_ACTIVE.store(true, Ordering::Release);
+                for request in 0..REPAINT_REQUESTS {
+                    if !SOURCE_PAD_HELD.load(Ordering::Acquire) {
+                        break;
+                    }
 
-                // This exercises only the SDK repaint path. No note hook is called.
-                draw::repaint_painted();
+                    if request == 0 {
+                        REQUESTED_AT_NS.store(monotonic_time_ns(), Ordering::Release);
+                        REQUEST_PENDING.store(true, Ordering::Release);
+                    }
+                    g_probe.repaint_requests.fetch_add(1, Ordering::AcqRel);
 
-                let deadline = Instant::now() + HANDOFF_TIMEOUT;
-                while !PAINT_COMPLETED.load(Ordering::Acquire) && Instant::now() < deadline {
-                    thread::sleep(Duration::from_millis(1));
+                    // Repaint requests only. This probe never invokes note hooks.
+                    draw::repaint_painted();
+                    thread::sleep(REPAINT_INTERVAL);
                 }
 
-                if !PAINT_COMPLETED.load(Ordering::Acquire) {
-                    REQUEST_PENDING.store(false, Ordering::Release);
+                thread::sleep(CALLBACK_DRAIN);
+                CADENCE_ACTIVE.store(false, Ordering::Release);
+                REQUEST_PENDING.store(false, Ordering::Release);
+                if g_probe.repaint_callbacks.load(Ordering::Acquire) == 0 {
                     g_probe.worker_timeouts.fetch_add(1, Ordering::AcqRel);
                 }
             }
@@ -142,26 +180,55 @@ pub fn source_pad_released(event: PadEvent) {
 
 /// Called from the native Sample-page paint hook.
 pub fn on_paint() {
-    if REQUEST_PENDING.swap(false, Ordering::AcqRel) {
-        let now = clock::now_ms();
-        let requested = REQUESTED_AT_MS.load(Ordering::Acquire);
-        let latency = now.saturating_sub(requested).clamp(0, i64::from(i32::MAX));
+    let first_request_callback = REQUEST_PENDING.swap(false, Ordering::AcqRel);
+    let cadence_active = CADENCE_ACTIVE.load(Ordering::Acquire);
+    if !first_request_callback && !cadence_active {
+        return;
+    }
 
+    let now_ns = monotonic_time_ns();
+    g_probe
+        .paint_thread_id
+        .store(current_thread_fingerprint(), Ordering::Release);
+
+    if first_request_callback {
+        let requested_ns = REQUESTED_AT_NS.load(Ordering::Acquire);
+        let latency_ms = now_ns
+            .saturating_sub(requested_ns)
+            .checked_div(1_000_000)
+            .unwrap_or(0)
+            .min(i32::MAX as u64) as i32;
         g_probe
-            .paint_thread_id
-            .store(current_thread_fingerprint(), Ordering::Release);
-        g_probe.callback_latency_ms.store(
-            i32::try_from(latency).unwrap_or(i32::MAX),
-            Ordering::Release,
-        );
+            .callback_latency_ms
+            .store(latency_ms, Ordering::Release);
+    }
+
+    if cadence_active {
+        let previous_ns = LAST_PAINT_NS.swap(now_ns, Ordering::AcqRel);
+        if previous_ns != 0 && now_ns >= previous_ns {
+            let interval_us = (now_ns - previous_ns) / 1_000;
+            if interval_us != 0 {
+                g_probe
+                    .paint_interval_min_us
+                    .fetch_min(interval_us, Ordering::Relaxed);
+                g_probe
+                    .paint_interval_max_us
+                    .fetch_max(interval_us, Ordering::Relaxed);
+                g_probe
+                    .paint_interval_sum_us
+                    .fetch_add(interval_us, Ordering::Relaxed);
+                g_probe.paint_interval_count.fetch_add(1, Ordering::Relaxed);
+            }
+        }
         g_probe.repaint_callbacks.fetch_add(1, Ordering::AcqRel);
-        PAINT_COMPLETED.store(true, Ordering::Release);
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use super::{ProbeDiagnostics, current_thread_fingerprint};
+    use super::{
+        Duration, ProbeDiagnostics, REPAINT_INTERVAL, REPAINT_REQUESTS, current_thread_fingerprint,
+    };
 
     #[test]
     fn thread_fingerprint_is_stable_on_one_thread() {
@@ -170,6 +237,12 @@ mod tests {
 
     #[test]
     fn exported_diagnostics_have_the_expected_c_layout() {
-        assert_eq!(core::mem::size_of::<ProbeDiagnostics>(), 56);
+        assert_eq!(core::mem::size_of::<ProbeDiagnostics>(), 88);
+    }
+
+    #[test]
+    fn repaint_cadence_is_bounded_and_matches_the_observation_target() {
+        assert_eq!(REPAINT_INTERVAL, Duration::from_millis(4));
+        assert_eq!(REPAINT_REQUESTS, 128);
     }
 }

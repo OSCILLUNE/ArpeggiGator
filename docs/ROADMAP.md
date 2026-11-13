@@ -13,7 +13,8 @@
 - [x] Inspect pinned SDK contracts for pad input/properties lifetime and thread ownership (see [PLAYBACK-RESEARCH.md](PLAYBACK-RESEARCH.md)); no safe deferred use established.
 - [x] Add host-tested, platform-independent rate/gate timing engine (not yet connected to MPC).
 - [ ] Find a reliable transport phase or beat clock, not just BPM.
-- [ ] Validate whether the SDK repaint-to-paint path can safely dispatch on the app UI thread; measure callback thread identity and timing in the emulator.
+- [x] Measure repaint callback thread fingerprints and cadence in the emulator; the pad and paint fingerprints differed in the recorded run (see [PLAYBACK-RESEARCH.md](PLAYBACK-RESEARCH.md)).
+- [ ] Identify the owning UI thread independently and verify a supported native note dispatch path.
 - [ ] Trigger and release pads through the native note path.
 - [ ] Guarantee note-off on pad release, disable, transport stop and unload.
 
