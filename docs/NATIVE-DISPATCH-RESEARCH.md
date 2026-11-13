@@ -34,15 +34,26 @@ Static disassembly shows that the event dispatcher checks the tag at `+0x08`.
 For tag 3, a zero float at `+0x10` branches to a call of `0x2118930`; the
 nonzero path goes through a different engine operation. The pinned SDK's MIDI
 parser independently corroborates tag 3 with zero velocity as a Note Off
-representation (see below). The exact source/note matching and all side effects
-still need verification before a call is safe to add.
+representation (see below). A deeper pass through the handler identifies a
+per-voice source/note candidate match, while the downstream voice and recorder
+effects still need verification before a call is safe to add.
 
 The branch is visible at `0x211b388` (`ldr s0, [x20, #0x10]`; `fcmp s0, #0.0`;
 `b.eq 0x211b430`). The zero path passes the engine, selector, byte `event+0x30`,
 source, and header bits 12–15 to `0x2118930`; it then makes a follow-up call to
-`0x211aeb0` with the event pointer. This narrows the candidate ABI, but does
-not establish how `event+0x30` matches the intended voice or the follow-up
-call's recording/listener effects.
+`0x211aeb0` with the event pointer.
+
+The `0x2118930` handler walks the engine's voice collection at `engine+0x7b0`.
+For each voice it selects a `0x218`-byte-stride table using the header bits and
+calls `0x282e8c0`, which compares the incoming source with the slot selected by
+the event's `+0x30` byte for ordinary note values. A match is passed to
+`0x2118810`. That helper applies more state and mode checks; a conditional
+branch can queue a recorder event through `0x20e4da0`, and an eligible path
+continues through `0x2118460`, which updates per-voice state and submits a
+24-byte event to callbacks through `0x212cba0`. This establishes candidate
+selection and the presence of conditional recorder/event paths in this binary.
+It does not establish that a call from this module would release every intended
+voice, nor what downstream callbacks do to audio or sequence recording.
 
 The pinned SDK's [`midi.rs`](https://github.com/ioma8/mpc-sample-sdk/blob/87d3ec20e6b8d46b0580a4fd7f0f39ca3fcd7caf/src/midi.rs)
 independently documents the same event layout: type at `+0x08`, velocity at
@@ -132,8 +143,9 @@ event API or a transport clock.
 No native Note On/Off call is added. Before a playback experiment, resolve:
 
 1. The complete `step_event` pitch, source, and duration contract.
-2. Whether the dispatcher’s zero-float branch releases the intended source/note
-   pair and what recorder/listener effects follow the `0x211aeb0` call.
+2. Confirm the per-voice source/note table interpretation against a known Note
+   On, then verify voice release and recorder/listener effects for both the
+   `0x211aeb0` and `0x212cba0` callback paths.
 3. Engine and track lifetime across page, instrument, project, and module
    changes.
 4. Audio-render synchronization and lock ordering for the exact call path.
