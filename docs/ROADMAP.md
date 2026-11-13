@@ -11,8 +11,9 @@
 ## Increment 1 — audible playback
 - [ ] Verify that the temporary project file follows unsaved tempo edits on device.
 - [x] Inspect pinned SDK contracts for pad input/properties lifetime and thread ownership (see [PLAYBACK-RESEARCH.md](PLAYBACK-RESEARCH.md)); no safe deferred use established.
+- [x] Add host-tested, platform-independent rate/gate timing engine (not yet connected to MPC).
 - [ ] Find a reliable transport phase or beat clock, not just BPM.
-- [ ] Identify and validate a supported app-UI-thread dispatch/scheduling mechanism (no such periodic callback is exposed by the inspected SDK API).
+- [ ] Validate whether the SDK repaint-to-paint path can safely dispatch on the app UI thread; measure callback thread identity and timing in the emulator.
 - [ ] Trigger and release pads through the native note path.
 - [ ] Guarantee note-off on pad release, disable, transport stop and unload.
 
