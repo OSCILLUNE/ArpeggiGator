@@ -24,3 +24,4 @@ jobs:
         run: |
           python3 -m py_compile scripts/emulator_repaint_observer.py
           sh -n scripts/emulator_repaint_observer.sh
+          sh -n scripts/build.sh
