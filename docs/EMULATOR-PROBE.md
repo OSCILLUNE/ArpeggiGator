@@ -30,20 +30,20 @@ Use a local checkout of this branch and the
 [virtual MPC Sample](https://github.com/orrpunk-art/virtual-mpc-sample)
 repository. Follow that repository's own firmware-input requirements.
 
-\`\`\`sh
+```sh
 # Build the emulator once, then start it.
 cd /path/to/virtual-mpc-sample
 python3 lab.py build
 python3 lab.py run --headless
-\`\`\`
+```
 
 In a second terminal, from the ArpeggiGator experiment-branch checkout:
 
-\`\`\`sh
+```sh
 sh scripts/build.sh
 python3 /path/to/virtual-mpc-sample/lab.py preload build/arpeggigator.so
 python3 scripts/emulator_repaint_probe.py --lab /path/to/virtual-mpc-sample
-\`\`\`
+```
 
 Open the emulator panel at http://127.0.0.1:8765/ if it is not already open.
 The script assumes 16 Levels is initially OFF; start from a fresh app session.
