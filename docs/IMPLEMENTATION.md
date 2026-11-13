@@ -12,6 +12,7 @@
 - SHIFT+B2 cycles eight patterns.
 - Pad press/release callbacks update the held-pad set and preserve velocity.
 - The pure Rust engine implements UP, DOWN, UP/DOWN, DOWN/UP, CONVERGE, DIVERGE, RANDOM and PLAYED.
+- A platform-independent timing engine implements the six intended rates, gate percentage, paired NoteOn/NoteOff events, rational step deadlines and missed-step skipping. It is host-testable but not connected to MPC callbacks.
 - A pixel-art gator splash is drawn on the Sample page after mod startup.
 - A read-only worker reads global or active-sequence BPM from the current temporary project file. It never modifies the project.
 
@@ -23,6 +24,10 @@ The current implementation reads /data/TempProjects/Temp-Project.xpj every 500 m
 
 This parser is host-testable. It still needs on-device confirmation that the temporary project file is refreshed as soon as the user changes BPM, without requiring a save/reload.
 
+## Timing engine
+
+`src/scheduler.rs` is a pure Rust state machine. It accepts a monotonic microsecond timestamp and a validated BPM, then returns at most one NoteOn per poll and its matching NoteOff. Step deadlines are derived from a rational grid (milli-BPM × subdivisions), so integer rounding does not accumulate. A late poll skips expired deadlines instead of emitting a burst. The engine defaults to 1/16 and 50% gate. It has no firmware calls, does not read the project file and is not yet responsible for transport-phase alignment.
+
 ## Playback architecture
 
 1. Capture the currently held 16 Levels pads.
@@ -31,7 +36,7 @@ This parser is host-testable. It still needs on-device confirmation that the tem
 4. Trigger the target pad through the SDK's native note-on path.
 5. Send the matching note-off before the next event or on any stop/disable/release path.
 
-The SDK exposes native note-on/note-off functions, but they require live input/property objects on their owning UI thread. The lifetime of pointers captured during a physical pad callback is not yet proven. Do not store or dereference them from a timer until this is tested.
+The SDK exposes native note-on/note-off functions, but they require live input/property objects on their owning UI thread. The Minimod reference stores the live input pointer to pair a later note-off, but no inspected implementation establishes that the properties pointer remains valid for a delayed note-on. The SDK repaint pump is a possible wake-up path: a worker requests repaint and the native paint hook may run on the app thread. The thread handoff must be verified in the emulator before dispatching notes from `on_paint`. Do not dereference cached properties from a worker or assume the repaint callback thread without that test.
 
 ## UI
 
