@@ -39,6 +39,12 @@ repaint function for a component. It is specifically a repaint mechanism, not
 a general UI callback dispatcher. It must not be repurposed to call
 `send_note_on/off`.
 
+### Repaint-to-paint handoff candidate
+
+The SDK repaint pump runs a worker that periodically calls the app repaint function. The SDK drawing documentation says `on_paint` receives a live Graphics object on the UI thread, and the Task example requests a repaint from a worker after its job completes. This suggests a possible handoff: a timer worker publishes due events through atomics, requests a repaint, and the native paint callback consumes the events on the app thread. However, the inspected source does not establish that the repaint function always marshals painting to the owning UI thread, nor does it establish callback timing or maximum useful frequency. This is a candidate for an emulator probe, not a verified scheduler.
+
+The built-in repaint pump ticks every 60 ms, which is too coarse to assume accurate 1/16 or faster playback. A higher-rate notifier would need to be tested for repaint coalescing, UI load and jitter.
+
 ### MIDI replay
 
 `NoteEvent::replay_as_pad` rewrites an existing app MIDI event during its
@@ -64,19 +70,10 @@ validation and, if required, SDK/firmware research.
 
 ## Current conclusion
 
-No inspected API in the pinned SDK provides a verified periodic callback on
-the app's owning UI thread. Consequently, there is no currently justified
-way to call native note-on/note-off at future step times while satisfying the
-SDK's pointer lifetime and thread contracts.
+The pinned SDK provides a repaint-driven callback candidate, but the thread handoff and timing characteristics have not been measured. Consequently, there is not yet a verified way to dispatch native note-on/note-off at future step times while satisfying the SDK's pointer lifetime and thread contracts.
 
-The next investigation should inspect the firmware's input/event queue and the
-SDK's hook installation points for a supported enqueue/dispatch path. Any
-candidate must be validated on the virtual MPC Sample emulator, including
-re-entrancy, note-off matching, mode exit and unload. Do not add cached pointers,
-new firmware offsets, or speculative cross-thread calls as an interim solution.
+The next investigation should probe the repaint-to-paint handoff on the virtual MPC Sample emulator, compare `on_pad` and `on_paint` thread identity, verify delayed `input` and `properties` use, and measure notifier latency. In parallel, inspect the firmware's input/event queue for a supported enqueue/dispatch path. Any candidate must be validated for re-entrancy, note-off matching, mode exit and unload. Do not add speculative cross-thread native calls or new firmware offsets as an interim solution.
 
 ## Test status
 
-Source/documentation inspection only. No emulator or physical MPC runtime test
-has been performed as part of this investigation. No playback behavior is
-claimed as working.
+Source/documentation inspection and host-side scheduler unit tests only. No emulator or physical MPC runtime test has been performed as part of this investigation. The timing engine is not connected to native playback; no audible arpeggiator behavior is claimed as working.
