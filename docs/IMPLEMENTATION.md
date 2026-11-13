@@ -48,3 +48,7 @@ The SDK exposes native note-on/note-off functions, but they require live input/p
 - Generated notes must not be re-captured as new physical pad presses.
 - Unknown firmware remains fail-closed.
 - The project, samples and device firmware remain unchanged.
+
+## Playback architecture investigation
+
+See [PLAYBACK-RESEARCH.md](PLAYBACK-RESEARCH.md) for the pinned-SDK source audit. No verified periodic UI-thread scheduler is currently exposed by the inspected API; do not implement playback by retaining input/property pointers in a worker or audio callback.
