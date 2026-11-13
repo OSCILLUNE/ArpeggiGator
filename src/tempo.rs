@@ -6,11 +6,11 @@
 //! reported as unavailable until a valid read succeeds.
 
 use std::{
-    fs::File,
+    fs::{self, File},
     io::Read,
     sync::atomic::{AtomicBool, AtomicU32, Ordering},
     thread,
-    time::Duration,
+    time::{Duration, SystemTime},
 };
 
 use flate2::read::GzDecoder;
@@ -33,14 +33,25 @@ pub fn start_monitor() {
     let result = thread::Builder::new()
         .name("arpeggigator-tempo".to_string())
         .spawn(|| {
+            let mut previous_modified: Option<SystemTime> = None;
+            let mut first_scan = true;
             loop {
-                match read_current_project_bpm() {
-                    Some(bpm) => {
-                        BPM_BITS.store(bpm.to_bits(), Ordering::Release);
-                        BPM_VALID.store(true, Ordering::Release);
+                let modified = fs::metadata(CURRENT_PROJECT)
+                    .and_then(|metadata| metadata.modified())
+                    .ok();
+
+                if first_scan || modified != previous_modified {
+                    first_scan = false;
+                    previous_modified = modified;
+                    match read_current_project_bpm() {
+                        Some(bpm) => {
+                            BPM_BITS.store(bpm.to_bits(), Ordering::Release);
+                            BPM_VALID.store(true, Ordering::Release);
+                        }
+                        None => BPM_VALID.store(false, Ordering::Release),
                     }
-                    None => BPM_VALID.store(false, Ordering::Release),
                 }
+
                 thread::sleep(Duration::from_millis(500));
             }
         });
