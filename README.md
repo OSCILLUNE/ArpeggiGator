@@ -32,11 +32,12 @@ Committed now:
 - SHIFT+B1 / SHIFT+B2 handling, scoped to 16 Levels.
 - Startup toast and compact pixel-art gator splash rendered through the MPC graphics API.
 - Eight-pattern engine and host tests.
+- Host-testable timing engine for 1/4, 1/8, 1/8T, 1/16, 1/16T and 1/32 rates, with gate control and paired note events.
 - Read-only BPM discovery from the active working project file. The overlay shows the detected BPM when the file is available.
 - Firmware-guarded build/package script and GitHub Actions CI.
 
 Still pending:
-- Automatic note-on/note-off scheduling. Native note trigger functions require live input/property objects on their owning UI thread; their lifetime beyond a physical pad callback still needs validation.
+- Connecting the timing engine to native note-on/note-off. Native note trigger functions require live input/property objects on their owning UI thread; deferred properties lifetime and the repaint-to-UI-thread handoff still need emulator validation.
 - Validation that the temporary project file updates immediately when unsaved sequence or global tempo changes are made.
 - Hardware verification of the clock and note lifecycle.
 
