@@ -5,6 +5,7 @@
 //! remains gated until live-input lifetime and UI-thread dispatch are validated.
 
 mod arp;
+mod probe;
 mod scheduler;
 mod splash;
 mod tempo;
@@ -91,8 +92,14 @@ impl Mod for ArpeggiGator {
         }
         if let Ok(pad) = u8::try_from(event.pad) {
             match event.action {
-                PadAction::Press => self.engine.press(pad, event.velocity),
-                PadAction::Release => self.engine.release(pad),
+                PadAction::Press => {
+                    self.engine.press(pad, event.velocity);
+                    probe::capture_and_schedule(event);
+                }
+                PadAction::Release => {
+                    self.engine.release(pad);
+                    probe::source_pad_released(event);
+                }
             }
         }
         // Physical strikes remain audible. Scheduled retriggers will be
@@ -109,6 +116,8 @@ impl Mod for ArpeggiGator {
         if !event.sample_page {
             return;
         }
+        // The probe runs only on experiment/repaint-dispatch-probe.
+        probe::on_paint();
         if clock::now_ms() < SPLASH_UNTIL_MS.load(Ordering::Acquire) {
             // SAFETY: on_paint supplies the live Graphics object on the app's
             // paint path.
