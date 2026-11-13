@@ -173,7 +173,9 @@ pub fn source_pad_released(event: PadEvent) {
 /// Called from the SDK's native Sample-page paint hook.
 pub fn on_paint() {
     let paint_thread = current_thread_fingerprint();
-    g_probe.paint_thread_id.store(paint_thread, Ordering::Release);
+    g_probe
+        .paint_thread_id
+        .store(paint_thread, Ordering::Release);
 
     if REQUEST_NOTE_ON.swap(false, Ordering::AcqRel) {
         let input = g_probe.input_ptr.load(Ordering::Acquire) as usize;
