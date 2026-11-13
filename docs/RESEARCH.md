@@ -39,7 +39,7 @@ The MPC working project is exposed at /data/TempProjects/Temp-Project.xpj. The f
 
 The JSON document has a data object with masterTempoEnabled, masterTempo, currentSequence and a sequences array. Sequence entries are key/value pairs: the active sequence must be found by matching the entry key to currentSequence, not by using the array position. When masterTempoEnabled is true, masterTempo takes precedence; otherwise the active sequence's value.bpm is used.
 
-ArpeggiGator now has a read-only parser and a 500 ms monitor for this file. It rejects missing, malformed or out-of-range values and shows BPM as unavailable instead of inventing a tempo. The remaining device-side question is freshness: confirm that the file reflects unsaved tempo edits immediately while the application is running.
+ArpeggiGator now has a read-only parser and a 500 ms monitor for this file. It rejects missing, malformed or out-of-range values. No tempo overlay is currently drawn on the MPC screen. The remaining device-side question is freshness: confirm that the file reflects unsaved tempo edits immediately while the application is running.
 
 Format reference: https://github.com/ioma8/mpc-minimod/blob/main/converter/docs/FORMAT.md, sections 1–4. Temporary project path reference: https://github.com/ioma8/mpc-minimod/blob/main/converter/docs/DEVICE-PROBE.md.
 

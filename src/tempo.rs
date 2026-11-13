@@ -63,6 +63,7 @@ pub fn start_monitor() {
 
 /// Current active project BPM, or None when it cannot be read reliably.
 #[must_use]
+#[allow(dead_code)] // Retained for scheduler integration; the UI avoids an overlay.
 pub fn current_bpm() -> Option<f32> {
     if !BPM_VALID.load(Ordering::Acquire) {
         return None;

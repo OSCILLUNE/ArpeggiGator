@@ -34,6 +34,10 @@ pub struct ProbeDiagnostics {
     pub paint_interval_max_us: AtomicU64,
     pub paint_interval_sum_us: AtomicU64,
     pub paint_interval_count: AtomicU32,
+    pub button_last: AtomicU32,
+    pub button_b1_press: AtomicU32,
+    pub button_b2_press: AtomicU32,
+    pub button_levels_press: AtomicU32,
 }
 
 impl ProbeDiagnostics {
@@ -55,8 +59,44 @@ impl ProbeDiagnostics {
             paint_interval_max_us: AtomicU64::new(0),
             paint_interval_sum_us: AtomicU64::new(0),
             paint_interval_count: AtomicU32::new(0),
+            button_last: AtomicU32::new(0),
+            button_b1_press: AtomicU32::new(0),
+            button_b2_press: AtomicU32::new(0),
+            button_levels_press: AtomicU32::new(0),
         }
     }
+}
+
+/// Store a compact snapshot for the emulator control probe.
+///
+/// Bits: code 0–7, pressed 8, SHIFT 9, 16 Levels 10, action 11–15.
+pub fn button_event(code: u32, pressed: bool, shifted: bool, in_16_levels: bool, action: u32) {
+    let snapshot = encode_button_snapshot(code, pressed, shifted, in_16_levels, action);
+    g_probe.button_last.store(snapshot, Ordering::Release);
+    if pressed {
+        match code {
+            12 => g_probe.button_b1_press.store(snapshot, Ordering::Release),
+            13 => g_probe.button_b2_press.store(snapshot, Ordering::Release),
+            40 => g_probe
+                .button_levels_press
+                .store(snapshot, Ordering::Release),
+            _ => {}
+        }
+    }
+}
+
+fn encode_button_snapshot(
+    code: u32,
+    pressed: bool,
+    shifted: bool,
+    in_16_levels: bool,
+    action: u32,
+) -> u32 {
+    (code & 0xff)
+        | (u32::from(pressed) << 8)
+        | (u32::from(shifted) << 9)
+        | (u32::from(in_16_levels) << 10)
+        | ((action & 0x1f) << 11)
 }
 
 mpc_sample_sdk::export_static!(
@@ -251,6 +291,7 @@ pub fn on_paint() {
 mod tests {
     use super::{
         Duration, ProbeDiagnostics, REPAINT_INTERVAL, REPAINT_REQUESTS, current_thread_id,
+        encode_button_snapshot,
     };
 
     #[test]
@@ -259,8 +300,18 @@ mod tests {
     }
 
     #[test]
+    fn button_snapshot_keeps_code_and_control_state() {
+        let snapshot = encode_button_snapshot(12, true, true, true, 1);
+        assert_eq!(snapshot & 0xff, 12);
+        assert_ne!(snapshot & (1 << 8), 0);
+        assert_ne!(snapshot & (1 << 9), 0);
+        assert_ne!(snapshot & (1 << 10), 0);
+        assert_eq!((snapshot >> 11) & 0x1f, 1);
+    }
+
+    #[test]
     fn exported_diagnostics_have_the_expected_c_layout() {
-        assert_eq!(core::mem::size_of::<ProbeDiagnostics>(), 96);
+        assert_eq!(core::mem::size_of::<ProbeDiagnostics>(), 112);
     }
 
     #[test]

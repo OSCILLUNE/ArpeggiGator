@@ -2,9 +2,9 @@
 
 ## Increment 0 — repository bootstrap
 - [x] Pin the target firmware and SDK revision.
-- [x] Add splash artwork and native pixel-art startup mark.
+- [x] Create reusable pixel-art gator brand artwork.
 - [x] Implement the eight-pattern held-pad engine.
-- [x] Bind SHIFT+B1 and SHIFT+B2 in 16 Levels.
+- [x] Bind SHIFT+B1/B2/B3 in 16 Levels.
 - [x] Add read-only current-sequence/global BPM parser and host tests.
 - [x] Host CI: formatting, unit tests and Clippy.
 
@@ -19,11 +19,14 @@
 - [ ] Trigger and release pads through the native note path.
 - [ ] Guarantee note-off on pad release, disable, transport stop and unload.
 
-## Increment 2 — performance controls
+## Increment 2 — arp controls and performance
 - [ ] Rate: 1/4, 1/8, 1/8T, 1/16, 1/16T, 1/32.
 - [ ] Gate length.
 - [ ] Octave span where the active 16 Levels mapping supports it.
-- [ ] Refine the compact status overlay.
+- [x] Keep native Sample and 16 Levels pages visible unless the user explicitly enables the arp.
+- [x] Show ARP, pattern and +1/+2/+3 on the native softkey row while SHIFT is held in 16 Levels.
+- [ ] Add a HOLD latch mode for source pads after note output is connected.
+- [ ] Drive the gator's chewing animation from generated arpeggio note events.
 
 ## Increment 3 — release
 - [ ] Build through the SDK's canonical script.

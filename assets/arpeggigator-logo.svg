@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 240" role="img" aria-labelledby="title desc">
+  <title id="title">ArpeggiGator</title>
+  <desc id="desc">Pixel-style green alligator in purple headphones eating a musical note beside an arpeggiator step pattern.</desc>
+  <rect width="320" height="240" fill="#09051f"/>
+  <path d="M7 10h306v220H7z" fill="none" stroke="#6720b5" stroke-width="3"/>
+  <path d="M14 15h292M20 55h280" stroke="#ed36cf" stroke-width="2"/>
+  <text x="160" y="43" fill="#ffcf36" font-family="monospace" font-size="22" font-weight="700" text-anchor="middle">ArpeggiGator</text>
+
+  <!-- Headphones and side-facing gator, drawn as crisp pixel blocks. -->
+  <g shape-rendering="crispEdges" stroke="#16082f" stroke-width="4" stroke-linejoin="round">
+    <path d="M40 93V79h8V69h48v8h9" fill="none" stroke="#ed36cf" stroke-width="8"/>
+    <path d="M31 87h14v30H31z" fill="#a62be8" stroke="#ed36cf"/>
+    <path d="M45 79h58v42H45zM78 89h48v25H78zM110 98h23v18h-23z" fill="#38d42e"/>
+    <path d="M55 86h22v17H55zM81 86h22v17H81z" fill="#6720b5"/>
+    <path d="M60 89h7v5h-7zM86 89h7v5h-7z" fill="#fff0d5" stroke="none"/>
+    <path d="M77 110h58v10H77z" fill="#16082f" stroke="none"/>
+    <path d="M82 120h50v12H82z" fill="#ffcf36"/>
+    <path d="M87 109h5v8h-5zM101 109h5v8h-5zM115 109h5v8h-5z" fill="#fff0d5" stroke="none"/>
+    <path d="M59 139h50v18H59zM48 151h22v12H48zM100 151h20v12h-20z" fill="#38d42e"/>
+  </g>
+
+  <!-- Four sampler pads. -->
+  <g shape-rendering="crispEdges" stroke="#16082f" stroke-width="3">
+    <path d="M24 183h23v16H24z" fill="#6720b5"/>
+    <path d="M50 183h23v16H50z" fill="#ed36cf"/>
+    <path d="M76 183h23v16H76z" fill="#ffcf36"/>
+    <path d="M102 183h23v16h-23z" fill="#a62be8"/>
+  </g>
+
+  <!-- Eight-step motif. -->
+  <rect x="151" y="68" width="151" height="101" fill="#16082f" stroke="#ed36cf" stroke-width="4"/>
+  <text x="162" y="86" fill="#ffcf36" font-family="monospace" font-size="8" font-weight="700">STEP PATTERN</text>
+  <g stroke="#6720b5" stroke-width="1">
+    <path d="M164 96h126M164 108h126M164 120h126M164 132h126M164 144h126"/>
+    <path d="M171 94v61M186 94v61M201 94v61M216 94v61M231 94v61M246 94v61M261 94v61M276 94v61"/>
+  </g>
+  <g shape-rendering="crispEdges">
+    <path d="M166 145h12v9h-12zM181 139h12v9h-12zM196 133h12v9h-12zM211 127h12v9h-12zM226 121h12v9h-12zM241 115h12v9h-12zM256 109h12v9h-12zM271 103h12v9h-12z" fill="#ffcf36"/>
+    <path d="M166 151h12v3h-12zM181 145h12v3h-12zM196 139h12v3h-12zM211 133h12v3h-12zM226 127h12v3h-12zM241 121h12v3h-12zM256 115h12v3h-12zM271 109h12v3h-12z" fill="#ed36cf"/>
+  </g>
+  <path d="M158 190h142" stroke="#ed36cf" stroke-width="2"/>
+  <text x="158" y="207" fill="#fff0d5" font-family="monospace" font-size="9" font-weight="700">ARPEGGIATOR MOD</text>
+  <text x="158" y="220" fill="#fff0d5" font-family="monospace" font-size="8">FOR MPC SAMPLE</text>
+
+  <!-- The note is entering the gator's mouth. -->
+  <g shape-rendering="crispEdges">
+    <path d="M127 111v14h3v-11h8v-3z" fill="#ed36cf"/>
+    <path d="M119 125h8v5h-8zM130 121h8v5h-8z" fill="#ffcf36"/>
+  </g>
+  <path d="M23 65h4v4h-4zM136 69h3v3h-3zM144 60h2v2h-2z" fill="#fff0d5"/>
+</svg>

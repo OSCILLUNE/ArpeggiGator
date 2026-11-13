@@ -13,7 +13,7 @@
 - Pad press/release callbacks update the held-pad set and preserve velocity.
 - The pure Rust engine implements UP, DOWN, UP/DOWN, DOWN/UP, CONVERGE, DIVERGE, RANDOM and PLAYED.
 - A platform-independent timing engine implements the six intended rates, gate percentage, paired NoteOn/NoteOff events, rational step deadlines and missed-step skipping. It is host-testable but not connected to MPC callbacks.
-- A pixel-art gator splash is drawn on the Sample page after mod startup.
+- The Sample page is left native; there is no startup overlay.
 - A read-only worker reads global or active-sequence BPM from the current temporary project file. It never modifies the project.
 
 The physical pad strike is still forwarded to MPC. The current prototype does not yet emit scheduled retriggers.
@@ -44,7 +44,9 @@ The SDK exposes native note-on/note-off functions, but they require live input/p
 - SHIFT+B2: next pattern.
 - B1/B2 are consumed only while 16 Levels is active and SHIFT is held.
 - The current physical pad event is forwarded.
-- The compact overlay shows pattern and detected BPM.
+- The native Sample and 16 Levels pages remain visible by default.
+- In 16 Levels, holding SHIFT replaces the three softkey captions with ARP, the current pattern, and +1/+2/+3. B1 toggles ARP, B2 changes pattern, and B3 cycles the additional-note setting.
+- When ARP is enabled, a compact gator overlay appears. Holding source pads animates a note toward its mouth as a visual preview; generated notes are not connected yet.
 
 ## Required safety behavior
 

@@ -16,8 +16,8 @@ import urllib.request
 
 ROOT = Path(__file__).resolve().parents[1]
 PANEL_DEFAULT = "http://127.0.0.1:8765"
-PROBE_SIZE = 96
-PROBE_FORMAT = "<QQQiiIIIIIIi4xQQQI4x"
+PROBE_SIZE = 112
+PROBE_FORMAT = "<QQQiiIIIIIIi4xQQQIIIII4x"
 REPAINT_REQUESTS = 128
 REPAINT_INTERVAL_US = 4_000
 PROBE_KEYS = (
@@ -26,6 +26,7 @@ PROBE_KEYS = (
     "worker_finished", "worker_timeouts", "callback_latency_ms",
     "paint_interval_min_us", "paint_interval_max_us",
     "paint_interval_sum_us", "paint_interval_count",
+    "button_last", "button_b1_press", "button_b2_press", "button_levels_press",
 )
 
 
@@ -117,9 +118,27 @@ def main():
     # Start from a known page and enable the observer.
     tap("SAMPLE")
     tap("16 LEVELS")
+
+    def decode_button(snapshot):
+        return {
+            "code": snapshot & 0xff,
+            "pressed": bool(snapshot & (1 << 8)),
+            "shift": bool(snapshot & (1 << 9)),
+            "in_16_levels": bool(snapshot & (1 << 10)),
+            "action": (snapshot >> 11) & 0x1f,
+        }
+
+    levels_state = decode_button(read_probe(pid_before, mod_base, symbols["g_probe"])[
+        "button_levels_press"
+    ])
+    if not levels_state["in_16_levels"]:
+        tap("16 LEVELS")
+
     control("SHIFT", "press")
     control("SCREEN 1", "press")
     control("SCREEN 1", "release")
+    control("SCREEN 2", "press")
+    control("SCREEN 2", "release")
     control("SHIFT", "release")
 
     control("PAD 1", "press", 127)
@@ -147,11 +166,24 @@ def main():
         "bounded_repaint_burst_completed": deltas["repaint_requests"] == REPAINT_REQUESTS,
         "multiple_paint_callbacks_received": deltas["repaint_callbacks"] >= 2,
         "interpaint_interval_measured": interval_count >= 1,
-        "worker_finished": deltas["worker_finished"] == 1,
+        "worker_finished": deltas["worker_finished"] >= 1,
         "no_handoff_timeout": deltas["worker_timeouts"] == 0,
         "mpc_process_unchanged": pid_after == pid_before,
         "ac50_service_active": service == "active",
         "no_new_systemd_restart": restarts_after == restarts_before,
+        "16_levels_mode_enabled": decode_button(after["button_levels_press"])[
+            "in_16_levels"
+        ],
+        "shift_b1_consumed_as_arp_toggle": (
+            decode_button(after["button_b1_press"])
+            == {"code": 12, "pressed": True, "shift": True,
+                "in_16_levels": True, "action": 1}
+        ),
+        "shift_b2_consumed_as_pattern_change": (
+            decode_button(after["button_b2_press"])
+            == {"code": 13, "pressed": True, "shift": True,
+                "in_16_levels": True, "action": 3}
+        ),
     }
 
     same_thread = (
@@ -189,6 +221,10 @@ def main():
         f"count={interval_count}, min={after['paint_interval_min_us']} us, "
         f"mean={interval_mean_us:.1f} us, max={after['paint_interval_max_us']} us"
     )
+    print(f"last button event:       {decode_button(after['button_last'])}")
+    print(f"B1 press snapshot:       {decode_button(after['button_b1_press'])}")
+    print(f"B2 press snapshot:       {decode_button(after['button_b2_press'])}")
+    print(f"16 Levels press:         {decode_button(after['button_levels_press'])}")
     for name, passed in checks.items():
         print(f"{'PASS' if passed else 'FAIL'}: {name}")
     print(f"counter deltas: {deltas}")

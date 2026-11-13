@@ -5,7 +5,7 @@
 - [x] Record the firmware 1.3.0.12 target and fingerprint.
 - [x] Map B1/B2 and SHIFT hardware codes.
 - [x] Implement the eight-pattern held-pad engine.
-- [x] Add native controls and gator startup mark.
+- [x] Add native controls and reusable gator artwork.
 - [ ] Run CI formatting, unit tests and Clippy.
 
 ## Audible playback
