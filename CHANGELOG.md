@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.0.2.2
+
+- Fix ArpeggiGator SHIFT menu visibility and state tracking across view transitions (Sample, SEQ, Pad FX, Sample Select, Mute, shortcuts).
+- Forward SHIFT+B1..B3 buttons when outside 16 Levels to restore native sample functions (Loop Lock, Normalize).
+- Maintain active 16 Levels during SHIFT+16 Levels TYPE shortcut and native SAMPLE presses.
+- Restore native pad LEDs when leaving 16 Levels and restore ArpeggiGator state on re-entry.
+
 ## 0.0.2.1
 
 - Add up to three octave-transposed notes to emulator audio patterns; all eight patterns include them in their ordering.

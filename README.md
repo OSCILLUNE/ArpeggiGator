@@ -4,7 +4,7 @@
 
 **Standalone arpeggiator mod for the AKAI MPC Sample.**
 
-**Version 0.0.2.1 — experimental emulator audio.**
+**Version 0.0.2.2 — experimental emulator audio.**
 
 ArpeggiGator targets stock MPC Sample firmware **1.3.0.12**. It is independent of SampQOL.
 
