@@ -8,6 +8,8 @@ use crate::{
     PAD_MASK, PREVIEW_ENABLED, PREVIEW_STATE, Pattern, Playback, SHORTCUT_PADS, ScheduledEvent,
     StepRate, tempo,
 };
+#[cfg(feature = "transport-sync-experiment")]
+use crate::{transport_clock, transport_playback::TransportPlayback};
 
 const RENDER_OFFSET: usize = 0x18dbcc0;
 const RENDER_VTABLE: usize = 0x6e3b220;
@@ -35,6 +37,25 @@ static g_arp_audio_off: AtomicU32 = AtomicU32::new(0);
 #[unsafe(no_mangle)]
 static g_arp_audio_last: AtomicU32 = AtomicU32::new(0);
 
+#[cfg(feature = "transport-sync-experiment")]
+#[unsafe(no_mangle)]
+static g_arp_transport_pulse: AtomicU64 = AtomicU64::new(0);
+#[cfg(feature = "transport-sync-experiment")]
+#[unsafe(no_mangle)]
+static g_arp_transport_mode: AtomicU32 = AtomicU32::new(0);
+#[cfg(feature = "transport-sync-experiment")]
+#[unsafe(no_mangle)]
+static g_arp_transport_resets: AtomicU32 = AtomicU32::new(0);
+#[cfg(feature = "transport-sync-experiment")]
+#[unsafe(no_mangle)]
+static g_arp_transport_reset_pair: AtomicU64 = AtomicU64::new(0);
+#[cfg(feature = "transport-sync-experiment")]
+#[unsafe(no_mangle)]
+static g_arp_transport_bounds: AtomicU64 = AtomicU64::new(0);
+#[cfg(feature = "transport-sync-experiment")]
+#[unsafe(no_mangle)]
+static g_arp_audio_trace: [AtomicU64; 256] = [const { AtomicU64::new(0) }; 256];
+
 #[derive(Clone, Copy)]
 struct Key {
     note: u8,
@@ -60,6 +81,12 @@ struct State {
     voice: Option<Key>,
     pattern: Pattern,
     engine: usize,
+    #[cfg(feature = "transport-sync-experiment")]
+    synced: bool,
+    #[cfg(feature = "transport-sync-experiment")]
+    transport: TransportPlayback,
+    #[cfg(feature = "transport-sync-experiment")]
+    transport_clock: transport_clock::UnwrapClock,
 }
 
 impl Default for State {
@@ -70,6 +97,12 @@ impl Default for State {
             voice: None,
             pattern: Pattern::Up,
             engine: 0,
+            #[cfg(feature = "transport-sync-experiment")]
+            synced: false,
+            #[cfg(feature = "transport-sync-experiment")]
+            transport: TransportPlayback::new(StepRate::Sixteenth, 960).unwrap(),
+            #[cfg(feature = "transport-sync-experiment")]
+            transport_clock: transport_clock::UnwrapClock::default(),
         }
     }
 }
@@ -217,19 +250,43 @@ impl State {
         let preview = PREVIEW_STATE.load(Acquire);
         let enabled = preview & PREVIEW_ENABLED != 0;
         let bpm = tempo::current_bpm();
+        #[cfg(feature = "transport-sync-experiment")]
+        let transport_snapshot = transport_clock::snapshot(engine, image::base());
+        #[cfg(feature = "transport-sync-experiment")]
+        let synced = enabled && bpm.is_some() && transport_snapshot.is_some_and(|s| s.playing);
         // SAFETY: the only native argument is the live engine from this render.
         unsafe {
+            #[cfg(feature = "transport-sync-experiment")]
+            if self.synced != synced {
+                let off = self.playback.set_enabled(false);
+                self.output(engine, off);
+                let off = self.transport.stop();
+                self.output(engine, off);
+                self.inputs = [0; 16];
+                self.synced = synced;
+                self.transport_clock = transport_clock::UnwrapClock::default();
+                g_arp_transport_mode.store(u32::from(synced), Release);
+            }
             let off = self.playback.set_enabled(enabled && bpm.is_some());
             self.output(engine, off);
             let pattern = Pattern::ALL[PATTERN.load(Acquire)];
             if self.pattern != pattern {
                 self.playback.set_pattern(pattern);
+                #[cfg(feature = "transport-sync-experiment")]
+                self.transport.set_pattern(pattern);
                 self.pattern = pattern;
             }
             let off = self.playback.set_rate(StepRate::ALL[RATE.load(Acquire)]);
             self.output(engine, off);
             self.playback
                 .set_additional_octaves(ADDITIONAL_OCTAVES.load(Acquire) as u8);
+            #[cfg(feature = "transport-sync-experiment")]
+            {
+                let off = self.transport.set_rate(StepRate::ALL[RATE.load(Acquire)]);
+                self.output(engine, off);
+                self.transport
+                    .set_additional_octaves(ADDITIONAL_OCTAVES.load(Acquire) as u8);
+            }
             let mut pending = [(0, 0); 16];
             let mut count = 0;
             for (pad, (input, slot)) in self.inputs.iter_mut().zip(&PADS).enumerate() {
@@ -242,11 +299,25 @@ impl State {
                     continue;
                 }
                 if *input != 0 {
-                    let off = self.playback.release(pad as u8);
-                    if off.is_some()
-                        && let Some(key) = self.voice.take()
+                    #[cfg(feature = "transport-sync-experiment")]
+                    if synced {
+                        self.transport.set_pad(pad as u8, None);
+                    } else {
+                        let off = self.playback.release(pad as u8);
+                        if off.is_some()
+                            && let Some(key) = self.voice.take()
+                        {
+                            send(engine, key, false);
+                        }
+                    }
+                    #[cfg(not(feature = "transport-sync-experiment"))]
                     {
-                        send(engine, key, false);
+                        let off = self.playback.release(pad as u8);
+                        if off.is_some()
+                            && let Some(key) = self.voice.take()
+                        {
+                            send(engine, key, false);
+                        }
                     }
                 }
                 *input = next;
@@ -257,6 +328,14 @@ impl State {
             }
             pending[..count].sort_unstable_by_key(|&(_, key)| Key::unpack(key).serial);
             for &(pad, bits) in &pending[..count] {
+                #[cfg(feature = "transport-sync-experiment")]
+                if synced {
+                    self.transport.set_pad(
+                        pad as u8,
+                        Some(f32::from(Key::unpack(bits).velocity) / f32::from(u16::MAX)),
+                    );
+                    continue;
+                }
                 let off = self.playback.press(
                     pad as u8,
                     f32::from(Key::unpack(bits).velocity) / f32::from(u16::MAX),
@@ -264,6 +343,32 @@ impl State {
                 debug_assert!(off.is_none());
             }
             let now = clock::now_ms().max(0) as u64 * 1000;
+            #[cfg(feature = "transport-sync-experiment")]
+            if synced {
+                let snapshot = transport_snapshot.unwrap();
+                g_arp_transport_bounds.store(
+                    (snapshot.loop_start << 32) | (snapshot.loop_end & 0xffff_ffff),
+                    Relaxed,
+                );
+                let (pulse, reset) =
+                    self.transport_clock
+                        .observe(snapshot, now / 1000, bpm.unwrap());
+                if reset {
+                    let previous = g_arp_transport_pulse.load(Relaxed);
+                    g_arp_transport_reset_pair
+                        .store((previous << 32) | (snapshot.pulse & 0xffff_ffff), Relaxed);
+                    g_arp_transport_resets.fetch_add(1, Relaxed);
+                    let off = self.transport.stop();
+                    self.output(engine, off);
+                }
+                g_arp_transport_pulse.store(pulse, Release);
+                if let Some(events) = self.transport.tick(pulse) {
+                    for event in events {
+                        self.output(engine, event);
+                    }
+                }
+                return;
+            }
             for event in self.playback.tick(now, bpm) {
                 self.output(engine, event);
             }
@@ -333,7 +438,18 @@ unsafe fn send(engine: usize, key: Key, on: bool) {
             u32::from(key.note) | (u32::from(key.pitch as u8) << 8),
             Relaxed,
         );
-        g_arp_audio_on.fetch_add(1, Relaxed);
+        let serial = g_arp_audio_on.fetch_add(1, Relaxed).wrapping_add(1);
+        #[cfg(feature = "transport-sync-experiment")]
+        {
+            let pulse = g_arp_transport_pulse.load(Relaxed) & 0xffff;
+            let packed = (u64::from(serial) << 32)
+                | (pulse << 16)
+                | (u64::from(key.pitch as u8) << 8)
+                | u64::from(key.note);
+            g_arp_audio_trace[serial as usize % 256].store(packed, Release);
+        }
+        #[cfg(not(feature = "transport-sync-experiment"))]
+        let _ = serial;
     } else {
         g_arp_audio_off.fetch_add(1, Relaxed);
     }

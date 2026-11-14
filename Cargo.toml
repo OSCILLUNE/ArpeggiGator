@@ -8,6 +8,7 @@ repository = "https://github.com/OSCILLUNE/ArpeggiGator"
 
 [features]
 emulator-audio = []
+transport-sync-experiment = ["emulator-audio"]
 
 [lib]
 crate-type = ["cdylib", "rlib"]

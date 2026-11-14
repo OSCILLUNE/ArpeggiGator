@@ -206,6 +206,24 @@ impl ArpEngine {
         self.reset_cycle();
     }
 
+    /// Apply a new live pad set at a step boundary without restarting the pattern.
+    pub(crate) fn update_at_boundary(&mut self, pads: &[Option<f32>; 16], order: &[u64; 16]) {
+        let cursor = self.cursor;
+        for (pad, velocity) in pads.iter().enumerate() {
+            if velocity.is_none() {
+                self.release(pad as u8);
+            }
+        }
+        let mut indices = core::array::from_fn::<_, 16, _>(|i| i);
+        indices.sort_unstable_by_key(|&i| order[i]);
+        for pad in indices {
+            if let Some(velocity) = pads[pad] {
+                self.press(pad as u8, velocity);
+            }
+        }
+        self.cursor = cursor;
+    }
+
     /// Number of pads currently held.
     #[must_use]
     pub fn held_count(&self) -> usize {

@@ -12,6 +12,9 @@ mod probe;
 mod scheduler;
 mod splash;
 mod tempo;
+#[cfg(feature = "transport-sync-experiment")]
+mod transport_clock;
+mod transport_playback;
 
 pub use arp::{ArpEngine, Pattern, Step};
 pub use playback::Playback;
@@ -19,9 +22,11 @@ pub use scheduler::{ArpScheduler, ScheduledEvent, StepRate};
 
 use core::sync::atomic::{AtomicBool, AtomicI64, AtomicU32, Ordering};
 
+#[cfg(not(feature = "transport-sync-experiment"))]
+use mpc_sample_sdk::draw;
 use mpc_sample_sdk::{
     ButtonEvent, ButtonFlow, EncoderEvent, EncoderFlow, Mod, PadAction, PadEvent, PadFlow,
-    PaintEvent, SurfaceEvent, draw,
+    PaintEvent, SurfaceEvent,
     event::button,
     platform::{clock, lighting},
 };
@@ -39,6 +44,7 @@ static SHORTCUT_PADS: AtomicU32 = AtomicU32::new(0);
 static PREVIEW_STATE: AtomicU32 = AtomicU32::new(0);
 static SHIFT_ACTIVE: AtomicBool = AtomicBool::new(false);
 
+#[cfg(not(feature = "transport-sync-experiment"))]
 fn repaint_component() -> usize {
     let now = clock::now_ms();
     if now < DASHBOARD_REFRESH_UNTIL_MS.load(Ordering::Acquire)
@@ -125,9 +131,13 @@ impl Mod for ArpeggiGator {
         tempo::start_monitor();
         #[cfg(feature = "emulator-audio")]
         native_audio::install();
-        // SAFETY: repaint_component returns only the live component last
-        // recorded by the SDK paint hook, or zero when none is available.
-        unsafe { draw::start_repaint_pump(repaint_component) };
+        // The experimental build avoids repaint calls from a worker: the
+        // SDK's repaint entry requires a live component on its UI thread.
+        #[cfg(not(feature = "transport-sync-experiment"))]
+        // SAFETY: retained for the existing non-experimental builds.
+        unsafe {
+            draw::start_repaint_pump(repaint_component)
+        };
     }
 
     fn on_button(&mut self, event: ButtonEvent) -> ButtonFlow {
