@@ -36,6 +36,7 @@ const HIGHLIGHT: u32 = 0xffa8ed67;
 pub unsafe fn draw_arp_overlay(
     graphics: &mut Graphics,
     show_shift_menu: bool,
+    enabled: bool,
     mode: EngineMode,
     b2_label: &str,
     b3_label: &str,
@@ -48,14 +49,16 @@ pub unsafe fn draw_arp_overlay(
         if show_shift_menu {
             draw_shift_labels(graphics, mode, b2_label, b3_label);
         }
-        match mode {
-            EngineMode::Arp => {
-                draw_arp_view(graphics, held_pads, hold, rate, now_ms);
+        if enabled {
+            match mode {
+                EngineMode::Arp => {
+                    draw_arp_view(graphics, held_pads, hold, rate, now_ms);
+                }
+                EngineMode::Melody => {
+                    draw_melody_view(graphics, b2_label, b3_label, held_pads, hold, rate, now_ms);
+                }
+                EngineMode::Off => {}
             }
-            EngineMode::Melody => {
-                draw_melody_view(graphics, b2_label, b3_label, held_pads, hold, rate, now_ms);
-            }
-            EngineMode::Off => {}
         }
     }
 }
@@ -220,10 +223,56 @@ unsafe fn draw_dj_booth(graphics: &mut Graphics, active: bool, now_ms: u64) {
         graphics.rect(26, 148, 2, 34);
         graphics.rect(156, 148, 2, 34);
 
-        graphics.colour(0xff35125a);
-        graphics.rect(48, 156, 88, 18);
-        graphics.colour(0xffd56aff);
-        graphics.text("ARPEGGI", 58, 157, 70, 16, 11.0);
+        // Front DJ booth marquee panel
+        graphics.colour(0xff0e041d);
+        graphics.rect(32, 153, 120, 24);
+        // Neon borders (cyan top-left, hot pink bottom-right)
+        graphics.colour(0xff00ffff);
+        graphics.rect(32, 153, 120, 1);
+        graphics.rect(32, 153, 1, 24);
+        graphics.colour(0xffff0088);
+        graphics.rect(32, 176, 120, 1);
+        graphics.rect(151, 153, 1, 24);
+
+        // Dynamic LED VU equalizers flanking the logo
+        let vu_step = if active { ((now_ms / 100) % 4) as i32 } else { 1 };
+        for bar in 0..3 {
+            let h = match (bar, vu_step) {
+                (0, 0) => 8,
+                (0, 1) => 12,
+                (0, 2) => 16,
+                (0, _) => 10,
+                (1, 0) => 14,
+                (1, 1) => 8,
+                (1, 2) => 12,
+                (1, _) => 16,
+                (2, 0) => 10,
+                (2, 1) => 15,
+                (2, 2) => 7,
+                (2, _) => 12,
+                _ => 10,
+            };
+            let lx = 35 + bar * 3;
+            let rx = 143 + bar * 3;
+            for seg in 0..(h / 4) {
+                let col = match seg {
+                    0 => 0xff00ff66,
+                    1 => 0xffffcc00,
+                    2 => 0xffff7700,
+                    _ => 0xffff0066,
+                };
+                graphics.colour(col);
+                let y = 173 - (seg * 4);
+                graphics.rect(lx, y, 2, 3);
+                graphics.rect(rx, y, 2, 3);
+            }
+        }
+
+        // ArpeggiGator logo text: glowing drop shadow + crisp neon cyan text
+        graphics.colour(0xffff0088);
+        graphics.text("ArpeggiGator", 46, 157, 94, 18, 12.0);
+        graphics.colour(0xffe0ffff);
+        graphics.text("ArpeggiGator", 45, 156, 94, 18, 12.0);
 
         draw_turntable(graphics, 34, 140, active, now_ms, 0xffff2050);
         draw_turntable(graphics, 118, 140, active, now_ms, 0xff00e5ff);
@@ -289,65 +338,169 @@ unsafe fn draw_turntable(
 unsafe fn draw_dj_gator(graphics: &mut Graphics, active: bool, now_ms: u64) {
     unsafe {
         let bob = if active {
-            [0, -1, -2, -1, 0, 1, 2, 1][((now_ms / 120) % 8) as usize]
+            [0, -2, -3, -1, 0, 2, 3, 1][((now_ms / 110) % 8) as usize]
         } else {
             0
         };
 
-        let gx = 68;
-        let gy = 100 + bob;
+        let gx = 60;
+        let gy = 78 + bob;
 
+        // Torso / DJ body behind booth (y: gy + 38 to 68)
         graphics.colour(INK);
-        graphics.rect(gx + 6, gy + 32, 28, 15);
+        graphics.rect(gx + 6, gy + 38, 44, 28);
         graphics.colour(SHADOW);
-        graphics.rect(gx + 8, gy + 34, 24, 13);
+        graphics.rect(gx + 8, gy + 40, 40, 25);
         graphics.colour(GREEN);
-        graphics.rect(gx + 10, gy + 35, 20, 10);
+        graphics.rect(gx + 10, gy + 41, 36, 23);
 
-        graphics.colour(INK);
-        graphics.rect(gx + 8, gy + 12, 28, 22);
-        graphics.rect(gx + 22, gy + 18, 18, 14);
+        // Gator chest / belly scutes (yellowish green)
+        graphics.colour(LIME);
+        graphics.rect(gx + 22, gy + 42, 14, 21);
+        graphics.colour(MID);
+        for row in 0..4 {
+            graphics.rect(gx + 23, gy + 46 + (row * 4), 12, 1);
+        }
 
-        graphics.colour(GREEN);
-        graphics.rect(gx + 10, gy + 14, 24, 18);
-        graphics.rect(gx + 22, gy + 20, 16, 10);
-
-        graphics.colour(HIGHLIGHT);
-        graphics.rect(gx + 12, gy + 14, 14, 3);
-        graphics.rect(gx + 24, gy + 20, 10, 2);
-
-        graphics.colour(0xff7b1fa2);
-        graphics.rect(gx + 14, gy + 19, 18, 6);
-        graphics.colour(0xffe1bee7);
-        graphics.rect(gx + 16, gy + 20, 4, 2);
-        graphics.rect(gx + 24, gy + 20, 4, 2);
-
-        graphics.colour(INK);
-        graphics.rect(gx + 24, gy + 28, 14, 2);
+        // Gold chain with 'G' pendant
+        graphics.colour(GOLD);
+        graphics.rect(gx + 18, gy + 40, 2, 6);
+        graphics.rect(gx + 38, gy + 40, 2, 6);
+        graphics.rect(gx + 20, gy + 45, 18, 2);
+        graphics.rect(gx + 27, gy + 47, 5, 5);
         graphics.colour(CREAM);
-        graphics.rect(gx + 26, gy + 27, 3, 2);
-        graphics.rect(gx + 32, gy + 27, 3, 2);
+        graphics.rect(gx + 28, gy + 48, 3, 3);
 
-        graphics.colour(0xffd50000);
-        graphics.rect(gx + 8, gy + 8, 24, 4);
-        graphics.rect(gx + 6, gy + 10, 4, 8);
-        graphics.rect(gx + 6, gy + 16, 5, 10);
-        graphics.colour(0xffff5252);
-        graphics.rect(gx + 7, gy + 18, 3, 6);
-
-        let scratch_offset = if active { ((now_ms / 100) % 3) as i32 - 1 } else { 0 };
+        // Head and snout outline
         graphics.colour(INK);
-        graphics.rect(gx - 10 + scratch_offset, gy + 36, 12, 6);
-        graphics.colour(GREEN);
-        graphics.rect(gx - 9 + scratch_offset, gy + 37, 10, 4);
+        graphics.rect(gx + 10, gy + 12, 36, 28);
+        graphics.rect(gx + 32, gy + 20, 32, 18);
+        graphics.rect(gx + 58, gy + 18, 6, 4);
 
-        let pump_y = gy + (if active { -4 + bob } else { 2 });
-        graphics.colour(INK);
-        graphics.rect(gx + 36, pump_y + 12, 8, 12);
+        // Green head body
+        graphics.colour(SHADOW);
+        graphics.rect(gx + 12, gy + 14, 32, 24);
+        graphics.rect(gx + 34, gy + 22, 28, 15);
+        graphics.rect(gx + 59, gy + 19, 4, 3);
         graphics.colour(GREEN);
-        graphics.rect(gx + 37, pump_y + 13, 6, 10);
+        graphics.rect(gx + 14, gy + 16, 28, 20);
+        graphics.rect(gx + 34, gy + 21, 27, 13);
+        graphics.rect(gx + 59, gy + 19, 4, 3);
+
+        // Highlights on crown and snout
         graphics.colour(HIGHLIGHT);
-        graphics.rect(gx + 39, pump_y + 9, 3, 5);
+        graphics.rect(gx + 16, gy + 16, 22, 3);
+        graphics.rect(gx + 36, gy + 21, 22, 2);
+        graphics.rect(gx + 59, gy + 19, 3, 2);
+
+        // Nostril
+        graphics.colour(INK);
+        graphics.rect(gx + 59, gy + 21, 3, 2);
+
+        // Mouth & sharp teeth
+        graphics.colour(INK);
+        graphics.rect(gx + 32, gy + 32, 30, 2);
+        graphics.colour(CREAM);
+        graphics.rect(gx + 36, gy + 30, 3, 3);
+        graphics.rect(gx + 42, gy + 30, 3, 4);
+        graphics.rect(gx + 48, gy + 30, 3, 3);
+        graphics.rect(gx + 54, gy + 30, 3, 4);
+        graphics.rect(gx + 60, gy + 30, 2, 3);
+
+        if active {
+            // Mouth slightly open to the beat
+            graphics.colour(INK);
+            graphics.rect(gx + 34, gy + 33, 28, 4);
+            graphics.colour(PINK);
+            graphics.rect(gx + 38, gy + 34, 18, 2);
+            graphics.colour(CREAM);
+            graphics.rect(gx + 38, gy + 35, 2, 2);
+            graphics.rect(gx + 44, gy + 35, 2, 2);
+            graphics.rect(gx + 50, gy + 35, 2, 2);
+            graphics.rect(gx + 56, gy + 35, 2, 2);
+            graphics.colour(MID);
+            graphics.rect(gx + 34, gy + 37, 28, 2);
+        }
+
+        // DJ Cyber Visor / Sunglasses
+        graphics.colour(INK);
+        graphics.rect(gx + 18, gy + 22, 26, 9);
+        graphics.colour(0xff7b1fa2);
+        graphics.rect(gx + 19, gy + 23, 24, 7);
+        // Glint animation
+        let glint_x = gx + 20 + if active { ((now_ms / 120) % 5) as i32 * 4 } else { 8 };
+        graphics.colour(0xffffffff);
+        graphics.rect(glint_x, gy + 24, 3, 5);
+        graphics.colour(0xff00ffff);
+        graphics.rect(glint_x - 1, gy + 25, 1, 3);
+        graphics.rect(glint_x + 3, gy + 25, 1, 3);
+
+        // Big Over-Ear Red DJ Headphones
+        graphics.colour(INK);
+        graphics.rect(gx + 10, gy + 6, 36, 8);
+        graphics.colour(0xff990000);
+        graphics.rect(gx + 12, gy + 8, 32, 4);
+        graphics.colour(0xffff3355);
+        graphics.rect(gx + 14, gy + 8, 26, 2);
+
+        // Left headphone ear-cup
+        graphics.colour(INK);
+        graphics.rect(gx + 6, gy + 14, 10, 20);
+        graphics.colour(0xff990000);
+        graphics.rect(gx + 7, gy + 15, 8, 18);
+        graphics.colour(0xffff1a35);
+        graphics.rect(gx + 8, gy + 17, 6, 14);
+        graphics.colour(0xffff8090);
+        graphics.rect(gx + 9, gy + 18, 3, 10);
+
+        // Right headphone ear-cup tip
+        graphics.colour(INK);
+        graphics.rect(gx + 44, gy + 14, 6, 12);
+        graphics.colour(0xffff1a35);
+        graphics.rect(gx + 45, gy + 15, 4, 10);
+
+        // Left arm: Pumping the crowd / hyping the club in the air (far away from snout)
+        let pump_dy = if active {
+            [-4, -7, -9, -7, -4, -1, 1, 0][((now_ms / 100) % 8) as usize]
+        } else {
+            0
+        };
+        let hand_y = gy + 16 + pump_dy;
+
+        // Left bicep / arm rising
+        graphics.colour(INK);
+        graphics.rect(gx - 6, gy + 30, 12, 16);
+        graphics.colour(GREEN);
+        graphics.rect(gx - 5, gy + 31, 10, 14);
+
+        // Fist and claws in the air
+        graphics.colour(INK);
+        graphics.rect(gx - 14, hand_y, 14, 16);
+        graphics.colour(GREEN);
+        graphics.rect(gx - 13, hand_y + 1, 12, 14);
+        graphics.colour(HIGHLIGHT);
+        graphics.rect(gx - 12, hand_y + 2, 4, 10);
+        graphics.colour(CREAM);
+        graphics.rect(gx - 13, hand_y - 2, 3, 3);
+        graphics.rect(gx - 9, hand_y - 3, 3, 4);
+        graphics.rect(gx - 5, hand_y - 2, 3, 3);
+
+        // Right arm: Mixing and scratching the vinyl / fader below the snout
+        let scratch_dx = if active { ((now_ms / 80) % 4) as i32 - 1 } else { 0 };
+        graphics.colour(INK);
+        graphics.rect(gx + 44, gy + 42, 14, 12);
+        graphics.colour(GREEN);
+        graphics.rect(gx + 45, gy + 43, 12, 10);
+
+        // Hand & claws on turntable platter / mixer
+        graphics.colour(INK);
+        graphics.rect(gx + 50 + scratch_dx, gy + 53, 16, 7);
+        graphics.colour(GREEN);
+        graphics.rect(gx + 51 + scratch_dx, gy + 54, 14, 5);
+        graphics.colour(CREAM);
+        graphics.rect(gx + 51 + scratch_dx, gy + 57, 3, 2);
+        graphics.rect(gx + 55 + scratch_dx, gy + 57, 3, 2);
+        graphics.rect(gx + 59 + scratch_dx, gy + 57, 3, 2);
     }
 }
 

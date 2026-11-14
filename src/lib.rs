@@ -158,35 +158,42 @@ impl ArpeggiGator {
         }
     }
 
+    fn reset_engine_state(&mut self) {
+        self.enabled = false;
+        self.mode = EngineMode::Off;
+        #[cfg(feature = "emulator-audio")]
+        native_audio::set_mode(EngineMode::Off);
+        self.engine.clear();
+        self.melody_engine.clear();
+        PREVIEW_STATE.store(0, Ordering::Release);
+        lighting::restore_pad_rgbs();
+        self.led_mask = 0;
+    }
+
     fn sync_navigation(&mut self, sample_page: bool, chop_mode: bool) {
         if sample_page {
             if self.current_screen != Screen::Sample {
                 self.current_screen = Screen::Sample;
                 self.in_16_levels = false;
-                lighting::restore_pad_rgbs();
-                self.led_mask = 0;
+                self.reset_engine_state();
             }
             if chop_mode {
                 self.in_16_levels = false;
+                self.reset_engine_state();
             }
             if lighting::has_native_lighting() {
                 let native_16_levels = lighting::is_16_levels_lit();
                 if self.in_16_levels != native_16_levels {
                     self.in_16_levels = native_16_levels;
                     if !native_16_levels {
-                        self.enabled = false;
-                        self.engine.clear();
-                        PREVIEW_STATE.store(0, Ordering::Release);
-                        lighting::restore_pad_rgbs();
-                        self.led_mask = 0;
+                        self.reset_engine_state();
                     }
                 }
             }
         } else {
             self.current_screen = Screen::Other;
             self.in_16_levels = false;
-            lighting::restore_pad_rgbs();
-            self.led_mask = 0;
+            self.reset_engine_state();
         }
     }
 }
@@ -256,15 +263,7 @@ impl Mod for ArpeggiGator {
                     self.in_16_levels = entering;
                     action = if entering { 4 } else { 5 };
                     if !entering {
-                        self.enabled = false;
-                        self.mode = EngineMode::Off;
-                        #[cfg(feature = "emulator-audio")]
-                        native_audio::set_mode(EngineMode::Off);
-                        self.engine.clear();
-                        self.melody_engine.clear();
-                        PREVIEW_STATE.store(0, Ordering::Release);
-                        lighting::restore_pad_rgbs();
-                        self.led_mask = 0;
+                        self.reset_engine_state();
                     }
                 }
             }
@@ -277,15 +276,13 @@ impl Mod for ArpeggiGator {
         {
             self.current_screen = Screen::Other;
             self.in_16_levels = false;
-            lighting::restore_pad_rgbs();
-            self.led_mask = 0;
+            self.reset_engine_state();
             ButtonFlow::Forward
         } else if event.pressed && event.code == BUTTON_SAMPLE {
             if self.current_screen == Screen::Other {
                 self.current_screen = Screen::Sample;
                 self.in_16_levels = false;
-                lighting::restore_pad_rgbs();
-                self.led_mask = 0;
+                self.reset_engine_state();
             }
             ButtonFlow::Forward
         } else {
@@ -396,8 +393,7 @@ impl Mod for ArpeggiGator {
             if matches!(event.pad, 4 | 7 | 8 | 10 | 11 | 13 | 15) {
                 self.current_screen = Screen::Other;
                 self.in_16_levels = false;
-                lighting::restore_pad_rgbs();
-                self.led_mask = 0;
+                self.reset_engine_state();
             }
         }
         if !self.enabled || !self.is_16_levels_active() {
@@ -409,10 +405,18 @@ impl Mod for ArpeggiGator {
             }
             match event.action {
                 PadAction::Press => {
-                    self.engine.press(pad, event.velocity);
+                    if self.mode == EngineMode::Melody {
+                        self.melody_engine.press(pad, event.velocity);
+                    } else {
+                        self.engine.press(pad, event.velocity);
+                    }
                 }
                 PadAction::Release => {
-                    self.engine.release(pad);
+                    if self.mode == EngineMode::Melody {
+                        self.melody_engine.release(pad);
+                    } else {
+                        self.engine.release(pad);
+                    }
                     if self.enabled && self.is_16_levels_active() {
                         return PadFlow::Consume;
                     }
@@ -485,6 +489,7 @@ impl Mod for ArpeggiGator {
             splash::draw_arp_overlay(
                 graphics,
                 show_shift_menu,
+                self.enabled,
                 self.mode,
                 b2_label,
                 b3_label,
@@ -875,6 +880,62 @@ mod animation_input_tests {
         assert!(!module.enabled);
         assert_eq!(PREVIEW_STATE.load(Ordering::Acquire), 0);
 
+        lighting::reset_lighting();
+    }
+
+    #[test]
+    fn melody_mode_navigating_away_and_returning_to_16_levels_resets_cleanly() {
+        let _guard = INPUT_TEST_LOCK.lock().unwrap();
+        lighting::reset_lighting();
+        let mut module = ArpeggiGator::default();
+        module.on_start();
+
+        // 1. Enter 16 Levels
+        module.on_button(button_ev(button::LEVELS, true, false));
+        assert!(module.is_16_levels_active());
+
+        // 2. Turn on Melody Mode (2x SHIFT+B1)
+        module.on_button(button_ev(BUTTON_B1, true, true));
+        module.on_button(button_ev(BUTTON_B1, false, true));
+        module.on_button(button_ev(BUTTON_B1, true, true));
+        module.on_button(button_ev(BUTTON_B1, false, true));
+        assert_eq!(module.mode, EngineMode::Melody);
+        assert!(module.enabled);
+
+        // 3. User navigates away to another screen (e.g. SEQ button)
+        module.on_button(button_ev(BUTTON_SEQ, true, false));
+        assert_eq!(module.current_screen, Screen::Other);
+        assert!(!module.is_16_levels_active());
+        assert!(!module.enabled);
+        assert_eq!(module.mode, EngineMode::Off);
+        assert_eq!(PREVIEW_STATE.load(Ordering::Acquire), 0);
+
+        // 4. User navigates back to SAMPLE screen
+        module.on_button(button_ev(BUTTON_SAMPLE, true, false));
+        assert_eq!(module.current_screen, Screen::Sample);
+        assert!(!module.is_16_levels_active());
+        assert!(!module.enabled);
+        assert_eq!(module.mode, EngineMode::Off);
+
+        // 5. User re-enters 16 Levels
+        module.on_button(button_ev(button::LEVELS, true, false));
+        assert!(module.is_16_levels_active());
+        // Clean initial state: not enabled, mode is OFF!
+        assert!(!module.enabled);
+        assert_eq!(module.mode, EngineMode::Off);
+
+        // 6. User presses SHIFT: mode must still be Off (no phantom gator!)
+        SHIFT_ACTIVE.store(true, Ordering::Release);
+        assert_eq!(module.mode, EngineMode::Off);
+        assert!(!module.enabled);
+
+        // 7. Pressing SHIFT+B1 cleanly turns on ARP mode first
+        module.on_button(button_ev(BUTTON_B1, true, true));
+        module.on_button(button_ev(BUTTON_B1, false, true));
+        assert_eq!(module.mode, EngineMode::Arp);
+        assert!(module.enabled);
+
+        SHIFT_ACTIVE.store(false, Ordering::Release);
         lighting::reset_lighting();
     }
 }
