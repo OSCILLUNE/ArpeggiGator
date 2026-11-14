@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Update only ArpeggiGator's autorun library on the running emulator card."""
+import argparse
 import hashlib
 import importlib.util
 from pathlib import Path
@@ -7,6 +8,10 @@ import subprocess
 import sys
 import zipfile
 
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument('--audio-lab', action='store_true',
+                    help='install the experimental audio build on the virtual MPC card')
+args = parser.parse_args()
 root = Path(__file__).resolve().parents[1]
 lab_path = Path.home() / 'Downloads/virtual-mpc-sample/lab.py'
 if not lab_path.is_file():
@@ -19,6 +24,8 @@ package = root / 'build/arpeggigator.zip'
 with zipfile.ZipFile(package) as archive:
     library = archive.read('autorun/arpeggigator.so')
     script = archive.read('autorun/autorun.sh')
+if args.audio_lab:
+    library = (root / 'build/audio-lab/arpeggigator-audio-lab.so').read_bytes()
 digest = hashlib.sha256(library).hexdigest()
 script_digest = hashlib.sha256(script).hexdigest()
 ssh = ['ssh', *lab.ssh_base(), 'root@' + lab.HOST]

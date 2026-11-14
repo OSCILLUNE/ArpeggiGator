@@ -119,7 +119,11 @@ esac
 mkdir -p "$output_dir"
 
 echo "== cargo build ($package) =="
-cargo build --release --manifest-path "$manifest" --target "$target" -p "$package" --lib
+set -- --release --manifest-path "$manifest" --target "$target" -p "$package" --lib
+if [ -n "${MPC_MOD_FEATURES:-}" ]; then
+    set -- "$@" --features "$MPC_MOD_FEATURES"
+fi
+cargo build "$@"
 
 meta=$(cargo metadata --format-version 1 --manifest-path "$manifest")
 plan=$(printf '%s' "$meta" | python3 -c '

@@ -138,11 +138,28 @@ fn restore(event: &mut [u8], saved: Saved) {
     event[EVENT_NOTE] = saved.note;
 }
 
+/// Scalar information from a physical pad call currently on this thread.
+///
+/// No firmware addresses are retained. `pitch` is present only if the app's
+/// 16 Levels pitch setter ran within the current physical pad call.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct PhysicalPad {
+    /// Physical pad index reported by the current pad-on callback.
+    pub pad: i32,
+    /// Velocity supplied to the physical pad-on callback.
+    pub velocity: f32,
+    /// The actual pitch offset forwarded to the app, when observed.
+    pub pitch: Option<i32>,
+}
+
 /// One note event, decoded and ready to be replayed.
 ///
 /// The mod reads the fields, optionally calls [`NoteEvent::replay_as_pad`], and
 /// returns [`crate::NoteFlow`]; the SDK forwards and restores the event.
 pub struct NoteEvent<'event> {
+    /// Physical pad information only when this event is synchronously nested
+    /// inside the app's current pad-on call on the same thread.
+    pub physical_pad: Option<PhysicalPad>,
     /// The app's `this` pointer.
     pub app: usize,
     /// The context the app passed with the event.
@@ -205,6 +222,7 @@ impl<'event> NoteEvent<'event> {
             (0, 0)
         };
         Self {
+            physical_pad: None,
             app,
             context,
             event,

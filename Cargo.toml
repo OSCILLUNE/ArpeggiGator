@@ -6,6 +6,9 @@ rust-version = "1.97"
 description = "Standalone arpeggiator mod for the AKAI MPC Sample"
 repository = "https://github.com/OSCILLUNE/ArpeggiGator"
 
+[features]
+emulator-audio = []
+
 [lib]
 crate-type = ["cdylib", "rlib"]
 

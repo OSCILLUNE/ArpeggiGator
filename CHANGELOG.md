@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.0.2.0
+
+- Add an opt-in emulator audio build with native pad playback, pattern and rate selection, and HOLD.
+- Record generated notes with SEQ RECORD and play them alongside live arpeggios.
+- Allow the emulator audio build to persist on the existing autorun card.
+- Audio is experimental and disabled in the standard hardware package. An unavailable sequence tempo prevents playback; transport phase and additional notes remain unfinished.
+
 ## 0.0.1.6
 
 - Add an optional real-time MIDI interceptor to the vendored SDK; ordinary MIDI retains its existing path.

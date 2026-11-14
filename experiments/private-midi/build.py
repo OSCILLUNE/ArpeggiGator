@@ -62,10 +62,23 @@ pub static g_poc_events: AtomicU32 = AtomicU32::new(0);
 pub static g_poc_last: AtomicU32 = AtomicU32::new(0);
 #[unsafe(no_mangle)]
 pub static g_poc_during_block: AtomicU32 = AtomicU32::new(0);
+#[unsafe(no_mangle)]
+pub static g_poc_pad: AtomicU32 = AtomicU32::new(0);
+#[unsafe(no_mangle)]
+pub static g_poc_pitch: AtomicU32 = AtomicU32::new(0);
+#[unsafe(no_mangle)]
+pub static g_poc_pad_count: AtomicU32 = AtomicU32::new(0);
 static POC_BLOCK_REQUEST: AtomicBool = AtomicBool::new(false);
 static POC_BLOCK_ACTIVE: AtomicBool = AtomicBool::new(false);
 static SHIFT_ACTIVE:""")
     data = replace_once(data, '#[derive(Default)]\nstruct ArpeggiGator', """fn poc_intercept(event: &mut mpc_sample_sdk::NoteEvent<'_>) -> Option<mpc_sample_sdk::NoteFlow> {
+    if event.note_on {
+        if let Some(pad) = event.physical_pad {
+            g_poc_pad.store(pad.pad as u32, Ordering::Release);
+            g_poc_pitch.store(pad.pitch.unwrap_or(i32::MIN) as u32, Ordering::Release);
+            g_poc_pad_count.fetch_add(1, Ordering::AcqRel);
+        }
+    }
     // This identifier and mapping are only valid for the measured emulator.
     if event.source != 0x60ec_0937 || !event.note_on || (event.note != 36 && event.note != 35) {
         return None;

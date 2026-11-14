@@ -1,10 +1,12 @@
 //! ArpeggiGator — standalone arpeggiator mod for AKAI MPC Sample 1.3.0.12.
 //!
 //! The GUI prototype keeps native Sample and 16 Levels screens intact, replacing
-//! softkey captions only while SHIFT is held. Generated pad retriggers remain
-//! gated until input lifetimes and UI-thread dispatch are validated.
+//! softkey captions only while SHIFT is held. The opt-in emulator build
+//! runs generated pad retriggers on the native audio thread.
 
 mod arp;
+#[cfg(feature = "emulator-audio")]
+mod native_audio;
 mod playback;
 mod probe;
 mod scheduler;
@@ -65,6 +67,8 @@ fn observe_surface(event: SurfaceEvent) {
         (0x90, 1..) => {
             let was_down = PHYSICAL_PADS.fetch_or(bit, Ordering::AcqRel) & bit != 0;
             if !was_down {
+                #[cfg(feature = "emulator-audio")]
+                native_audio::begin_press(pad as usize);
                 let _ = PREVIEW_STATE.fetch_update(Ordering::AcqRel, Ordering::Acquire, |state| {
                     (state & PREVIEW_ENABLED != 0).then_some(if state & HOLD_ENABLED != 0 {
                         state ^ bit
@@ -110,6 +114,8 @@ impl Mod for ArpeggiGator {
         PHYSICAL_PADS.store(0, Ordering::Release);
         SHIFT_ACTIVE.store(false, Ordering::Release);
         tempo::start_monitor();
+        #[cfg(feature = "emulator-audio")]
+        native_audio::install();
         // SAFETY: repaint_component returns only the live component last
         // recorded by the SDK paint hook, or zero when none is available.
         unsafe { draw::start_repaint_pump(repaint_component) };
@@ -117,6 +123,11 @@ impl Mod for ArpeggiGator {
 
     fn on_button(&mut self, event: ButtonEvent) -> ButtonFlow {
         let mut action = 0;
+        #[cfg(feature = "emulator-audio")]
+        if event.pressed && matches!(event.code, 81 | 6 | 7) {
+            // STOP, SAMPLE and SEQ discard the current selection.
+            PREVIEW_STATE.fetch_and(!PAD_MASK, Ordering::AcqRel);
+        }
         if event.code == button::SHIFT {
             SHIFT_ACTIVE.store(event.pressed, Ordering::Release);
             DASHBOARD_REFRESH_UNTIL_MS.store(clock::now_ms() + 500, Ordering::Release);
@@ -179,7 +190,10 @@ impl Mod for ArpeggiGator {
                 ButtonFlow::Consume
             } else if bit == 2 {
                 self.consumed_buttons |= bit;
-                self.engine.cycle_pattern();
+                let pattern = self.engine.cycle_pattern();
+                #[cfg(feature = "emulator-audio")]
+                native_audio::set_pattern(pattern);
+                let _ = pattern;
                 action = 3;
                 ButtonFlow::Consume
             } else {
@@ -209,9 +223,16 @@ impl Mod for ArpeggiGator {
         }
         let rate = self.scheduler.rate().shifted(event.delta);
         if self.scheduler.set_rate(rate) {
+            #[cfg(feature = "emulator-audio")]
+            native_audio::set_rate(rate);
             DASHBOARD_REFRESH_UNTIL_MS.store(clock::now_ms() + 500, Ordering::Release);
         }
         EncoderFlow::Consume
+    }
+
+    #[cfg(feature = "emulator-audio")]
+    fn note_interceptor(&self) -> Option<mpc_sample_sdk::NoteInterceptor> {
+        Some(native_audio::capture)
     }
 
     fn surface_observer(&self) -> Option<fn(SurfaceEvent)> {

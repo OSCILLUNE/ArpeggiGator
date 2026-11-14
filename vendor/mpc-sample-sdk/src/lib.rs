@@ -46,3 +46,4 @@ pub use event::{
     SurfaceFlow, erase, shift,
 };
 pub use loader::{InstallError, install};
+pub use midi::PhysicalPad;

@@ -4,7 +4,10 @@
 //! forwards the app's own displaced function or swallows the event.  The
 //! originals are stored here and never leave this module.
 
-use core::sync::atomic::{AtomicBool, Ordering};
+use core::{
+    cell::Cell,
+    sync::atomic::{AtomicBool, Ordering},
+};
 
 use crate::draw::{self, Graphics, Repaint};
 use crate::event::{
@@ -291,6 +294,41 @@ unsafe extern "C" fn data(surface: usize, delta: i32) {
     }
 }
 
+// Only scalar pad information is kept, and only while the app's current
+// synchronous pad-on call is active on this thread. Nested calls restore the
+// previous scope; no input, properties, screen, or engine pointers are saved.
+thread_local! {
+    static CURRENT_PHYSICAL_PAD: Cell<Option<midi::PhysicalPad>> = const { Cell::new(None) };
+}
+
+struct PhysicalPadScope(Option<midi::PhysicalPad>);
+
+impl PhysicalPadScope {
+    fn enter(pad: i32, velocity: f32) -> Self {
+        let previous = CURRENT_PHYSICAL_PAD.replace(Some(midi::PhysicalPad {
+            pad,
+            velocity,
+            pitch: None,
+        }));
+        Self(previous)
+    }
+}
+
+impl Drop for PhysicalPadScope {
+    fn drop(&mut self) {
+        CURRENT_PHYSICAL_PAD.set(self.0);
+    }
+}
+
+fn remember_physical_pitch(pitch: i32) {
+    CURRENT_PHYSICAL_PAD.with(|slot| {
+        slot.set(slot.get().map(|mut pad| {
+            pad.pitch = Some(pitch);
+            pad
+        }));
+    });
+}
+
 /// A pad press: let the mod decide, then forward.
 ///
 /// # Safety
@@ -317,6 +355,8 @@ unsafe extern "C" fn note_on(
         unsafe {
             if let Some(forward) = original::<unsafe extern "C" fn(usize, i32, i32, usize, f32)>(3)
             {
+                let _scope = crate::loader::note_interceptor()
+                    .map(|_| PhysicalPadScope::enter(pad, velocity));
                 forward(input, source, pad, properties, velocity);
             }
         }
@@ -414,6 +454,9 @@ unsafe extern "C" fn cc(event: usize, raw: u32, low: f32, range: f32) {
 /// The app calls this with its own arguments.
 unsafe extern "C" fn pitch(app: usize, a: u64, b: u64, applied: i32) {
     let offset = with_mod(|module| module.on_pitch(applied)).unwrap_or(applied);
+    if crate::loader::note_interceptor().is_some() {
+        remember_physical_pitch(offset);
+    }
     // SAFETY: the original is the app's own setter.
     unsafe {
         if let Some(forward) = original::<unsafe extern "C" fn(usize, u64, u64, i32)>(7) {
@@ -549,7 +592,11 @@ unsafe extern "C" fn note(app: usize, context: usize, event: *mut u8, source: us
     };
     // SAFETY: the site supplies the app's own displaced pitch setter.
     let mut message = unsafe { NoteEvent::new(app, context, storage, source as u64, pitch_off) };
-    let flow = choose_note_flow(&mut message, crate::loader::note_interceptor(), |message| {
+    let interceptor = crate::loader::note_interceptor();
+    if interceptor.is_some() {
+        message.physical_pad = CURRENT_PHYSICAL_PAD.get();
+    }
+    let flow = choose_note_flow(&mut message, interceptor, |message| {
         with_mod(|module| module.on_note(message)).unwrap_or(NoteFlow::Forward)
     });
     match flow {
@@ -682,6 +729,16 @@ fn install_paint(base: usize) -> bool {
     true
 }
 
+/// Displaced native dispatcher and pitch setter, when both hooks are installed.
+///
+/// The addresses are firmware functions. Calling them requires a live engine
+/// or property object and the owning firmware context.
+#[must_use]
+pub fn note_trampolines() -> Option<(usize, usize)> {
+    // SAFETY: both indices refer to immutable entries after SDK installation.
+    unsafe { Some((original::<usize>(14)?, original::<usize>(7)?)) }
+}
+
 /// The app's own repaint, for a mod that needs to call it directly.
 #[must_use]
 pub fn repaint_function() -> Option<Repaint> {
@@ -790,7 +847,10 @@ pub unsafe fn send_note_off(input: usize, source: i32, pad: i32) {
 
 #[cfg(test)]
 mod tests {
-    use super::{choose_note_flow, notes_ready, table};
+    use super::{
+        CURRENT_PHYSICAL_PAD, PhysicalPadScope, choose_note_flow, notes_ready,
+        remember_physical_pitch, table,
+    };
     use crate::{NoteEvent, NoteFlow};
 
     fn consume(_event: &mut NoteEvent<'_>) -> Option<NoteFlow> {
@@ -799,6 +859,47 @@ mod tests {
 
     fn ignore(_event: &mut NoteEvent<'_>) -> Option<NoteFlow> {
         None
+    }
+
+    #[test]
+    fn physical_pad_scope_tracks_pitch_and_restores_nested_context() {
+        assert!(CURRENT_PHYSICAL_PAD.get().is_none());
+        {
+            let _outer = PhysicalPadScope::enter(3, 0.75);
+            remember_physical_pitch(-4);
+            let outer = CURRENT_PHYSICAL_PAD.get().unwrap();
+            assert_eq!(
+                (outer.pad, outer.velocity, outer.pitch),
+                (3, 0.75, Some(-4))
+            );
+            {
+                let _inner = PhysicalPadScope::enter(8, 0.5);
+                remember_physical_pitch(6);
+                let inner = CURRENT_PHYSICAL_PAD.get().unwrap();
+                assert_eq!((inner.pad, inner.velocity, inner.pitch), (8, 0.5, Some(6)));
+            }
+            assert_eq!(CURRENT_PHYSICAL_PAD.get(), Some(outer));
+        }
+        assert!(CURRENT_PHYSICAL_PAD.get().is_none());
+    }
+
+    #[test]
+    fn physical_pad_scope_is_thread_local_and_ignores_pitch_outside_scope() {
+        remember_physical_pitch(7);
+        assert!(CURRENT_PHYSICAL_PAD.get().is_none());
+        let _scope = PhysicalPadScope::enter(4, 0.5);
+        std::thread::spawn(|| {
+            assert!(CURRENT_PHYSICAL_PAD.get().is_none());
+            remember_physical_pitch(-2);
+            assert!(CURRENT_PHYSICAL_PAD.get().is_none());
+            let _scope = PhysicalPadScope::enter(9, 1.0);
+            remember_physical_pitch(3);
+            assert_eq!(CURRENT_PHYSICAL_PAD.get().unwrap().pitch, Some(3));
+        })
+        .join()
+        .unwrap();
+        let pad = CURRENT_PHYSICAL_PAD.get().unwrap();
+        assert_eq!((pad.pad, pad.velocity, pad.pitch), (4, 0.5, None));
     }
 
     #[test]
