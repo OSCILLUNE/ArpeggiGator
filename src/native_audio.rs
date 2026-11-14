@@ -76,8 +76,9 @@ impl Default for State {
 
 static mut STATE: Option<State> = None;
 
-pub fn begin_press(pad: usize) {
-    PADS[pad].store(0, Release);
+pub fn begin_press(_pad: usize) {
+    // No-op: capture() atomically stores fresh key bits for each press.
+    // Zeroing PADS here races against capture() if NoteEvent arrives first.
 }
 
 pub fn set_pattern(pattern: Pattern) {
@@ -111,17 +112,13 @@ pub fn capture(event: &mut NoteEvent<'_>) -> Option<NoteFlow> {
     if state & PREVIEW_ENABLED == 0 || tempo::current_bpm().is_none() {
         return None;
     }
-    if state & (1 << index) != 0 {
-        let serial = SERIAL.fetch_add(1, Relaxed).wrapping_add(1);
-        let velocity = (event.velocity.clamp(0.0, 1.0) * f32::from(u16::MAX)).round() as u16;
-        let bits = (u64::from(serial) << 32)
-            | (u64::from(velocity.max(1)) << 16)
-            | (u64::from(pitch as u8) << 8)
-            | u64::from(event.note);
-        PADS[index].store(bits, Release);
-    } else {
-        PADS[index].store(0, Release);
-    }
+    let serial = SERIAL.fetch_add(1, Relaxed).wrapping_add(1);
+    let velocity = (event.velocity.clamp(0.0, 1.0) * f32::from(u16::MAX)).round() as u16;
+    let bits = (u64::from(serial) << 32)
+        | (u64::from(velocity.max(1)) << 16)
+        | (u64::from(pitch as u8) << 8)
+        | u64::from(event.note);
+    PADS[index].store(bits, Release);
     Some(NoteFlow::Consume)
 }
 
@@ -228,15 +225,17 @@ impl State {
             {
                 send(engine, key, false);
             }
-            let pattern = Pattern::ALL[PATTERN.load(Acquire)];
+            let pattern_idx = PATTERN.load(Acquire) % Pattern::ALL.len();
+            let pattern = Pattern::ALL[pattern_idx];
             if self.pattern != pattern {
                 self.playback.set_pattern(pattern);
                 self.pattern = pattern;
             }
-            let off = self.playback.set_rate(StepRate::ALL[RATE.load(Acquire)]);
+            let rate_idx = RATE.load(Acquire) % StepRate::ALL.len();
+            let off = self.playback.set_rate(StepRate::ALL[rate_idx]);
             self.output(engine, off);
             self.playback
-                .set_additional_octaves(ADDITIONAL_OCTAVES.load(Acquire) as u8);
+                .set_additional_octaves((ADDITIONAL_OCTAVES.load(Acquire) % 4) as u8);
             let mut pending = [(0, 0); 16];
             let mut count = 0;
             for (pad, (input, slot)) in self.inputs.iter_mut().zip(&PADS).enumerate() {
@@ -250,12 +249,6 @@ impl State {
                 }
                 if *input != 0 {
                     let off = self.playback.release(pad as u8);
-                    if let Some(key) = self.voice.as_ref() {
-                        if key.note == Key::unpack(*input).note {
-                            let old_key = self.voice.take().unwrap();
-                            send(engine, old_key, false);
-                        }
-                    }
                     if off.is_some()
                         && let Some(key) = self.voice.take()
                     {
@@ -298,13 +291,7 @@ impl State {
                         return;
                     }
                     let mut key = Key::unpack(raw_bits);
-                    if key.velocity == 0 || key.note == 0 {
-                        return;
-                    }
-
-                    // Protect against out-of-bounds MIDI note numbers.
-                    let total_note = i32::from(key.note) + i32::from(step.transpose);
-                    if !(0..=127).contains(&total_note) {
+                    if key.velocity == 0 {
                         return;
                     }
 
