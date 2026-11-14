@@ -346,7 +346,8 @@ mod tests {
             note_on(scheduler.tick(1_000_000, &mut engine)),
             Some(Step {
                 pad: 2,
-                velocity: 0.7
+                velocity: 0.7,
+                transpose: 0,
             })
         );
         assert_eq!(scheduler.tick(1_062_499, &mut engine), [None, None]);
@@ -356,7 +357,8 @@ mod tests {
                 Some(ScheduledEvent::NoteOff { pad: 2 }),
                 Some(ScheduledEvent::NoteOn(Step {
                     pad: 5,
-                    velocity: 0.9
+                    velocity: 0.9,
+                    transpose: 0,
                 }))
             ]
         );
@@ -447,7 +449,8 @@ mod tests {
                 Some(ScheduledEvent::NoteOff { pad: 2 }),
                 Some(ScheduledEvent::NoteOn(Step {
                     pad: 5,
-                    velocity: 0.9
+                    velocity: 0.9,
+                    transpose: 0,
                 }))
             ]
         );

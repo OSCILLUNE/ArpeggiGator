@@ -45,6 +45,11 @@ impl Playback {
         self.engine.set_pattern(pattern);
     }
 
+    /// Append the given number of octave-transposed first notes.
+    pub fn set_additional_octaves(&mut self, octaves: u8) {
+        self.engine.set_additional_octaves(octaves);
+    }
+
     /// Change division. A sounding note must be released before restarting.
     pub fn set_rate(&mut self, rate: StepRate) -> Option<ScheduledEvent> {
         if self.scheduler.rate() == rate {

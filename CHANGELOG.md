@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.0.2.1
+
+- Add up to three octave-transposed notes to emulator audio patterns; all eight patterns include them in their ordering.
+- Prevent SHIFT+pad shortcuts from changing the HOLD selection and retry transient project-tempo read failures.
+- Verify all patterns with two additional notes before and after an emulator reboot; generated Note On and Note Off counts matched.
+- Audio remains experimental and is disabled in the standard hardware package. Transport alignment, recording behaviour, pitch limits and screen-dependent pad lighting remain under investigation.
+
 ## 0.0.2.0
 
 - Add an opt-in emulator audio build with native pad playback, pattern and rate selection, and HOLD.

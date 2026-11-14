@@ -35,6 +35,7 @@ const PREVIEW_ENABLED: u32 = 1 << 16;
 const PAD_MASK: u32 = PREVIEW_ENABLED - 1;
 const HOLD_ENABLED: u32 = 1 << 17;
 static PHYSICAL_PADS: AtomicU32 = AtomicU32::new(0);
+static SHORTCUT_PADS: AtomicU32 = AtomicU32::new(0);
 static PREVIEW_STATE: AtomicU32 = AtomicU32::new(0);
 static SHIFT_ACTIVE: AtomicBool = AtomicBool::new(false);
 
@@ -67,6 +68,10 @@ fn observe_surface(event: SurfaceEvent) {
         (0x90, 1..) => {
             let was_down = PHYSICAL_PADS.fetch_or(bit, Ordering::AcqRel) & bit != 0;
             if !was_down {
+                if SHIFT_ACTIVE.load(Ordering::Acquire) {
+                    SHORTCUT_PADS.fetch_or(bit, Ordering::AcqRel);
+                    return;
+                }
                 #[cfg(feature = "emulator-audio")]
                 native_audio::begin_press(pad as usize);
                 let _ = PREVIEW_STATE.fetch_update(Ordering::AcqRel, Ordering::Acquire, |state| {
@@ -80,6 +85,9 @@ fn observe_surface(event: SurfaceEvent) {
         }
         (0x80, _) | (0x90, 0) => {
             PHYSICAL_PADS.fetch_and(!bit, Ordering::AcqRel);
+            if SHORTCUT_PADS.fetch_and(!bit, Ordering::AcqRel) & bit != 0 {
+                return;
+            }
             let _ = PREVIEW_STATE.fetch_update(Ordering::AcqRel, Ordering::Acquire, |state| {
                 (state & PREVIEW_ENABLED != 0).then_some(if state & HOLD_ENABLED != 0 {
                     state
@@ -112,6 +120,7 @@ impl Mod for ArpeggiGator {
         DASHBOARD_REFRESH_UNTIL_MS.store(0, Ordering::Release);
         PREVIEW_STATE.store(0, Ordering::Release);
         PHYSICAL_PADS.store(0, Ordering::Release);
+        SHORTCUT_PADS.store(0, Ordering::Release);
         SHIFT_ACTIVE.store(false, Ordering::Release);
         tempo::start_monitor();
         #[cfg(feature = "emulator-audio")]
@@ -199,6 +208,8 @@ impl Mod for ArpeggiGator {
             } else {
                 self.consumed_buttons |= bit;
                 self.additional_notes = (self.additional_notes + 1) % 4;
+                #[cfg(feature = "emulator-audio")]
+                native_audio::set_additional_octaves(self.additional_notes);
                 action = 6;
                 ButtonFlow::Consume
             }
@@ -244,6 +255,9 @@ impl Mod for ArpeggiGator {
             return PadFlow::Forward;
         }
         if let Ok(pad) = u8::try_from(event.pad) {
+            if pad < 16 && SHORTCUT_PADS.load(Ordering::Acquire) & (1 << pad) != 0 {
+                return PadFlow::Forward;
+            }
             match event.action {
                 PadAction::Press => {
                     self.engine.press(pad, event.velocity);
@@ -325,6 +339,9 @@ mpc_sample_sdk::export_mod!(ArpeggiGator);
 #[cfg(test)]
 mod animation_input_tests {
     use super::*;
+    use std::sync::Mutex;
+
+    static INPUT_TEST_LOCK: Mutex<()> = Mutex::new(());
 
     fn surface(code: i32, status: u8, velocity: u8) -> SurfaceEvent {
         SurfaceEvent {
@@ -340,6 +357,7 @@ mod animation_input_tests {
 
     #[test]
     fn encoder_controls_rate_only_in_active_arp_without_shift() {
+        let _guard = INPUT_TEST_LOCK.lock().unwrap();
         let mut module = ArpeggiGator::default();
         let turn = EncoderEvent {
             surface: 0,
@@ -362,6 +380,10 @@ mod animation_input_tests {
 
     #[test]
     fn animation_tracks_physical_pads_through_release_and_mode_changes() {
+        let _guard = INPUT_TEST_LOCK.lock().unwrap();
+        SHIFT_ACTIVE.store(false, Ordering::Release);
+        PHYSICAL_PADS.store(0, Ordering::Release);
+        SHORTCUT_PADS.store(0, Ordering::Release);
         PREVIEW_STATE.store(0, Ordering::Release);
         observe_surface(surface(0, 0x99, 100));
         assert_eq!(PREVIEW_STATE.load(Ordering::Acquire) & PAD_MASK, 0);
@@ -395,6 +417,18 @@ mod animation_input_tests {
         observe_surface(surface(1, 0x99, 100));
         observe_surface(surface(1, 0x89, 0));
         assert_eq!(PREVIEW_STATE.load(Ordering::Acquire) & PAD_MASK, 0b1101);
+        // A shortcut must neither toggle an existing latch nor add a new one,
+        // even if SHIFT is released before the pad.
+        SHIFT_ACTIVE.store(true, Ordering::Release);
+        observe_surface(surface(0, 0x99, 100));
+        observe_surface(surface(15, 0x99, 100));
+        assert_eq!(PREVIEW_STATE.load(Ordering::Acquire) & PAD_MASK, 0b1101);
+        assert_eq!(SHORTCUT_PADS.load(Ordering::Acquire), 1 | (1 << 15));
+        SHIFT_ACTIVE.store(false, Ordering::Release);
+        observe_surface(surface(0, 0x89, 0));
+        observe_surface(surface(15, 0x89, 0));
+        assert_eq!(PREVIEW_STATE.load(Ordering::Acquire) & PAD_MASK, 0b1101);
+        assert_eq!(SHORTCUT_PADS.load(Ordering::Acquire), 0);
         PREVIEW_STATE.store(0, Ordering::Release);
     }
 }

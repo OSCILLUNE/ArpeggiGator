@@ -5,7 +5,8 @@ use core::sync::atomic::{AtomicBool, AtomicU32, AtomicU64, AtomicUsize, Ordering
 use mpc_sample_sdk::{NoteEvent, NoteFlow, hook, image, platform::clock};
 
 use crate::{
-    PAD_MASK, PREVIEW_ENABLED, PREVIEW_STATE, Pattern, Playback, ScheduledEvent, StepRate, tempo,
+    PAD_MASK, PREVIEW_ENABLED, PREVIEW_STATE, Pattern, Playback, SHORTCUT_PADS, ScheduledEvent,
+    StepRate, tempo,
 };
 
 const RENDER_OFFSET: usize = 0x18dbcc0;
@@ -25,6 +26,7 @@ static PADS: [AtomicU64; 16] = [const { AtomicU64::new(0) }; 16];
 static SERIAL: AtomicU32 = AtomicU32::new(0);
 static PATTERN: AtomicUsize = AtomicUsize::new(0);
 static RATE: AtomicUsize = AtomicUsize::new(StepRate::Sixteenth as usize);
+static ADDITIONAL_OCTAVES: AtomicUsize = AtomicUsize::new(0);
 
 #[unsafe(no_mangle)]
 static g_arp_audio_on: AtomicU32 = AtomicU32::new(0);
@@ -86,6 +88,10 @@ pub fn set_rate(rate: StepRate) {
     RATE.store(rate as usize, Release);
 }
 
+pub fn set_additional_octaves(octaves: u8) {
+    ADDITIONAL_OCTAVES.store(usize::from(octaves.min(3)), Release);
+}
+
 pub fn capture(event: &mut NoteEvent<'_>) -> Option<NoteFlow> {
     if !READY.load(Acquire)
         || !event.note_on
@@ -97,6 +103,9 @@ pub fn capture(event: &mut NoteEvent<'_>) -> Option<NoteFlow> {
     }
     let pad = event.physical_pad?;
     let index = usize::try_from(pad.pad).ok().filter(|&pad| pad < 16)?;
+    if SHORTCUT_PADS.load(Acquire) & (1 << index) != 0 {
+        return Some(NoteFlow::Consume);
+    }
     let pitch = i8::try_from(pad.pitch?).ok()?;
     let state = PREVIEW_STATE.load(Acquire);
     if state & PREVIEW_ENABLED == 0 || tempo::current_bpm().is_none() {
@@ -219,6 +228,8 @@ impl State {
             }
             let off = self.playback.set_rate(StepRate::ALL[RATE.load(Acquire)]);
             self.output(engine, off);
+            self.playback
+                .set_additional_octaves(ADDITIONAL_OCTAVES.load(Acquire) as u8);
             let mut pending = [(0, 0); 16];
             let mut count = 0;
             for (pad, (input, slot)) in self.inputs.iter_mut().zip(&PADS).enumerate() {
@@ -264,9 +275,12 @@ impl State {
         unsafe {
             match event {
                 Some(ScheduledEvent::NoteOn(step)) => {
-                    let key = Key::unpack(self.inputs[usize::from(step.pad)]);
-                    send(engine, key, true);
-                    self.voice = Some(key);
+                    let mut key = Key::unpack(self.inputs[usize::from(step.pad)]);
+                    if let Some(pitch) = key.pitch.checked_add(step.transpose as i8) {
+                        key.pitch = pitch;
+                        send(engine, key, true);
+                        self.voice = Some(key);
+                    }
                 }
                 Some(ScheduledEvent::NoteOff { .. }) => {
                     if let Some(key) = self.voice.take() {

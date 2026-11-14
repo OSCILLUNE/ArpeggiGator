@@ -42,13 +42,18 @@ pub fn start_monitor() {
 
                 if first_scan || modified != previous_modified {
                     first_scan = false;
-                    previous_modified = modified;
                     match read_current_project_bpm() {
                         Some(bpm) => {
+                            previous_modified = modified;
                             BPM_BITS.store(bpm.to_bits(), Ordering::Release);
                             BPM_VALID.store(true, Ordering::Release);
                         }
-                        None => BPM_VALID.store(false, Ordering::Release),
+                        None => {
+                            // A writer may have been replacing the project during this read.
+                            // Retry even if its timestamp does not change again.
+                            first_scan = true;
+                            BPM_VALID.store(false, Ordering::Release);
+                        }
                     }
                 }
 

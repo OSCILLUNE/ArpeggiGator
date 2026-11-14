@@ -4,7 +4,7 @@
 
 **Standalone arpeggiator mod for the AKAI MPC Sample.**
 
-**Version 0.0.1 — GUI prototype.**
+**Version 0.0.2.1 — experimental emulator audio.**
 
 ArpeggiGator targets stock MPC Sample firmware **1.3.0.12**. It is independent of SampQOL.
 
@@ -28,28 +28,26 @@ The pure Rust engine tracks the held-pad set and strike velocities. Unit tests c
 
 ## Current development status
 
-**GUI prototype — automatic note retriggering is not enabled yet.**
+The opt-in emulator audio build generates arpeggios, including HOLD, rate and pattern selection, and up to three additional octave notes. The standard hardware package does not enable experimental audio.
 
 Committed now:
 - SDK integration pinned to a specific revision.
 - SHIFT+B1/B2/B3 controls scoped to 16 Levels, with temporary custom softkey captions.
-- An on-demand pixel gator overlay when ARP is enabled; ordinary Sample and 16 Levels views remain native.
+- An on-demand pixel gator overlay when ARP is enabled.
 - Eight-pattern engine and host tests.
 - Host-testable timing engine for 1/4, 1/8, 1/8T, 1/16, 1/16T and 1/32 rates, with gate control and paired note events.
-- Read-only BPM discovery from the active working project file; tempo is not currently shown over the MPC controls.
+- Read-only BPM discovery from the active working project file.
+- Experimental native audio retriggering, HOLD and additional octave notes in the opt-in emulator build.
 - Firmware-guarded build/package script and GitHub Actions CI.
 
 Still pending:
-- Connecting the chewing animation to actual arpeggiated note events. The current motion is a visual preview while a source pad is held; this build does not generate arpeggio notes yet.
-- Applying the +0/+1/+2/+3 setting to generated notes; the setting currently changes its softkey label only.
-- Adding the HOLD mode later, after the core arp output works.
-- Connecting the timing engine to native note-on/note-off. Native note trigger functions require live input/property objects on their owning UI thread; deferred properties lifetime and the repaint-to-UI-thread handoff still need emulator validation.
+- Connecting the chewing animation to actual arpeggiated note events; the current motion is a visual preview.
+- Validating the additional-note pitch limits and recording behaviour on the emulator and hardware.
+- Aligning the arpeggiator clock and recording behaviour with the transport and stock NOTE REPEAT.
 - Validation that the temporary project file updates immediately when unsaved sequence or global tempo changes are made.
 - Hardware verification of the clock and note lifecycle.
 
-The goal remains an automatic arpeggiator that works without NOTE REPEAT and follows the active project tempo. No generated notes are emitted until pointer lifetime, tempo freshness and note-off cleanup are proven.
-
-This version is a GUI prototype, not an audible arpeggiator release: it does not yet emit generated notes.
+The emulator audio build is experimental and is not a hardware audio release.
 
 ## Build
 

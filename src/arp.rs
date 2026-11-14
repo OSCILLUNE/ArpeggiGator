@@ -76,6 +76,8 @@ pub struct Step {
     pub pad: u8,
     /// Original strike velocity, normalised to 0.0–1.0.
     pub velocity: f32,
+    /// Transposition above the original pad, in semitones.
+    pub transpose: u8,
 }
 
 #[derive(Clone, Copy, Debug, Default)]
@@ -84,6 +86,12 @@ struct HeldPad {
     pad: u8,
     velocity: f32,
     press_order: u32,
+}
+
+#[derive(Clone, Copy, Default)]
+struct PatternNote {
+    pad: HeldPad,
+    transpose: u8,
 }
 
 /// The arpeggiator's held-pad set and pure pattern sequencer.
@@ -98,6 +106,7 @@ pub struct ArpEngine {
     press_serial: u32,
     random_state: u32,
     previous_random: Option<usize>,
+    additional_octaves: u8,
 }
 
 impl Default for ArpEngine {
@@ -122,6 +131,7 @@ impl ArpEngine {
             press_serial: 0,
             random_state: 0x9e37_79b9,
             previous_random: None,
+            additional_octaves: 0,
         }
     }
 
@@ -141,6 +151,15 @@ impl ArpEngine {
     pub fn cycle_pattern(&mut self) -> Pattern {
         self.set_pattern(self.pattern.next());
         self.pattern
+    }
+
+    /// Add up to three octave-transposed copies of the lowest held pad.
+    pub fn set_additional_octaves(&mut self, octaves: u8) {
+        let octaves = octaves.min(3);
+        if self.additional_octaves != octaves {
+            self.additional_octaves = octaves;
+            self.reset_cycle();
+        }
     }
 
     /// Add a held pad. Repeated press updates velocity without changing
@@ -195,10 +214,13 @@ impl ArpEngine {
 
     /// Return the next pad in the current pattern, or None when no pad is held.
     pub fn next_step(&mut self) -> Option<Step> {
-        let mut pads = [HeldPad::default(); 16];
+        let mut pads = [PatternNote::default(); 19];
         let mut count = 0;
         for held in self.held.iter().copied().filter(|held| held.active) {
-            pads[count] = held;
+            pads[count] = PatternNote {
+                pad: held,
+                transpose: 0,
+            };
             count += 1;
         }
         if count == 0 {
@@ -206,27 +228,41 @@ impl ArpEngine {
             return None;
         }
 
+        let root = pads[..count].iter().min_by_key(|note| note.pad.pad)?.pad;
+        for octave in 1..=self.additional_octaves {
+            pads[count] = PatternNote {
+                pad: root,
+                transpose: octave * 12,
+            };
+            count += 1;
+        }
         let active = &mut pads[..count];
         if self.pattern == Pattern::Played {
-            active.sort_by_key(|pad| pad.press_order);
+            active.sort_by_key(|note| (note.transpose != 0, note.pad.press_order, note.transpose));
         } else {
-            active.sort_by_key(|pad| pad.pad);
+            active.sort_by_key(|note| {
+                (
+                    u16::from(note.pad.pad) + u16::from(note.transpose),
+                    note.transpose,
+                )
+            });
         }
-
+        let pattern_position = self.cursor as usize;
         let step_index = match self.pattern {
-            Pattern::Up | Pattern::Played => self.cursor as usize % count,
-            Pattern::Down => count - 1 - (self.cursor as usize % count),
-            Pattern::UpDown => bounce_up(self.cursor as usize, count),
-            Pattern::DownUp => bounce_down(self.cursor as usize, count),
-            Pattern::Converge => converge(self.cursor as usize, count),
-            Pattern::Diverge => diverge(self.cursor as usize, count),
+            Pattern::Up | Pattern::Played => pattern_position % count,
+            Pattern::Down => count - 1 - (pattern_position % count),
+            Pattern::UpDown => bounce_up(pattern_position, count),
+            Pattern::DownUp => bounce_down(pattern_position, count),
+            Pattern::Converge => converge(pattern_position, count),
+            Pattern::Diverge => diverge(pattern_position, count),
             Pattern::Random => self.random_index(count),
         };
         self.cursor = self.cursor.wrapping_add(1);
         let selected = active[step_index];
         Some(Step {
-            pad: selected.pad,
-            velocity: selected.velocity,
+            pad: selected.pad.pad,
+            velocity: selected.pad.velocity,
+            transpose: selected.transpose,
         })
     }
 
@@ -353,6 +389,120 @@ mod tests {
     fn played_pattern_preserves_press_order() {
         let mut engine = engine_with_pads(Pattern::Played, &[7, 1, 12]);
         assert_eq!(sequence(&mut engine, 3), [7, 1, 12]);
+    }
+
+    #[test]
+    fn additional_notes_follow_the_first_note_at_octave_intervals() {
+        let mut engine = engine_with_pads(Pattern::Up, &[1, 0]);
+        engine.set_additional_octaves(3);
+        let steps: Vec<_> = (0..9)
+            .map(|_| {
+                let step = engine.next_step().unwrap();
+                (step.pad, step.transpose)
+            })
+            .collect();
+        assert_eq!(
+            steps,
+            [
+                (0, 0),
+                (1, 0),
+                (0, 12),
+                (0, 24),
+                (0, 36),
+                (0, 0),
+                (1, 0),
+                (0, 12),
+                (0, 24)
+            ]
+        );
+        engine.set_additional_octaves(0);
+        assert_eq!(engine.next_step().unwrap().transpose, 0);
+    }
+
+    #[test]
+    fn bouncing_pattern_includes_added_notes() {
+        let mut engine = engine_with_pads(Pattern::UpDown, &[0, 1, 2]);
+        engine.set_additional_octaves(1);
+        let steps: Vec<_> = (0..8)
+            .map(|_| {
+                let step = engine.next_step().unwrap();
+                (step.pad, step.transpose)
+            })
+            .collect();
+        assert_eq!(
+            steps,
+            [
+                (0, 0),
+                (1, 0),
+                (2, 0),
+                (0, 12),
+                (2, 0),
+                (1, 0),
+                (0, 0),
+                (1, 0)
+            ]
+        );
+    }
+
+    #[test]
+    fn additional_note_count_controls_the_number_of_appended_steps() {
+        for extra in 1..=3 {
+            let mut engine = engine_with_pads(Pattern::Played, &[7, 1]);
+            engine.set_additional_octaves(extra);
+            let steps: Vec<_> = (0..usize::from(extra) + 3)
+                .map(|_| {
+                    let step = engine.next_step().unwrap();
+                    (step.pad, step.transpose)
+                })
+                .collect();
+            assert_eq!(&steps[..2], &[(7, 0), (1, 0)]);
+            for index in 0..extra {
+                assert_eq!(steps[usize::from(index) + 2], (1, (index + 1) * 12));
+            }
+            assert_eq!(steps[usize::from(extra) + 2], (7, 0));
+        }
+    }
+
+    #[test]
+    fn every_pattern_orders_added_notes_as_part_of_the_set() {
+        let cases: &[(Pattern, &[(u8, u8)])] = &[
+            (Pattern::Up, &[(0, 0), (1, 0), (0, 12), (0, 24)]),
+            (Pattern::Down, &[(0, 24), (0, 12), (1, 0), (0, 0)]),
+            (
+                Pattern::UpDown,
+                &[(0, 0), (1, 0), (0, 12), (0, 24), (0, 12), (1, 0)],
+            ),
+            (
+                Pattern::DownUp,
+                &[(0, 24), (0, 12), (1, 0), (0, 0), (1, 0), (0, 12)],
+            ),
+            (Pattern::Converge, &[(0, 0), (0, 24), (1, 0), (0, 12)]),
+            (Pattern::Diverge, &[(1, 0), (0, 12), (0, 0), (0, 24)]),
+            (Pattern::Played, &[(0, 0), (1, 0), (0, 12), (0, 24)]),
+        ];
+        for &(pattern, expected) in cases {
+            let mut engine = engine_with_pads(pattern, &[0, 1]);
+            engine.set_additional_octaves(2);
+            let actual: Vec<_> = (0..expected.len())
+                .map(|_| {
+                    let step = engine.next_step().unwrap();
+                    (step.pad, step.transpose)
+                })
+                .collect();
+            assert_eq!(actual, expected, "{pattern:?}");
+        }
+        let mut random = engine_with_pads(Pattern::Random, &[0, 1]);
+        random.set_additional_octaves(2);
+        let steps: Vec<_> = (0..128)
+            .map(|_| {
+                let s = random.next_step().unwrap();
+                (s.pad, s.transpose)
+            })
+            .collect();
+        for note in [(0, 0), (1, 0), (0, 12), (0, 24)] {
+            assert!(steps.contains(&note));
+        }
+        assert!(steps.windows(2).all(|pair| pair[0] != pair[1]));
     }
 
     #[test]
