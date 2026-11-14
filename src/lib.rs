@@ -25,7 +25,7 @@ use mpc_sample_sdk::{
     ButtonEvent, ButtonFlow, EncoderEvent, EncoderFlow, Mod, PadAction, PadEvent, PadFlow,
     PaintEvent, SurfaceEvent, draw,
     event::button,
-    platform::{clock, lighting},
+    platform::{clock, lighting, page},
 };
 
 /// Confirmed control-surface values: B1=12, B2=13, B3=14.
@@ -47,13 +47,25 @@ static PHYSICAL_PADS: AtomicU32 = AtomicU32::new(0);
 static SHORTCUT_PADS: AtomicU32 = AtomicU32::new(0);
 static PREVIEW_STATE: AtomicU32 = AtomicU32::new(0);
 static SHIFT_ACTIVE: AtomicBool = AtomicBool::new(false);
+static IN_16_LEVELS_ACTIVE: AtomicBool = AtomicBool::new(false);
+static SPLASH_ACTIVE: AtomicBool = AtomicBool::new(true);
 
 fn repaint_component() -> usize {
+    let screen = page::screen();
+    if !page::is_sample_page(screen) {
+        return 0;
+    }
+    if SPLASH_ACTIVE.load(Ordering::Acquire) {
+        return screen;
+    }
+    if !IN_16_LEVELS_ACTIVE.load(Ordering::Acquire) {
+        return 0;
+    }
     let now = clock::now_ms();
     if now < DASHBOARD_REFRESH_UNTIL_MS.load(Ordering::Acquire)
         || PREVIEW_STATE.load(Ordering::Acquire) & PAD_MASK != 0
     {
-        draw::painted()
+        screen
     } else {
         0
     }
@@ -199,6 +211,7 @@ impl ArpeggiGator {
             self.in_16_levels = false;
             self.reset_engine_state();
         }
+        IN_16_LEVELS_ACTIVE.store(self.is_16_levels_active(), Ordering::Release);
     }
 }
 
@@ -208,6 +221,8 @@ impl Mod for ArpeggiGator {
         self.in_16_levels = false;
         self.led_mask = 0;
         self.loop_audition_active = false;
+        IN_16_LEVELS_ACTIVE.store(false, Ordering::Release);
+        SPLASH_ACTIVE.store(true, Ordering::Release);
         DASHBOARD_REFRESH_UNTIL_MS.store(0, Ordering::Release);
         PREVIEW_STATE.store(0, Ordering::Release);
         PHYSICAL_PADS.store(0, Ordering::Release);
@@ -284,6 +299,7 @@ impl Mod for ArpeggiGator {
                         !self.in_16_levels
                     };
                     self.in_16_levels = entering;
+                    IN_16_LEVELS_ACTIVE.store(self.is_16_levels_active(), Ordering::Release);
                     action = if entering { 4 } else { 5 };
                     if !entering {
                         self.reset_engine_state();
@@ -299,12 +315,14 @@ impl Mod for ArpeggiGator {
         {
             self.current_screen = Screen::Other;
             self.in_16_levels = false;
+            IN_16_LEVELS_ACTIVE.store(false, Ordering::Release);
             self.reset_engine_state();
             ButtonFlow::Forward
         } else if event.pressed && event.code == BUTTON_SAMPLE {
             if self.current_screen == Screen::Other {
                 self.current_screen = Screen::Sample;
                 self.in_16_levels = false;
+                IN_16_LEVELS_ACTIVE.store(false, Ordering::Release);
                 self.reset_engine_state();
             }
             ButtonFlow::Forward
@@ -415,6 +433,7 @@ impl Mod for ArpeggiGator {
         if event.action == PadAction::Press && SHIFT_ACTIVE.load(Ordering::Acquire) {
             self.current_screen = Screen::Other;
             self.in_16_levels = false;
+            IN_16_LEVELS_ACTIVE.store(false, Ordering::Release);
             self.reset_engine_state();
         }
         if !self.enabled || !self.is_16_levels_active() {
@@ -452,6 +471,7 @@ impl Mod for ArpeggiGator {
     fn on_pitch(&mut self, applied: i32) -> i32 {
         self.current_screen = Screen::Sample;
         self.in_16_levels = true;
+        IN_16_LEVELS_ACTIVE.store(self.is_16_levels_active(), Ordering::Release);
         DASHBOARD_REFRESH_UNTIL_MS.store(clock::now_ms() + 500, Ordering::Release);
         applied
     }
@@ -465,12 +485,14 @@ impl Mod for ArpeggiGator {
         let now = clock::now_ms();
         if self.splash_until_ms == 0 {
             self.splash_until_ms = now + 2_000;
-            DASHBOARD_REFRESH_UNTIL_MS.store(now + 2_400, Ordering::Release);
+            SPLASH_ACTIVE.store(true, Ordering::Release);
         }
         if now < self.splash_until_ms {
             // SAFETY: the SDK invokes this callback with the live UI graphics.
             unsafe { splash::draw_boot_splash(graphics) };
             return;
+        } else if SPLASH_ACTIVE.load(Ordering::Acquire) {
+            SPLASH_ACTIVE.store(false, Ordering::Release);
         }
         let preview = PREVIEW_STATE.load(Ordering::Acquire);
         let active = preview & PAD_MASK;
@@ -984,5 +1006,30 @@ mod animation_input_tests {
         // 4. Inside 16 Levels: LOOP button (74) is consumed and does not activate audition!
         assert_eq!(module.on_button(button_ev(74, true, false)), ButtonFlow::Consume);
         assert!(!module.loop_audition_active);
+    }
+
+    #[test]
+    fn repaint_component_only_targets_valid_screen_and_stops_outside_16_levels() {
+        let _guard = INPUT_TEST_LOCK.lock().unwrap();
+        let mut module = ArpeggiGator::default();
+        module.on_start();
+
+        // Screen is 0 initially (not a valid SamplePage) -> returns 0
+        assert_eq!(repaint_component(), 0);
+
+        // When not in 16 levels and splash inactive, returns 0 even if DASHBOARD_REFRESH is set
+        SPLASH_ACTIVE.store(false, Ordering::Release);
+        IN_16_LEVELS_ACTIVE.store(false, Ordering::Release);
+        DASHBOARD_REFRESH_UNTIL_MS.store(clock::now_ms() + 10_000, Ordering::Release);
+        assert_eq!(repaint_component(), 0);
+
+        // Entering 16 levels updates IN_16_LEVELS_ACTIVE
+        module.on_button(button_ev(button::LEVELS, true, false));
+        assert!(IN_16_LEVELS_ACTIVE.load(Ordering::Acquire));
+
+        // Exiting 16 levels resets IN_16_LEVELS_ACTIVE to false
+        module.on_button(button_ev(BUTTON_SEQ, true, false));
+        assert!(!IN_16_LEVELS_ACTIVE.load(Ordering::Acquire));
+        assert_eq!(repaint_component(), 0);
     }
 }
