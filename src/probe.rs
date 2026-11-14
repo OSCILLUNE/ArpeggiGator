@@ -4,6 +4,8 @@
 //! stores or dereferences PadEvent.input / PadEvent.properties and never calls
 //! sites::send_note_on or sites::send_note_off. It is not a playback test.
 
+#![allow(dead_code)]
+
 use core::sync::atomic::{AtomicBool, AtomicI32, AtomicU32, AtomicU64, Ordering};
 use std::{
     thread,

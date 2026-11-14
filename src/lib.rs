@@ -317,11 +317,9 @@ impl Mod for ArpeggiGator {
             match event.action {
                 PadAction::Press => {
                     self.engine.press(pad, event.velocity);
-                    probe::capture_and_schedule(event);
                 }
                 PadAction::Release => {
                     self.engine.release(pad);
-                    probe::source_pad_released(event);
                     if self.enabled && self.is_16_levels_active() {
                         return PadFlow::Consume;
                     }
