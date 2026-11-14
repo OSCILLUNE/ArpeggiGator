@@ -119,6 +119,8 @@ pub fn capture(event: &mut NoteEvent<'_>) -> Option<NoteFlow> {
             | (u64::from(pitch as u8) << 8)
             | u64::from(event.note);
         PADS[index].store(bits, Release);
+    } else {
+        PADS[index].store(0, Release);
     }
     Some(NoteFlow::Consume)
 }
@@ -221,6 +223,11 @@ impl State {
         unsafe {
             let off = self.playback.set_enabled(enabled && bpm.is_some());
             self.output(engine, off);
+            if (!enabled || bpm.is_none())
+                && let Some(key) = self.voice.take()
+            {
+                send(engine, key, false);
+            }
             let pattern = Pattern::ALL[PATTERN.load(Acquire)];
             if self.pattern != pattern {
                 self.playback.set_pattern(pattern);
@@ -243,6 +250,12 @@ impl State {
                 }
                 if *input != 0 {
                     let off = self.playback.release(pad as u8);
+                    if let Some(key) = self.voice.as_ref() {
+                        if key.note == Key::unpack(*input).note {
+                            let old_key = self.voice.take().unwrap();
+                            send(engine, old_key, false);
+                        }
+                    }
                     if off.is_some()
                         && let Some(key) = self.voice.take()
                     {
@@ -275,12 +288,32 @@ impl State {
         unsafe {
             match event {
                 Some(ScheduledEvent::NoteOn(step)) => {
-                    let mut key = Key::unpack(self.inputs[usize::from(step.pad)]);
-                    if let Some(pitch) = key.pitch.checked_add(step.transpose as i8) {
-                        key.pitch = pitch;
-                        send(engine, key, true);
-                        self.voice = Some(key);
+                    // Strict monophonic voice guarantee: close any sounding voice before opening a new one.
+                    if let Some(old_key) = self.voice.take() {
+                        send(engine, old_key, false);
                     }
+
+                    let raw_bits = self.inputs[usize::from(step.pad)];
+                    if raw_bits == 0 {
+                        return;
+                    }
+                    let mut key = Key::unpack(raw_bits);
+                    if key.velocity == 0 || key.note == 0 {
+                        return;
+                    }
+
+                    // Protect against out-of-bounds MIDI note numbers.
+                    let total_note = i32::from(key.note) + i32::from(step.transpose);
+                    if !(0..=127).contains(&total_note) {
+                        return;
+                    }
+
+                    // Protect against extreme pitch transposition. Firmware 16 Levels range is [-24, +24].
+                    let total_pitch = i32::from(key.pitch) + i32::from(step.transpose);
+                    key.pitch = total_pitch.clamp(-24, 24) as i8;
+
+                    send(engine, key, true);
+                    self.voice = Some(key);
                 }
                 Some(ScheduledEvent::NoteOff { .. }) => {
                     if let Some(key) = self.voice.take() {
@@ -295,10 +328,10 @@ impl State {
 
 /// Inline pad event as constructed by the guarded firmware's 0x27e54d0.
 #[repr(C, align(8))]
-struct PadPacket([u8; 56]);
+struct PadPacket([u8; 128]);
 
 unsafe fn send(engine: usize, key: Key, on: bool) {
-    let mut packet = PadPacket([0; 56]);
+    let mut packet = PadPacket([0; 128]);
     packet.0[8] = 3;
     let velocity = if on {
         f32::from(key.velocity) / f32::from(u16::MAX)
