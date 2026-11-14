@@ -30,6 +30,12 @@ use mpc_sample_sdk::{
 const BUTTON_B1: u32 = 12;
 const BUTTON_B2: u32 = 13;
 const BUTTON_B3: u32 = 14;
+const BUTTON_PAD_FX: u32 = 1;
+const BUTTON_SAMPLE: u32 = 6;
+const BUTTON_SEQ: u32 = 7;
+const BUTTON_SAMPLE_SELECT: u32 = 36;
+const BUTTON_MUTE: u32 = 43;
+const BUTTON_SAMPLE_RECORD: u32 = 73;
 static DASHBOARD_REFRESH_UNTIL_MS: AtomicI64 = AtomicI64::new(0);
 const PREVIEW_ENABLED: u32 = 1 << 16;
 const PAD_MASK: u32 = PREVIEW_ENABLED - 1;
@@ -74,7 +80,7 @@ fn observe_surface(event: SurfaceEvent) {
                 }
                 #[cfg(feature = "emulator-audio")]
                 native_audio::begin_press(pad as usize);
-                let _ = PREVIEW_STATE.fetch_update(Ordering::AcqRel, Ordering::Acquire, |state| {
+                let _ = PREVIEW_STATE.try_update(Ordering::AcqRel, Ordering::Acquire, |state| {
                     (state & PREVIEW_ENABLED != 0).then_some(if state & HOLD_ENABLED != 0 {
                         state ^ bit
                     } else {
@@ -88,7 +94,7 @@ fn observe_surface(event: SurfaceEvent) {
             if SHORTCUT_PADS.fetch_and(!bit, Ordering::AcqRel) & bit != 0 {
                 return;
             }
-            let _ = PREVIEW_STATE.fetch_update(Ordering::AcqRel, Ordering::Acquire, |state| {
+            let _ = PREVIEW_STATE.try_update(Ordering::AcqRel, Ordering::Acquire, |state| {
                 (state & PREVIEW_ENABLED != 0).then_some(if state & HOLD_ENABLED != 0 {
                     state
                 } else {
@@ -102,11 +108,19 @@ fn observe_surface(event: SurfaceEvent) {
     DASHBOARD_REFRESH_UNTIL_MS.store(clock::now_ms() + 400, Ordering::Release);
 }
 
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Default)]
+enum Screen {
+    #[default]
+    Sample,
+    Other,
+}
+
 #[derive(Default)]
 struct ArpeggiGator {
     engine: ArpEngine,
     scheduler: ArpScheduler,
     enabled: bool,
+    current_screen: Screen,
     in_16_levels: bool,
     additional_notes: u8,
     consumed_buttons: u8,
@@ -115,8 +129,17 @@ struct ArpeggiGator {
     splash_until_ms: i64,
 }
 
+impl ArpeggiGator {
+    fn is_16_levels_active(&self) -> bool {
+        self.current_screen == Screen::Sample && self.in_16_levels
+    }
+}
+
 impl Mod for ArpeggiGator {
     fn on_start(&mut self) {
+        self.current_screen = Screen::Sample;
+        self.in_16_levels = false;
+        self.led_mask = 0;
         DASHBOARD_REFRESH_UNTIL_MS.store(0, Ordering::Release);
         PREVIEW_STATE.store(0, Ordering::Release);
         PHYSICAL_PADS.store(0, Ordering::Release);
@@ -148,11 +171,11 @@ impl Mod for ArpeggiGator {
         } else if event.code == button::DATA
             && event.pressed
             && self.enabled
-            && self.in_16_levels
+            && self.is_16_levels_active()
             && !event.shift
         {
             self.consumed_data = true;
-            let _ = PREVIEW_STATE.fetch_update(Ordering::AcqRel, Ordering::Acquire, |state| {
+            let _ = PREVIEW_STATE.try_update(Ordering::AcqRel, Ordering::Acquire, |state| {
                 (state & PREVIEW_ENABLED != 0).then_some(if state & HOLD_ENABLED != 0 {
                     // Disabling HOLD removes all latched pads.
                     PREVIEW_ENABLED
@@ -163,12 +186,37 @@ impl Mod for ArpeggiGator {
             action = 7;
             ButtonFlow::Consume
         } else if event.code == button::LEVELS && event.pressed {
-            self.in_16_levels = !self.in_16_levels;
-            action = if self.in_16_levels { 4 } else { 5 };
-            if !self.in_16_levels {
-                self.enabled = false;
-                self.engine.clear();
-                PREVIEW_STATE.store(0, Ordering::Release);
+            if !event.shift {
+                if self.current_screen == Screen::Sample {
+                    self.in_16_levels = !self.in_16_levels;
+                    action = if self.in_16_levels { 4 } else { 5 };
+                    if !self.in_16_levels {
+                        self.enabled = false;
+                        self.engine.clear();
+                        PREVIEW_STATE.store(0, Ordering::Release);
+                        lighting::restore_pad_rgbs();
+                        self.led_mask = 0;
+                    }
+                }
+            }
+            ButtonFlow::Forward
+        } else if event.pressed
+            && matches!(
+                event.code,
+                BUTTON_SEQ | BUTTON_PAD_FX | BUTTON_SAMPLE_SELECT | BUTTON_MUTE | BUTTON_SAMPLE_RECORD
+            )
+        {
+            self.current_screen = Screen::Other;
+            self.in_16_levels = false;
+            lighting::restore_pad_rgbs();
+            self.led_mask = 0;
+            ButtonFlow::Forward
+        } else if event.pressed && event.code == BUTTON_SAMPLE {
+            if self.current_screen == Screen::Other {
+                self.current_screen = Screen::Sample;
+                self.in_16_levels = false;
+                lighting::restore_pad_rgbs();
+                self.led_mask = 0;
             }
             ButtonFlow::Forward
         } else {
@@ -183,7 +231,7 @@ impl Mod for ArpeggiGator {
             } else if !event.pressed && self.consumed_buttons & bit != 0 {
                 self.consumed_buttons &= !bit;
                 ButtonFlow::Consume
-            } else if !self.in_16_levels || !event.shift || !event.pressed {
+            } else if !self.is_16_levels_active() || !event.shift || !event.pressed {
                 ButtonFlow::Forward
             } else if bit == 1 {
                 self.consumed_buttons |= bit;
@@ -222,14 +270,14 @@ impl Mod for ArpeggiGator {
             event.code,
             event.pressed,
             event.shift,
-            self.in_16_levels,
+            self.is_16_levels_active(),
             action,
         );
         flow
     }
 
     fn on_encoder(&mut self, event: EncoderEvent) -> EncoderFlow {
-        if !self.enabled || !self.in_16_levels || SHIFT_ACTIVE.load(Ordering::Acquire) {
+        if !self.enabled || !self.is_16_levels_active() || SHIFT_ACTIVE.load(Ordering::Acquire) {
             return EncoderFlow::Forward;
         }
         let rate = self.scheduler.rate().shifted(event.delta);
@@ -251,7 +299,15 @@ impl Mod for ArpeggiGator {
     }
 
     fn on_pad(&mut self, event: PadEvent) -> PadFlow {
-        if !self.enabled || !self.in_16_levels {
+        if event.action == PadAction::Press && SHIFT_ACTIVE.load(Ordering::Acquire) {
+            if matches!(event.pad, 4 | 7 | 10 | 11 | 13 | 15) {
+                self.current_screen = Screen::Other;
+                self.in_16_levels = false;
+                lighting::restore_pad_rgbs();
+                self.led_mask = 0;
+            }
+        }
+        if !self.enabled || !self.is_16_levels_active() {
             return PadFlow::Forward;
         }
         if let Ok(pad) = u8::try_from(event.pad) {
@@ -275,6 +331,7 @@ impl Mod for ArpeggiGator {
     }
 
     fn on_pitch(&mut self, applied: i32) -> i32 {
+        self.current_screen = Screen::Sample;
         self.in_16_levels = true;
         DASHBOARD_REFRESH_UNTIL_MS.store(clock::now_ms() + 500, Ordering::Release);
         applied
@@ -282,7 +339,22 @@ impl Mod for ArpeggiGator {
 
     fn on_paint(&mut self, graphics: &mut mpc_sample_sdk::draw::Graphics, event: PaintEvent) {
         if event.sample_page {
+            if self.current_screen != Screen::Sample {
+                self.current_screen = Screen::Sample;
+                self.in_16_levels = false;
+                lighting::restore_pad_rgbs();
+                self.led_mask = 0;
+            }
+            if event.chop_mode {
+                self.in_16_levels = false;
+            }
             probe::on_paint();
+        } else {
+            self.current_screen = Screen::Other;
+            self.in_16_levels = false;
+            lighting::restore_pad_rgbs();
+            self.led_mask = 0;
+            return;
         }
         let now = clock::now_ms();
         if self.splash_until_ms == 0 {
@@ -296,20 +368,21 @@ impl Mod for ArpeggiGator {
         }
         let preview = PREVIEW_STATE.load(Ordering::Acquire);
         let active = preview & PAD_MASK;
-        let changed = self.led_mask ^ active;
+        let target_leds = if self.is_16_levels_active() { active } else { 0 };
+        let changed = self.led_mask ^ target_leds;
         for pad in 0..16 {
             if changed & (1 << pad) != 0 {
-                if active & (1 << pad) != 0 {
+                if target_leds & (1 << pad) != 0 {
                     let _ = lighting::send_pad_light(pad as u8, 0x00ff00, 1.0);
                 } else {
                     lighting::restore_pad_rgb(pad as u8);
                 }
             }
         }
-        self.led_mask = active;
+        self.led_mask = target_leds;
         let shift_active = SHIFT_ACTIVE.load(Ordering::Acquire);
-        let show_shift_menu = self.in_16_levels && shift_active;
-        let show_mascot = self.in_16_levels && self.enabled;
+        let show_shift_menu = self.is_16_levels_active() && shift_active;
+        let show_mascot = self.is_16_levels_active() && self.enabled;
         if !show_shift_menu && !show_mascot {
             return;
         }
@@ -430,5 +503,168 @@ mod animation_input_tests {
         assert_eq!(PREVIEW_STATE.load(Ordering::Acquire) & PAD_MASK, 0b1101);
         assert_eq!(SHORTCUT_PADS.load(Ordering::Acquire), 0);
         PREVIEW_STATE.store(0, Ordering::Release);
+    }
+
+    fn button_ev(code: u32, pressed: bool, shift: bool) -> ButtonEvent {
+        ButtonEvent {
+            event: 0,
+            bytes: [0; 16],
+            code,
+            value: if pressed { button::PRESSED } else { 0 },
+            pressed,
+            shift,
+            erase: false,
+            surface: 0,
+        }
+    }
+
+    #[test]
+    fn shift_menu_and_softkeys_track_16_levels_and_navigation() {
+        let _guard = INPUT_TEST_LOCK.lock().unwrap();
+        let mut module = ArpeggiGator::default();
+        module.on_start();
+
+        // 1. Initial state: on Sample screen, 16 Levels inactive.
+        assert!(!module.is_16_levels_active());
+        // SHIFT+B1/B2/B3 must be forwarded to native firmware.
+        assert_eq!(
+            module.on_button(button_ev(BUTTON_B1, true, true)),
+            ButtonFlow::Forward
+        );
+        assert!(!module.enabled);
+
+        // 2. Press 16 LEVELS: enters 16 Levels.
+        assert_eq!(
+            module.on_button(button_ev(button::LEVELS, true, false)),
+            ButtonFlow::Forward
+        );
+        assert!(module.is_16_levels_active());
+        // Now SHIFT+B1 toggles ARP and is consumed.
+        assert_eq!(
+            module.on_button(button_ev(BUTTON_B1, true, true)),
+            ButtonFlow::Consume
+        );
+        assert!(module.enabled);
+        assert_eq!(
+            module.on_button(button_ev(BUTTON_B1, false, true)),
+            ButtonFlow::Consume
+        );
+
+        // 3. Press SEQ, then SAMPLE: switches to SEQ, then returns to SAMPLE.
+        assert_eq!(
+            module.on_button(button_ev(BUTTON_SEQ, true, false)),
+            ButtonFlow::Forward
+        );
+        assert!(!module.is_16_levels_active());
+        assert_eq!(module.current_screen, Screen::Other);
+
+        // Outside 16 Levels, SHIFT+B1 is forwarded to native.
+        assert_eq!(
+            module.on_button(button_ev(BUTTON_B1, true, true)),
+            ButtonFlow::Forward
+        );
+
+        // Press SAMPLE to return to Sample screen.
+        assert_eq!(
+            module.on_button(button_ev(BUTTON_SAMPLE, true, false)),
+            ButtonFlow::Forward
+        );
+        assert_eq!(module.current_screen, Screen::Sample);
+        // Returning from SEQ leaves 16 Levels OFF!
+        assert!(!module.is_16_levels_active());
+
+        // In normal Sample mode, SHIFT+B1 is forwarded to native (Loop Lock / Normalize).
+        assert_eq!(
+            module.on_button(button_ev(BUTTON_B1, true, true)),
+            ButtonFlow::Forward
+        );
+
+        // 4. Press 16 LEVELS again: re-enters 16 Levels!
+        assert_eq!(
+            module.on_button(button_ev(button::LEVELS, true, false)),
+            ButtonFlow::Forward
+        );
+        assert!(module.is_16_levels_active());
+
+        // In re-entered 16 Levels, SHIFT+B1 is consumed by ArpeggiGator!
+        assert_eq!(
+            module.on_button(button_ev(BUTTON_B1, true, true)),
+            ButtonFlow::Consume
+        );
+    }
+
+    #[test]
+    fn pressing_sample_while_in_16_levels_preserves_16_levels() {
+        let _guard = INPUT_TEST_LOCK.lock().unwrap();
+        let mut module = ArpeggiGator::default();
+        module.on_start();
+
+        // Enter 16 Levels.
+        module.on_button(button_ev(button::LEVELS, true, false));
+        assert!(module.is_16_levels_active());
+
+        // Pressing SAMPLE while already on Sample page does not exit 16 Levels.
+        assert_eq!(
+            module.on_button(button_ev(BUTTON_SAMPLE, true, false)),
+            ButtonFlow::Forward
+        );
+        assert!(module.is_16_levels_active());
+    }
+
+    #[test]
+    fn pressing_16_levels_while_on_other_screen_is_ignored() {
+        let _guard = INPUT_TEST_LOCK.lock().unwrap();
+        let mut module = ArpeggiGator::default();
+        module.on_start();
+
+        // Navigate to PAD FX.
+        module.on_button(button_ev(BUTTON_PAD_FX, true, false));
+        assert_eq!(module.current_screen, Screen::Other);
+        assert!(!module.is_16_levels_active());
+
+        // 16 LEVELS button on other screens does not enter 16 Levels.
+        module.on_button(button_ev(button::LEVELS, true, false));
+        assert!(!module.is_16_levels_active());
+        assert_eq!(module.current_screen, Screen::Other);
+    }
+
+    #[test]
+    fn shift_levels_type_selection_does_not_toggle_16_levels() {
+        let _guard = INPUT_TEST_LOCK.lock().unwrap();
+        let mut module = ArpeggiGator::default();
+        module.on_start();
+
+        // Enter 16 Levels.
+        module.on_button(button_ev(button::LEVELS, true, false));
+        assert!(module.is_16_levels_active());
+
+        // SHIFT + 16 LEVELS is TYPE selection; it must not exit 16 Levels.
+        module.on_button(button_ev(button::LEVELS, true, true));
+        assert!(module.is_16_levels_active());
+    }
+
+    #[test]
+    fn shortcut_pad_press_exits_16_levels() {
+        let _guard = INPUT_TEST_LOCK.lock().unwrap();
+        let mut module = ArpeggiGator::default();
+        module.on_start();
+
+        // Enter 16 Levels.
+        module.on_button(button_ev(button::LEVELS, true, false));
+        assert!(module.is_16_levels_active());
+
+        // Press SHIFT + PAD 16 (pad index 15, Project shortcut).
+        SHIFT_ACTIVE.store(true, Ordering::Release);
+        module.on_pad(PadEvent {
+            action: PadAction::Press,
+            input: 0,
+            source: 0,
+            pad: 15,
+            properties: 0,
+            velocity: 1.0,
+        });
+        assert_eq!(module.current_screen, Screen::Other);
+        assert!(!module.is_16_levels_active());
+        SHIFT_ACTIVE.store(false, Ordering::Release);
     }
 }

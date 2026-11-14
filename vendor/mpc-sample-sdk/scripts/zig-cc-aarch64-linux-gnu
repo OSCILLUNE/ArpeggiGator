@@ -9,7 +9,7 @@
 args=
 for arg in "$@"; do
     case $arg in
-        -Wl,-O0|-Wl,-O1|-Wl,-O2|-Wl,-O3|-Wl,-Os|-Wl,-Oz) ;;
+        -Wl,-O0|-Wl,-O1|-Wl,-O2|-Wl,-O3|-Wl,-Os|-Wl,-Oz|-Wl,--fix-cortex-a53-843419) ;;
         *) args="$args $arg" ;;
     esac
 done
