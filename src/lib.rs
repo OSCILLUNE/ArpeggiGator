@@ -143,6 +143,7 @@ struct ArpeggiGator {
     consumed_buttons: u8,
     consumed_data: bool,
     led_mask: u32,
+    loop_audition_active: bool,
     splash_until_ms: i64,
 }
 
@@ -162,7 +163,10 @@ impl ArpeggiGator {
         self.enabled = false;
         self.mode = EngineMode::Off;
         #[cfg(feature = "emulator-audio")]
-        native_audio::set_mode(EngineMode::Off);
+        {
+            native_audio::set_mode(EngineMode::Off);
+            native_audio::panic();
+        }
         self.engine.clear();
         self.melody_engine.clear();
         PREVIEW_STATE.store(0, Ordering::Release);
@@ -203,6 +207,7 @@ impl Mod for ArpeggiGator {
         self.current_screen = Screen::Sample;
         self.in_16_levels = false;
         self.led_mask = 0;
+        self.loop_audition_active = false;
         DASHBOARD_REFRESH_UNTIL_MS.store(0, Ordering::Release);
         PREVIEW_STATE.store(0, Ordering::Release);
         PHYSICAL_PADS.store(0, Ordering::Release);
@@ -218,10 +223,28 @@ impl Mod for ArpeggiGator {
 
     fn on_button(&mut self, event: ButtonEvent) -> ButtonFlow {
         let mut action = 0;
+        if event.code == 74 {
+            if self.is_16_levels_active() {
+                // In 16 Levels, LOOP button must not trigger background loop audition.
+                return ButtonFlow::Consume;
+            }
+            if event.pressed {
+                self.loop_audition_active = !self.loop_audition_active;
+            }
+        }
+        if event.pressed && (event.code == 81 || event.code == button::LEVELS) {
+            if self.loop_audition_active {
+                unsafe {
+                    let _ = mpc_sample_sdk::sites::replay_button(&event.bytes, 74);
+                }
+                self.loop_audition_active = false;
+            }
+        }
         #[cfg(feature = "emulator-audio")]
-        if event.pressed && matches!(event.code, 81 | 6 | 7) {
-            // STOP, SAMPLE and SEQ discard the current selection.
-            PREVIEW_STATE.fetch_and(!PAD_MASK, Ordering::AcqRel);
+        if event.pressed && matches!(event.code, 81 | 6 | 7 | button::LEVELS) {
+            // STOP, SAMPLE, SEQ and 16 LEVELS discard the current selection and kill sounding voices.
+            PREVIEW_STATE.fetch_and(!(PAD_MASK | HOLD_ENABLED), Ordering::AcqRel);
+            native_audio::panic();
         }
         if event.code == button::SHIFT {
             SHIFT_ACTIVE.store(event.pressed, Ordering::Release);
@@ -390,11 +413,9 @@ impl Mod for ArpeggiGator {
 
     fn on_pad(&mut self, event: PadEvent) -> PadFlow {
         if event.action == PadAction::Press && SHIFT_ACTIVE.load(Ordering::Acquire) {
-            if matches!(event.pad, 4 | 7 | 8 | 10 | 11 | 13 | 15) {
-                self.current_screen = Screen::Other;
-                self.in_16_levels = false;
-                self.reset_engine_state();
-            }
+            self.current_screen = Screen::Other;
+            self.in_16_levels = false;
+            self.reset_engine_state();
         }
         if !self.enabled || !self.is_16_levels_active() {
             return PadFlow::Forward;
@@ -937,5 +958,31 @@ mod animation_input_tests {
 
         SHIFT_ACTIVE.store(false, Ordering::Release);
         lighting::reset_lighting();
+    }
+
+    #[test]
+    fn loop_button_is_consumed_in_16_levels_and_cancelled_by_stop_or_levels() {
+        let _guard = INPUT_TEST_LOCK.lock().unwrap();
+        let mut module = ArpeggiGator::default();
+        module.on_start();
+
+        // 1. Outside 16 Levels: LOOP button (74) toggles loop audition state.
+        assert_eq!(module.on_button(button_ev(74, true, false)), ButtonFlow::Forward);
+        assert!(module.loop_audition_active);
+
+        // 2. Pressing STOP (81) turns off loop audition state.
+        assert_eq!(module.on_button(button_ev(81, true, false)), ButtonFlow::Forward);
+        assert!(!module.loop_audition_active);
+
+        // 3. Toggling LOOP on again, then entering 16 Levels (40): cancels loop audition.
+        assert_eq!(module.on_button(button_ev(74, true, false)), ButtonFlow::Forward);
+        assert!(module.loop_audition_active);
+        assert_eq!(module.on_button(button_ev(button::LEVELS, true, false)), ButtonFlow::Forward);
+        assert!(!module.loop_audition_active);
+        assert!(module.is_16_levels_active());
+
+        // 4. Inside 16 Levels: LOOP button (74) is consumed and does not activate audition!
+        assert_eq!(module.on_button(button_ev(74, true, false)), ButtonFlow::Consume);
+        assert!(!module.loop_audition_active);
     }
 }

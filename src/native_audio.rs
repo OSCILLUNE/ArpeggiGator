@@ -15,7 +15,20 @@ const ENGINE_OFFSET: usize = 0x5c0;
 const ENGINE_VTABLE: usize = 0x6e7f2d0;
 const DISPATCH_OFFSET: usize = 0x211b090;
 const PITCH_OFFSET: usize = 0x27e4400;
+const KILL_ALL_VOICES: usize = 0x2118a20;
 const PAD_SOURCE: u32 = 0x7fff_fffa;
+
+unsafe fn kill_all_voices(engine: usize) {
+    if engine == 0 {
+        return;
+    }
+    let base = image::base();
+    unsafe {
+        let kill_all =
+            core::mem::transmute::<usize, unsafe extern "C" fn(usize)>(base + KILL_ALL_VOICES);
+        kill_all(engine);
+    }
+}
 
 static DISPATCH: AtomicUsize = AtomicUsize::new(0);
 static PITCH: AtomicUsize = AtomicUsize::new(0);
@@ -27,6 +40,7 @@ static SERIAL: AtomicU32 = AtomicU32::new(0);
 static PATTERN: AtomicUsize = AtomicUsize::new(0);
 static RATE: AtomicUsize = AtomicUsize::new(StepRate::Sixteenth as usize);
 static ADDITIONAL_OCTAVES: AtomicUsize = AtomicUsize::new(0);
+static PANIC: AtomicBool = AtomicBool::new(false);
 
 #[unsafe(no_mangle)]
 static g_arp_audio_on: AtomicU32 = AtomicU32::new(0);
@@ -37,6 +51,7 @@ static g_arp_audio_last: AtomicU32 = AtomicU32::new(0);
 
 #[derive(Clone, Copy)]
 struct Key {
+    pad: u8,
     note: u8,
     pitch: i8,
     velocity: u16,
@@ -44,8 +59,9 @@ struct Key {
 }
 
 impl Key {
-    fn unpack(bits: u64) -> Self {
+    fn unpack(bits: u64, pad: u8) -> Self {
         Self {
+            pad,
             note: bits as u8,
             pitch: (bits >> 8) as i8,
             velocity: (bits >> 16) as u16,
@@ -107,6 +123,10 @@ pub fn set_rate(rate: StepRate) {
 
 pub fn set_additional_octaves(octaves: u8) {
     ADDITIONAL_OCTAVES.store(usize::from(octaves.min(3)), Release);
+}
+
+pub fn panic() {
+    PANIC.store(true, Release);
 }
 
 pub fn capture(event: &mut NoteEvent<'_>) -> Option<NoteFlow> {
@@ -238,6 +258,41 @@ impl State {
             }
         }
 
+        let panic_requested = PANIC.swap(false, Acquire);
+        if panic_requested {
+            unsafe {
+                if let Some(key) = self.voice.take() {
+                    send(engine, key, false);
+                }
+                for p in 0..16_u8 {
+                    if self.inputs[usize::from(p)] != 0 {
+                        let key = Key::unpack(self.inputs[usize::from(p)], p);
+                        send(engine, key, false);
+                        self.inputs[usize::from(p)] = 0;
+                        PADS[usize::from(p)].store(0, Release);
+                    }
+                    let key0 = Key {
+                        pad: p,
+                        note: 0,
+                        pitch: 0,
+                        velocity: 0,
+                        serial: 0,
+                    };
+                    send(engine, key0, false);
+                    let key_std = Key {
+                        pad: p,
+                        note: 36 + p,
+                        pitch: 0,
+                        velocity: 0,
+                        serial: 0,
+                    };
+                    send(engine, key_std, false);
+                }
+                kill_all_voices(engine);
+            }
+            let _ = self.playback.set_mode(EngineMode::Off);
+        }
+
         let preview = PREVIEW_STATE.load(Acquire);
         let enabled = preview & PREVIEW_ENABLED != 0;
         let bpm = tempo::current_bpm();
@@ -248,17 +303,18 @@ impl State {
         };
         // SAFETY: the only native argument is the live engine from this render.
         unsafe {
-            let active_mode = if enabled && bpm.is_some() {
+            let active_mode = if enabled && bpm.is_some() && !panic_requested {
                 mode
             } else {
                 EngineMode::Off
             };
             let off = self.playback.set_mode(active_mode);
             self.output(engine, off);
-            if (active_mode == EngineMode::Off)
+            if active_mode == EngineMode::Off
                 && let Some(key) = self.voice.take()
             {
                 send(engine, key, false);
+                kill_all_voices(engine);
             }
             if mode == EngineMode::Arp {
                 let pattern_idx = PATTERN.load(Acquire) % Pattern::ALL.len();
@@ -306,11 +362,11 @@ impl State {
             for off in &releases[..release_count] {
                 self.output(engine, *off);
             }
-            pending[..count].sort_unstable_by_key(|&(_, key)| Key::unpack(key).serial);
+            pending[..count].sort_unstable_by_key(|&(pad, bits)| Key::unpack(bits, pad as u8).serial);
             for &(pad, bits) in &pending[..count] {
                 let off = self.playback.press(
                     pad as u8,
-                    f32::from(Key::unpack(bits).velocity) / f32::from(u16::MAX),
+                    f32::from(Key::unpack(bits, pad as u8).velocity) / f32::from(u16::MAX),
                 );
                 if off.is_some() {
                     self.output(engine, off);
@@ -319,6 +375,12 @@ impl State {
             let now = clock::now_ms().max(0) as u64 * 1000;
             for event in self.playback.tick(now, bpm) {
                 self.output(engine, event);
+            }
+            if self.playback.selected() == 0
+                && let Some(key) = self.voice.take()
+            {
+                send(engine, key, false);
+                kill_all_voices(engine);
             }
         }
     }
@@ -337,7 +399,7 @@ impl State {
                     if raw_bits == 0 {
                         return;
                     }
-                    let mut key = Key::unpack(raw_bits);
+                    let mut key = Key::unpack(raw_bits, step.pad);
                     if key.velocity == 0 {
                         return;
                     }
@@ -349,8 +411,11 @@ impl State {
                     send(engine, key, true);
                     self.voice = Some(key);
                 }
-                Some(ScheduledEvent::NoteOff { .. }) => {
+                Some(ScheduledEvent::NoteOff { pad }) => {
                     if let Some(key) = self.voice.take() {
+                        send(engine, key, false);
+                    } else if self.inputs[usize::from(pad)] != 0 {
+                        let key = Key::unpack(self.inputs[usize::from(pad)], pad);
                         send(engine, key, false);
                     }
                 }
@@ -366,7 +431,8 @@ struct PadPacket([u8; 128]);
 
 unsafe fn send(engine: usize, key: Key, on: bool) {
     let mut packet = PadPacket([0; 128]);
-    packet.0[8] = 3;
+    let tag: u32 = 3 | ((u32::from(key.pad) & 0xf) << 12);
+    packet.0[8..12].copy_from_slice(&tag.to_le_bytes());
     let velocity = if on {
         f32::from(key.velocity) / f32::from(u16::MAX)
     } else {
@@ -403,5 +469,35 @@ unsafe fn send(engine: usize, key: Key, on: bool) {
         g_arp_audio_on.fetch_add(1, Relaxed);
     } else {
         g_arp_audio_off.fetch_add(1, Relaxed);
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn key_preserves_pad_index_and_builds_firmware_tag() {
+        for pad in 0..16_u8 {
+            let note = 36 + pad;
+            let pitch = -5_i8;
+            let velocity = 50000_u16;
+            let serial = 42_u32;
+            let bits = (u64::from(serial) << 32)
+                | (u64::from(velocity) << 16)
+                | (u64::from(pitch as u8) << 8)
+                | u64::from(note);
+
+            let key = Key::unpack(bits, pad);
+            assert_eq!(key.pad, pad);
+            assert_eq!(key.note, note);
+            assert_eq!(key.pitch, pitch);
+            assert_eq!(key.velocity, velocity);
+            assert_eq!(key.serial, serial);
+
+            let tag: u32 = 3 | ((u32::from(key.pad) & 0xf) << 12);
+            assert_eq!(tag & 0xff, 3);
+            assert_eq!((tag >> 12) & 0xf, u32::from(pad));
+        }
     }
 }
