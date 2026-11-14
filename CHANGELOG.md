@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.0.1.4
+
+- Add a host-tested playback state machine for held pads, note pairing, BPM and rate changes.
+- Record emulator-only MIDI/audio and voice-release investigation results.
+- Audio output is not yet connected; the new state machine emits commands only.
+
 ## 0.0.1.3
 
 - Select the arpeggiator step rate with the DATA encoder, with a visible rate label.

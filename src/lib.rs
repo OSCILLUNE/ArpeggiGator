@@ -5,12 +5,14 @@
 //! gated until input lifetimes and UI-thread dispatch are validated.
 
 mod arp;
+mod playback;
 mod probe;
 mod scheduler;
 mod splash;
 mod tempo;
 
 pub use arp::{ArpEngine, Pattern, Step};
+pub use playback::Playback;
 pub use scheduler::{ArpScheduler, ScheduledEvent, StepRate};
 
 use core::sync::atomic::{AtomicBool, AtomicI64, AtomicU32, Ordering};
