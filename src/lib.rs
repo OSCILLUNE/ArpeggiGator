@@ -12,6 +12,7 @@ mod playback;
 mod probe;
 mod scheduler;
 mod splash;
+pub(crate) mod splash_art;
 mod tempo;
 
 pub use arp::{ArpEngine, Pattern, Step, StepEngine};
@@ -889,11 +890,23 @@ mod animation_input_tests {
         module.on_button(button_ev(BUTTON_B2, false, true));
         assert_eq!(module.melody_bars, BarLength::Bars16);
 
-        // In Melody: SHIFT+B3 cycles melody variants
+        // In Melody: SHIFT+B3 cycles melody variants MEL1..MEL9
         assert_eq!(module.melody_variant, MelodyVariant::Mel1);
-        module.on_button(button_ev(BUTTON_B3, true, true));
-        module.on_button(button_ev(BUTTON_B3, false, true));
-        assert_eq!(module.melody_variant, MelodyVariant::Mel2);
+        for expected in [
+            MelodyVariant::Mel2,
+            MelodyVariant::Mel3,
+            MelodyVariant::Mel4,
+            MelodyVariant::Mel5,
+            MelodyVariant::Mel6,
+            MelodyVariant::Mel7,
+            MelodyVariant::Mel8,
+            MelodyVariant::Mel9,
+            MelodyVariant::Mel1,
+        ] {
+            module.on_button(button_ev(BUTTON_B3, true, true));
+            module.on_button(button_ev(BUTTON_B3, false, true));
+            assert_eq!(module.melody_variant, expected);
+        }
 
         // In Melody with HOLD: test pad switching and single-pad latch
         // Turn HOLD on (click DATA wheel)
