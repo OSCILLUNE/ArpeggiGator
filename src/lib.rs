@@ -131,7 +131,46 @@ struct ArpeggiGator {
 
 impl ArpeggiGator {
     fn is_16_levels_active(&self) -> bool {
-        self.current_screen == Screen::Sample && self.in_16_levels
+        if self.current_screen != Screen::Sample {
+            return false;
+        }
+        if lighting::has_native_lighting() {
+            self.in_16_levels && lighting::is_16_levels_lit()
+        } else {
+            self.in_16_levels
+        }
+    }
+
+    fn sync_navigation(&mut self, sample_page: bool, chop_mode: bool) {
+        if sample_page {
+            if self.current_screen != Screen::Sample {
+                self.current_screen = Screen::Sample;
+                self.in_16_levels = false;
+                lighting::restore_pad_rgbs();
+                self.led_mask = 0;
+            }
+            if chop_mode {
+                self.in_16_levels = false;
+            }
+            if lighting::has_native_lighting() {
+                let native_16_levels = lighting::is_16_levels_lit();
+                if self.in_16_levels != native_16_levels {
+                    self.in_16_levels = native_16_levels;
+                    if !native_16_levels {
+                        self.enabled = false;
+                        self.engine.clear();
+                        PREVIEW_STATE.store(0, Ordering::Release);
+                        lighting::restore_pad_rgbs();
+                        self.led_mask = 0;
+                    }
+                }
+            }
+        } else {
+            self.current_screen = Screen::Other;
+            self.in_16_levels = false;
+            lighting::restore_pad_rgbs();
+            self.led_mask = 0;
+        }
     }
 }
 
@@ -188,9 +227,14 @@ impl Mod for ArpeggiGator {
         } else if event.code == button::LEVELS && event.pressed {
             if !event.shift {
                 if self.current_screen == Screen::Sample {
-                    self.in_16_levels = !self.in_16_levels;
-                    action = if self.in_16_levels { 4 } else { 5 };
-                    if !self.in_16_levels {
+                    let entering = if lighting::has_native_lighting() {
+                        !lighting::is_16_levels_lit()
+                    } else {
+                        !self.in_16_levels
+                    };
+                    self.in_16_levels = entering;
+                    action = if entering { 4 } else { 5 };
+                    if !entering {
                         self.enabled = false;
                         self.engine.clear();
                         PREVIEW_STATE.store(0, Ordering::Release);
@@ -300,7 +344,7 @@ impl Mod for ArpeggiGator {
 
     fn on_pad(&mut self, event: PadEvent) -> PadFlow {
         if event.action == PadAction::Press && SHIFT_ACTIVE.load(Ordering::Acquire) {
-            if matches!(event.pad, 4 | 7 | 10 | 11 | 13 | 15) {
+            if matches!(event.pad, 4 | 7 | 8 | 10 | 11 | 13 | 15) {
                 self.current_screen = Screen::Other;
                 self.in_16_levels = false;
                 lighting::restore_pad_rgbs();
@@ -339,24 +383,11 @@ impl Mod for ArpeggiGator {
     }
 
     fn on_paint(&mut self, graphics: &mut mpc_sample_sdk::draw::Graphics, event: PaintEvent) {
-        if event.sample_page {
-            if self.current_screen != Screen::Sample {
-                self.current_screen = Screen::Sample;
-                self.in_16_levels = false;
-                lighting::restore_pad_rgbs();
-                self.led_mask = 0;
-            }
-            if event.chop_mode {
-                self.in_16_levels = false;
-            }
-            probe::on_paint();
-        } else {
-            self.current_screen = Screen::Other;
-            self.in_16_levels = false;
-            lighting::restore_pad_rgbs();
-            self.led_mask = 0;
+        self.sync_navigation(event.sample_page, event.chop_mode);
+        if !event.sample_page {
             return;
         }
+        probe::on_paint();
         let now = clock::now_ms();
         if self.splash_until_ms == 0 {
             self.splash_until_ms = now + 2_000;
@@ -667,5 +698,49 @@ mod animation_input_tests {
         assert_eq!(module.current_screen, Screen::Other);
         assert!(!module.is_16_levels_active());
         SHIFT_ACTIVE.store(false, Ordering::Release);
+    }
+
+    #[test]
+    fn native_lighting_synchronizes_16_levels_state() {
+        let _guard = INPUT_TEST_LOCK.lock().unwrap();
+        lighting::reset_lighting();
+        let mut module = ArpeggiGator::default();
+        module.on_start();
+
+        let unlit = u64::from(0.0_f32.to_bits()) << 32 | 0x00ff_ffff;
+        let p1_lit = u64::from(1.0_f32.to_bits()) << 32 | 0x000a_000f;
+        let p15_lit = u64::from(1.0_f32.to_bits()) << 32 | 0x0096_00ef;
+
+        // Initial hardware state: outside 16 levels.
+        lighting::observe(0x1000, 1, unlit);
+        lighting::observe(0x1000, 15, unlit);
+        assert!(lighting::has_native_lighting());
+        assert!(!lighting::is_16_levels_lit());
+
+        // Button LEVELS pressed to enter 16 Levels:
+        module.on_button(button_ev(button::LEVELS, true, false));
+        assert!(module.in_16_levels);
+
+        // Hardware confirms 16 Levels by lighting chromatic purple pads:
+        lighting::observe(0x1000, 1, p1_lit);
+        lighting::observe(0x1000, 15, p15_lit);
+        assert!(lighting::is_16_levels_lit());
+        assert!(module.is_16_levels_active());
+
+        // Native hardware turns off 16 Levels (e.g. shortcut pad dialog):
+        lighting::observe(0x1000, 1, unlit);
+        lighting::observe(0x1000, 15, unlit);
+        assert!(!lighting::is_16_levels_lit());
+        assert!(!module.is_16_levels_active());
+
+        // When returning to Sample screen, navigation sync synchronizes in_16_levels:
+        module.sync_navigation(true, false);
+        assert!(!module.in_16_levels);
+
+        // Next button LEVELS press correctly enters 16 levels (no inversion!):
+        module.on_button(button_ev(button::LEVELS, true, false));
+        assert!(module.in_16_levels);
+
+        lighting::reset_lighting();
     }
 }

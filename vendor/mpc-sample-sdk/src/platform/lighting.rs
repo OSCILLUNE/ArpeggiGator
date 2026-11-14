@@ -94,6 +94,15 @@ pub fn restore_pad_rgbs() {
     }
 }
 
+/// Reset all overrides, native lights and sender (primarily for testing).
+pub fn reset_lighting() {
+    clear_pad_rgbs();
+    SENDER.store(0, Ordering::Release);
+    for slot in &NATIVE {
+        slot.store(0, Ordering::Release);
+    }
+}
+
 /// Call the original per-pad callback with one `PadLight`.
 fn send(pad: u8, light: u64) -> bool {
     let sender = SENDER.load(Ordering::Acquire);
@@ -109,8 +118,40 @@ pub fn sender() -> usize {
     SENDER.load(Ordering::Acquire)
 }
 
+/// Whether any native lighting callback has been received from the host app.
+#[must_use]
+pub fn has_native_lighting() -> bool {
+    SENDER.load(Ordering::Acquire) != 0
+}
+
+/// Returns the app's native light for a pad (`RGB | brightness << 32`), before any override.
+#[must_use]
+pub fn native_pad_light(pad: u8) -> Option<u64> {
+    let index = usize::from(pad);
+    if index < PADS {
+        Some(NATIVE[index].load(Ordering::Acquire))
+    } else {
+        None
+    }
+}
+
+/// Whether the native pad lighting indicates that 16 Levels is currently active.
+///
+/// In 16 Levels mode (Tune or Velocity), the MPC Sample firmware lights pads 1..15 at full
+/// brightness (1.0f) with a non-zero scale gradient. Outside 16 Levels (normal Sample screen,
+/// dialogs, chop mode, etc.), pads 1..15 have brightness 0.0f.
+#[must_use]
+pub fn is_16_levels_lit() -> bool {
+    let p1 = NATIVE[1].load(Ordering::Acquire);
+    let p15 = NATIVE[15].load(Ordering::Acquire);
+    let b1 = (p1 >> 32) as u32;
+    let b15 = (p15 >> 32) as u32;
+    let full = 1.0_f32.to_bits();
+    b1 == full && b15 == full && (p1 as u32) != 0 && (p15 as u32) != 0
+}
+
 /// Record the sender and the native light observed by the native hook.
-pub(crate) fn observe(sender: usize, pad: u8, native: u64) {
+pub fn observe(sender: usize, pad: u8, native: u64) {
     SENDER.store(sender, Ordering::Release);
     let index = usize::from(pad);
     if index < PADS {
@@ -176,5 +217,32 @@ mod tests {
         assert!(!set_pad_rgb(0, 0x01_00_00_00));
         assert!(!set_pad_light(0, 0, f32::NAN));
         assert_eq!(override_light(PADS as u8), None);
+    }
+
+    #[test]
+    fn sixteen_levels_detection_tracks_chromatic_pad_lighting() {
+        use super::{has_native_lighting, is_16_levels_lit, native_pad_light, observe};
+
+        clear_pad_rgbs();
+        // Outside 16 Levels: pads 1..15 are unlit (brightness 0).
+        let unlit = u64::from(0.0_f32.to_bits()) << 32 | 0x00ff_ffff;
+        observe(0x1000, 1, unlit);
+        observe(0x1000, 15, unlit);
+        assert!(has_native_lighting());
+        assert_eq!(native_pad_light(1), Some(unlit));
+        assert!(!is_16_levels_lit());
+
+        // In 16 Levels (Tune mode): pad 1 has chromatic purple, pad 15 has full gradient.
+        let p1_lit = u64::from(1.0_f32.to_bits()) << 32 | 0x000a_000f;
+        let p15_lit = u64::from(1.0_f32.to_bits()) << 32 | 0x0096_00ef;
+        observe(0x1000, 1, p1_lit);
+        observe(0x1000, 15, p15_lit);
+        assert!(is_16_levels_lit());
+
+        // Exiting 16 Levels resets pads 1..15 to 0 brightness.
+        observe(0x1000, 1, unlit);
+        observe(0x1000, 15, unlit);
+        assert!(!is_16_levels_lit());
+        clear_pad_rgbs();
     }
 }
