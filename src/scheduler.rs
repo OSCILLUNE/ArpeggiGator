@@ -5,7 +5,7 @@
 //! claim transport-phase synchronisation. Firmware integration must feed it a
 //! monotonic timestamp and dispatch its events on a verified app thread.
 
-use crate::{ArpEngine, Step};
+use crate::{Step, StepEngine};
 
 /// Musical subdivision of one quarter note.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
@@ -211,7 +211,11 @@ impl ArpScheduler {
     /// The first slot is always processed before the second. A tick may return
     /// NoteOff followed by NoteOn when a new step is due. It never returns more
     /// than one NoteOn, even after a long scheduling delay.
-    pub fn tick(&mut self, now_us: u64, engine: &mut ArpEngine) -> [Option<ScheduledEvent>; 2] {
+    pub fn tick(
+        &mut self,
+        now_us: u64,
+        engine: &mut impl StepEngine,
+    ) -> [Option<ScheduledEvent>; 2] {
         let mut events = [None, None];
         let mut event_count = 0;
 
@@ -253,18 +257,20 @@ impl ArpScheduler {
             self.running = false;
             return events;
         };
-        events[event_count] = Some(ScheduledEvent::NoteOn(step));
+        if step.velocity > 0.0 {
+            events[event_count] = Some(ScheduledEvent::NoteOn(step));
 
-        let step_duration = self
-            .deadline_us(due_index.saturating_add(1))
-            .saturating_sub(self.deadline_us(due_index));
-        let gate_duration =
-            (u128::from(step_duration) * u128::from(self.gate_percent) / 100).max(1);
-        let gate_duration = u64::try_from(gate_duration).unwrap_or(u64::MAX);
-        self.active_note = Some(ActiveNote {
-            pad: step.pad,
-            off_at_us: now_us.saturating_add(gate_duration),
-        });
+            let step_duration = self
+                .deadline_us(due_index.saturating_add(1))
+                .saturating_sub(self.deadline_us(due_index));
+            let gate_duration =
+                (u128::from(step_duration) * u128::from(self.gate_percent) / 100).max(1);
+            let gate_duration = u64::try_from(gate_duration).unwrap_or(u64::MAX);
+            self.active_note = Some(ActiveNote {
+                pad: step.pad,
+                off_at_us: now_us.saturating_add(gate_duration),
+            });
+        }
 
         // Keep the ideal grid phase but skip any deadlines already in the past.
         // Only the step actually emitted advances the pattern engine.

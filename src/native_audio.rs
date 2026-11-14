@@ -5,8 +5,8 @@ use core::sync::atomic::{AtomicBool, AtomicU32, AtomicU64, AtomicUsize, Ordering
 use mpc_sample_sdk::{NoteEvent, NoteFlow, hook, image, platform::clock};
 
 use crate::{
-    PAD_MASK, PREVIEW_ENABLED, PREVIEW_STATE, Pattern, Playback, SHORTCUT_PADS, ScheduledEvent,
-    StepRate, tempo,
+    BarLength, EngineMode, MelodyVariant, PAD_MASK, PREVIEW_ENABLED, PREVIEW_STATE, Pattern,
+    Playback, SHORTCUT_PADS, ScheduledEvent, StepRate, tempo,
 };
 
 const RENDER_OFFSET: usize = 0x18dbcc0;
@@ -79,6 +79,22 @@ static mut STATE: Option<State> = None;
 pub fn begin_press(_pad: usize) {
     // No-op: capture() atomically stores fresh key bits for each press.
     // Zeroing PADS here races against capture() if NoteEvent arrives first.
+}
+
+static MODE: AtomicUsize = AtomicUsize::new(0);
+static MELODY_BARS: AtomicUsize = AtomicUsize::new(0);
+static MELODY_VARIANT: AtomicUsize = AtomicUsize::new(0);
+
+pub fn set_mode(mode: EngineMode) {
+    MODE.store(mode as usize, Release);
+}
+
+pub fn set_melody_bars(bars: BarLength) {
+    MELODY_BARS.store(bars as usize, Release);
+}
+
+pub fn set_melody_variant(variant: MelodyVariant) {
+    MELODY_VARIANT.store(variant as usize, Release);
 }
 
 pub fn set_pattern(pattern: Pattern) {
@@ -225,26 +241,43 @@ impl State {
         let preview = PREVIEW_STATE.load(Acquire);
         let enabled = preview & PREVIEW_ENABLED != 0;
         let bpm = tempo::current_bpm();
+        let mode = match MODE.load(Acquire) {
+            1 => EngineMode::Arp,
+            2 => EngineMode::Melody,
+            _ => EngineMode::Off,
+        };
         // SAFETY: the only native argument is the live engine from this render.
         unsafe {
-            let off = self.playback.set_enabled(enabled && bpm.is_some());
+            let active_mode = if enabled && bpm.is_some() {
+                mode
+            } else {
+                EngineMode::Off
+            };
+            let off = self.playback.set_mode(active_mode);
             self.output(engine, off);
-            if (!enabled || bpm.is_none())
+            if (active_mode == EngineMode::Off)
                 && let Some(key) = self.voice.take()
             {
                 send(engine, key, false);
             }
-            let pattern_idx = PATTERN.load(Acquire) % Pattern::ALL.len();
-            let pattern = Pattern::ALL[pattern_idx];
-            if self.pattern != pattern {
-                self.playback.set_pattern(pattern);
-                self.pattern = pattern;
+            if mode == EngineMode::Arp {
+                let pattern_idx = PATTERN.load(Acquire) % Pattern::ALL.len();
+                let pattern = Pattern::ALL[pattern_idx];
+                if self.pattern != pattern {
+                    self.playback.set_pattern(pattern);
+                    self.pattern = pattern;
+                }
+                self.playback
+                    .set_additional_octaves((ADDITIONAL_OCTAVES.load(Acquire) % 4) as u8);
+            } else if mode == EngineMode::Melody {
+                let bars_idx = MELODY_BARS.load(Acquire) % BarLength::ALL.len();
+                self.playback.set_melody_bars(BarLength::ALL[bars_idx]);
+                let var_idx = MELODY_VARIANT.load(Acquire) % MelodyVariant::ALL.len();
+                self.playback.set_melody_variant(MelodyVariant::ALL[var_idx]);
             }
             let rate_idx = RATE.load(Acquire) % StepRate::ALL.len();
             let off = self.playback.set_rate(StepRate::ALL[rate_idx]);
             self.output(engine, off);
-            self.playback
-                .set_additional_octaves((ADDITIONAL_OCTAVES.load(Acquire) % 4) as u8);
             let mut pending = [(0, 0); 16];
             let mut count = 0;
             let mut releases = [None; 16];

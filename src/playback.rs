@@ -3,37 +3,69 @@
 //! This layer owns only scalar pad state and timing. Its events are commands
 //! for a future verified output adapter; it does not call firmware or MIDI.
 
-use crate::{ArpEngine, ArpScheduler, Pattern, ScheduledEvent, StepRate};
+use crate::{
+    ArpEngine, ArpScheduler, BarLength, MelodyEngine, MelodyVariant, Pattern, ScheduledEvent,
+    StepRate,
+};
 
-/// Playback state and exact note-off handoff for a single arpeggiator.
+/// High-level engine mode: disabled, arpeggiator, or melodic phrase sequencer.
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Default)]
+pub enum EngineMode {
+    #[default]
+    Off,
+    Arp,
+    Melody,
+}
+
+/// Playback state and exact note-off handoff for ARP and MELODY engines.
 #[derive(Default)]
 pub struct Playback {
-    engine: ArpEngine,
+    arp_engine: ArpEngine,
+    melody_engine: MelodyEngine,
     scheduler: ArpScheduler,
     physical: u16,
     selected: u16,
-    enabled: bool,
+    mode: EngineMode,
     hold: bool,
     bpm: Option<f32>,
 }
 
 impl Playback {
-    /// Enable or disable playback, returning any note that must be released.
+    /// Set the active engine mode, releasing any sounding voice on transition.
+    pub fn set_mode(&mut self, mode: EngineMode) -> Option<ScheduledEvent> {
+        if self.mode == mode {
+            return None;
+        }
+        let old_mode = self.mode;
+        self.mode = mode;
+        if mode == EngineMode::Off {
+            self.hold = false;
+            self.clear()
+        } else if old_mode != EngineMode::Off {
+            self.clear()
+        } else {
+            None
+        }
+    }
+
+    /// Enable or disable playback (compat with ARP-only callers).
     pub fn set_enabled(&mut self, enabled: bool) -> Option<ScheduledEvent> {
-        if self.enabled == enabled {
-            return None;
-        }
-        self.enabled = enabled;
-        if enabled {
-            return None;
-        }
-        self.hold = false;
-        self.clear()
+        self.set_mode(if enabled {
+            EngineMode::Arp
+        } else {
+            EngineMode::Off
+        })
+    }
+
+    /// Current engine mode.
+    #[must_use]
+    pub const fn mode(&self) -> EngineMode {
+        self.mode
     }
 
     /// Disable HOLD by clearing the latched notes and releasing any voice.
     pub fn set_hold(&mut self, hold: bool) -> Option<ScheduledEvent> {
-        if !self.enabled || self.hold == hold {
+        if self.mode == EngineMode::Off || self.hold == hold {
             return None;
         }
         self.hold = hold;
@@ -42,12 +74,22 @@ impl Playback {
 
     /// Set a new pattern, restarting its sequence.
     pub fn set_pattern(&mut self, pattern: Pattern) {
-        self.engine.set_pattern(pattern);
+        self.arp_engine.set_pattern(pattern);
     }
 
     /// Append the given number of octave-transposed first notes.
     pub fn set_additional_octaves(&mut self, octaves: u8) {
-        self.engine.set_additional_octaves(octaves);
+        self.arp_engine.set_additional_octaves(octaves);
+    }
+
+    /// Set phrase length for the MELODY engine.
+    pub fn set_melody_bars(&mut self, bars: BarLength) {
+        self.melody_engine.set_bars(bars);
+    }
+
+    /// Set melody preset for the MELODY engine.
+    pub fn set_melody_variant(&mut self, variant: MelodyVariant) {
+        self.melody_engine.set_variant(variant);
     }
 
     /// Change division. A sounding note must be released before restarting.
@@ -68,29 +110,56 @@ impl Playback {
             return None;
         }
         self.physical |= bit;
-        if !self.enabled {
+        if self.mode == EngineMode::Off {
             return None;
         }
-        if self.hold && self.selected & bit != 0 {
-            self.selected &= !bit;
-            self.engine.release(pad);
-            return self.stop_if_empty();
+        if self.mode == EngineMode::Arp {
+            if self.hold && self.selected & bit != 0 {
+                self.selected &= !bit;
+                self.arp_engine.release(pad);
+                return self.stop_if_empty();
+            }
+            self.selected |= bit;
+            self.arp_engine.press(pad, velocity);
+            None
+        } else {
+            // In MELODY mode: monophonic voice-stealing / retrigger from this root pad.
+            if self.hold && self.selected == bit {
+                self.selected = 0;
+                self.melody_engine.clear();
+                return self.stop_if_empty();
+            }
+            let off = if self.selected != 0 {
+                self.scheduler.stop()
+            } else {
+                None
+            };
+            self.selected = bit;
+            self.melody_engine.press(pad, velocity);
+            off
         }
-        self.selected |= bit;
-        self.engine.press(pad, velocity);
-        None
     }
 
     /// Handle a physical release; HOLD retains selected pads.
     pub fn release(&mut self, pad: u8) -> Option<ScheduledEvent> {
         let bit = bit(pad)?;
         self.physical &= !bit;
-        if !self.enabled || self.hold {
+        if self.mode == EngineMode::Off || self.hold {
             return None;
         }
-        self.selected &= !bit;
-        self.engine.release(pad);
-        self.stop_if_empty()
+        if self.mode == EngineMode::Arp {
+            self.selected &= !bit;
+            self.arp_engine.release(pad);
+            self.stop_if_empty()
+        } else {
+            if self.selected == bit {
+                self.selected = 0;
+                self.melody_engine.release(pad);
+                self.stop_if_empty()
+            } else {
+                None
+            }
+        }
     }
 
     /// Active source-pad bit mask, including latched pads.
@@ -102,7 +171,7 @@ impl Playback {
     /// Emit due commands. On BPM change, release the old voice before a new one.
     /// Invalid or unavailable BPM stops playback rather than inventing a tempo.
     pub fn tick(&mut self, now_us: u64, bpm: Option<f32>) -> [Option<ScheduledEvent>; 2] {
-        if !self.enabled || self.selected == 0 {
+        if self.mode == EngineMode::Off || self.selected == 0 {
             return [self.scheduler.stop(), None];
         }
         let valid_bpm = bpm.filter(|bpm| bpm.is_finite() && (20.0..=400.0).contains(bpm));
@@ -120,7 +189,11 @@ impl Playback {
             }
             self.bpm = Some(bpm);
         }
-        let events = self.scheduler.tick(now_us, &mut self.engine);
+        let events = match self.mode {
+            EngineMode::Arp => self.scheduler.tick(now_us, &mut self.arp_engine),
+            EngineMode::Melody => self.scheduler.tick(now_us, &mut self.melody_engine),
+            EngineMode::Off => [None, None],
+        };
         if old_off.is_some() {
             // Restart begins with a NoteOn; preserve the preceding NoteOff.
             [old_off, events.into_iter().flatten().next()]
@@ -140,7 +213,8 @@ impl Playback {
 
     fn clear(&mut self) -> Option<ScheduledEvent> {
         self.selected = 0;
-        self.engine.clear();
+        self.arp_engine.clear();
+        self.melody_engine.clear();
         self.bpm = None;
         self.scheduler.stop()
     }
@@ -250,5 +324,46 @@ mod tests {
             p.tick(100, Some(120.0))[0],
             Some(ScheduledEvent::NoteOn(_))
         ));
+    }
+
+    #[test]
+    fn melody_mode_advances_and_plays_steps() {
+        let mut p = Playback::default();
+        p.set_mode(EngineMode::Melody);
+        p.set_melody_bars(BarLength::Bars2);
+        p.set_melody_variant(MelodyVariant::Mel1);
+        p.press(4, 0.8);
+        assert_eq!(p.selected(), 1 << 4);
+
+        let first = p.tick(0, Some(120.0));
+        assert!(matches!(first[0], Some(ScheduledEvent::NoteOn(Step { pad: 4, .. }))));
+
+        // Releasing stops in non-hold mode
+        assert_eq!(p.release(4), Some(ScheduledEvent::NoteOff { pad: 4 }));
+        assert_eq!(p.selected(), 0);
+    }
+
+    #[test]
+    fn melody_mode_hold_switches_active_pad() {
+        let mut p = Playback::default();
+        p.set_mode(EngineMode::Melody);
+        p.set_hold(true);
+
+        p.press(1, 0.8);
+        p.release(1);
+        assert_eq!(p.selected(), 1 << 1);
+
+        let _ = p.tick(0, Some(120.0));
+
+        // Hitting another pad switches to that pad and turns off previous
+        let off = p.press(8, 0.9);
+        assert_eq!(off, Some(ScheduledEvent::NoteOff { pad: 1 }));
+        assert_eq!(p.selected(), 1 << 8);
+        p.release(8);
+
+        // Hitting the same pad again toggles it off
+        let toggle_off = p.press(8, 0.9);
+        assert_eq!(p.selected(), 0);
+        assert!(toggle_off.is_none());
     }
 }

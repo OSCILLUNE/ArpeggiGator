@@ -76,8 +76,14 @@ pub struct Step {
     pub pad: u8,
     /// Original strike velocity, normalised to 0.0–1.0.
     pub velocity: f32,
-    /// Transposition above the original pad, in semitones.
-    pub transpose: u8,
+    /// Transposition above or below the original pad, in semitones.
+    pub transpose: i8,
+}
+
+/// A sequential step provider (used by ArpEngine and MelodyEngine).
+pub trait StepEngine {
+    fn held_count(&self) -> usize;
+    fn next_step(&mut self) -> Option<Step>;
 }
 
 #[derive(Clone, Copy, Debug, Default)]
@@ -91,7 +97,7 @@ struct HeldPad {
 #[derive(Clone, Copy, Default)]
 struct PatternNote {
     pad: HeldPad,
-    transpose: u8,
+    transpose: i8,
 }
 
 /// The arpeggiator's held-pad set and pure pattern sequencer.
@@ -232,7 +238,7 @@ impl ArpEngine {
         for octave in 1..=self.additional_octaves {
             pads[count] = PatternNote {
                 pad: root,
-                transpose: octave * 12,
+                transpose: (octave as i8) * 12,
             };
             count += 1;
         }
@@ -242,7 +248,7 @@ impl ArpEngine {
         } else {
             active.sort_by_key(|note| {
                 (
-                    u16::from(note.pad.pad) + u16::from(note.transpose),
+                    i16::from(note.pad.pad) + i16::from(note.transpose),
                     note.transpose,
                 )
             });
@@ -283,6 +289,16 @@ impl ArpEngine {
         }
         self.previous_random = Some(index);
         index
+    }
+}
+
+impl StepEngine for ArpEngine {
+    fn held_count(&self) -> usize {
+        self.held_count()
+    }
+
+    fn next_step(&mut self) -> Option<Step> {
+        self.next_step()
     }
 }
 
@@ -457,7 +473,7 @@ mod tests {
                 .collect();
             assert_eq!(&steps[..2], &[(7, 0), (1, 0)]);
             for index in 0..extra {
-                assert_eq!(steps[usize::from(index) + 2], (1, (index + 1) * 12));
+                assert_eq!(steps[usize::from(index) + 2], (1, ((index + 1) * 12) as i8));
             }
             assert_eq!(steps[usize::from(extra) + 2], (7, 0));
         }
@@ -465,7 +481,7 @@ mod tests {
 
     #[test]
     fn every_pattern_orders_added_notes_as_part_of_the_set() {
-        let cases: &[(Pattern, &[(u8, u8)])] = &[
+        let cases: &[(Pattern, &[(u8, i8)])] = &[
             (Pattern::Up, &[(0, 0), (1, 0), (0, 12), (0, 24)]),
             (Pattern::Down, &[(0, 24), (0, 12), (1, 0), (0, 0)]),
             (
@@ -499,7 +515,7 @@ mod tests {
                 (s.pad, s.transpose)
             })
             .collect();
-        for note in [(0, 0), (1, 0), (0, 12), (0, 24)] {
+        for note in [(0_u8, 0_i8), (1, 0), (0, 12), (0, 24)] {
             assert!(steps.contains(&note));
         }
         assert!(steps.windows(2).all(|pair| pair[0] != pair[1]));

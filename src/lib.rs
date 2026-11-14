@@ -5,6 +5,7 @@
 //! runs generated pad retriggers on the native audio thread.
 
 mod arp;
+mod melody;
 #[cfg(feature = "emulator-audio")]
 mod native_audio;
 mod playback;
@@ -13,8 +14,9 @@ mod scheduler;
 mod splash;
 mod tempo;
 
-pub use arp::{ArpEngine, Pattern, Step};
-pub use playback::Playback;
+pub use arp::{ArpEngine, Pattern, Step, StepEngine};
+pub use melody::{BarLength, MelodyEngine, MelodyVariant};
+pub use playback::{EngineMode, Playback};
 pub use scheduler::{ArpScheduler, ScheduledEvent, StepRate};
 
 use core::sync::atomic::{AtomicBool, AtomicI64, AtomicU32, Ordering};
@@ -40,6 +42,7 @@ static DASHBOARD_REFRESH_UNTIL_MS: AtomicI64 = AtomicI64::new(0);
 const PREVIEW_ENABLED: u32 = 1 << 16;
 const PAD_MASK: u32 = PREVIEW_ENABLED - 1;
 const HOLD_ENABLED: u32 = 1 << 17;
+const MODE_MELODY: u32 = 1 << 18;
 static PHYSICAL_PADS: AtomicU32 = AtomicU32::new(0);
 static SHORTCUT_PADS: AtomicU32 = AtomicU32::new(0);
 static PREVIEW_STATE: AtomicU32 = AtomicU32::new(0);
@@ -81,7 +84,17 @@ fn observe_surface(event: SurfaceEvent) {
                 #[cfg(feature = "emulator-audio")]
                 native_audio::begin_press(pad as usize);
                 let _ = PREVIEW_STATE.try_update(Ordering::AcqRel, Ordering::Acquire, |state| {
-                    (state & PREVIEW_ENABLED != 0).then_some(if state & HOLD_ENABLED != 0 {
+                    (state & PREVIEW_ENABLED != 0).then_some(if state & MODE_MELODY != 0 {
+                        if state & HOLD_ENABLED != 0 {
+                            if state & PAD_MASK == bit {
+                                state & !bit
+                            } else {
+                                (state & !PAD_MASK) | bit
+                            }
+                        } else {
+                            (state & !PAD_MASK) | bit
+                        }
+                    } else if state & HOLD_ENABLED != 0 {
                         state ^ bit
                     } else {
                         state | bit
@@ -118,7 +131,11 @@ enum Screen {
 #[derive(Default)]
 struct ArpeggiGator {
     engine: ArpEngine,
+    melody_engine: MelodyEngine,
     scheduler: ArpScheduler,
+    mode: EngineMode,
+    melody_bars: BarLength,
+    melody_variant: MelodyVariant,
     enabled: bool,
     current_screen: Screen,
     in_16_levels: bool,
@@ -217,7 +234,11 @@ impl Mod for ArpeggiGator {
             let _ = PREVIEW_STATE.try_update(Ordering::AcqRel, Ordering::Acquire, |state| {
                 (state & PREVIEW_ENABLED != 0).then_some(if state & HOLD_ENABLED != 0 {
                     // Disabling HOLD removes all latched pads.
-                    PREVIEW_ENABLED
+                    if state & MODE_MELODY != 0 {
+                        PREVIEW_ENABLED | MODE_MELODY
+                    } else {
+                        PREVIEW_ENABLED
+                    }
                 } else {
                     state | HOLD_ENABLED
                 })
@@ -236,7 +257,11 @@ impl Mod for ArpeggiGator {
                     action = if entering { 4 } else { 5 };
                     if !entering {
                         self.enabled = false;
+                        self.mode = EngineMode::Off;
+                        #[cfg(feature = "emulator-audio")]
+                        native_audio::set_mode(EngineMode::Off);
                         self.engine.clear();
+                        self.melody_engine.clear();
                         PREVIEW_STATE.store(0, Ordering::Release);
                         lighting::restore_pad_rgbs();
                         self.led_mask = 0;
@@ -279,29 +304,53 @@ impl Mod for ArpeggiGator {
                 ButtonFlow::Forward
             } else if bit == 1 {
                 self.consumed_buttons |= bit;
-                self.enabled = !self.enabled;
-                if !self.enabled {
+                self.mode = match self.mode {
+                    EngineMode::Off => EngineMode::Arp,
+                    EngineMode::Arp => EngineMode::Melody,
+                    EngineMode::Melody => EngineMode::Off,
+                };
+                self.enabled = self.mode != EngineMode::Off;
+                if self.mode == EngineMode::Off {
                     self.engine.clear();
+                    self.melody_engine.clear();
                     PREVIEW_STATE.store(0, Ordering::Release);
-                }
-                if self.enabled {
+                } else if self.mode == EngineMode::Arp {
                     PREVIEW_STATE.store(PREVIEW_ENABLED, Ordering::Release);
+                } else {
+                    PREVIEW_STATE.store(PREVIEW_ENABLED | MODE_MELODY, Ordering::Release);
                 }
-                action = if self.enabled { 1 } else { 2 };
+                #[cfg(feature = "emulator-audio")]
+                native_audio::set_mode(self.mode);
+                action = match self.mode {
+                    EngineMode::Arp => 1,
+                    EngineMode::Melody => 8,
+                    EngineMode::Off => 2,
+                };
                 ButtonFlow::Consume
             } else if bit == 2 {
                 self.consumed_buttons |= bit;
-                let pattern = self.engine.cycle_pattern();
-                #[cfg(feature = "emulator-audio")]
-                native_audio::set_pattern(pattern);
-                let _ = pattern;
+                if self.mode == EngineMode::Melody {
+                    self.melody_bars = self.melody_bars.cycle();
+                    #[cfg(feature = "emulator-audio")]
+                    native_audio::set_melody_bars(self.melody_bars);
+                } else {
+                    let _pattern = self.engine.cycle_pattern();
+                    #[cfg(feature = "emulator-audio")]
+                    native_audio::set_pattern(_pattern);
+                }
                 action = 3;
                 ButtonFlow::Consume
             } else {
                 self.consumed_buttons |= bit;
-                self.additional_notes = (self.additional_notes + 1) % 4;
-                #[cfg(feature = "emulator-audio")]
-                native_audio::set_additional_octaves(self.additional_notes);
+                if self.mode == EngineMode::Melody {
+                    self.melody_variant = self.melody_variant.cycle();
+                    #[cfg(feature = "emulator-audio")]
+                    native_audio::set_melody_variant(self.melody_variant);
+                } else {
+                    self.additional_notes = (self.additional_notes + 1) % 4;
+                    #[cfg(feature = "emulator-audio")]
+                    native_audio::set_additional_octaves(self.additional_notes);
+                }
                 action = 6;
                 ButtonFlow::Consume
             }
@@ -414,20 +463,31 @@ impl Mod for ArpeggiGator {
         self.led_mask = target_leds;
         let shift_active = SHIFT_ACTIVE.load(Ordering::Acquire);
         let show_shift_menu = self.is_16_levels_active() && shift_active;
-        let show_mascot = self.is_16_levels_active() && self.enabled;
-        if !show_shift_menu && !show_mascot {
+        let show_overlay = self.is_16_levels_active() && self.enabled;
+        if !show_shift_menu && !show_overlay {
             return;
         }
+        let b2_label = if self.mode == EngineMode::Melody {
+            self.melody_bars.label()
+        } else {
+            self.engine.pattern().label()
+        };
+        let b3_formatted;
+        let b3_label = if self.mode == EngineMode::Melody {
+            self.melody_variant.label()
+        } else {
+            b3_formatted = format!("+{}", self.additional_notes);
+            &b3_formatted
+        };
         // SAFETY: on_paint supplies the live Graphics object on the app's
-        // paint path. The overlay only paints the three SHIFT labels and the
-        // mascot after the user explicitly enables ARP in 16 Levels.
+        // paint path.
         unsafe {
             splash::draw_arp_overlay(
                 graphics,
                 show_shift_menu,
-                self.enabled,
-                self.engine.pattern().label(),
-                self.additional_notes,
+                self.mode,
+                b2_label,
+                b3_label,
                 (
                     active.count_ones() as u8,
                     preview & HOLD_ENABLED != 0,
@@ -740,6 +800,80 @@ mod animation_input_tests {
         // Next button LEVELS press correctly enters 16 levels (no inversion!):
         module.on_button(button_ev(button::LEVELS, true, false));
         assert!(module.in_16_levels);
+
+        lighting::reset_lighting();
+    }
+
+    #[test]
+    fn melody_mode_softkey_selection_and_pad_switching() {
+        let _guard = INPUT_TEST_LOCK.lock().unwrap();
+        lighting::reset_lighting();
+        let mut module = ArpeggiGator::default();
+        module.on_start();
+
+        // Enter 16 Levels
+        module.on_button(button_ev(button::LEVELS, true, false));
+        assert!(module.is_16_levels_active());
+        assert_eq!(module.mode, EngineMode::Off);
+
+        // 1st SHIFT+B1 -> enters Arp
+        module.on_button(button_ev(BUTTON_B1, true, true));
+        module.on_button(button_ev(BUTTON_B1, false, true));
+        assert_eq!(module.mode, EngineMode::Arp);
+        assert!(module.enabled);
+
+        // 2nd SHIFT+B1 -> enters Melody
+        module.on_button(button_ev(BUTTON_B1, true, true));
+        module.on_button(button_ev(BUTTON_B1, false, true));
+        assert_eq!(module.mode, EngineMode::Melody);
+        assert!(module.enabled);
+        assert_eq!(PREVIEW_STATE.load(Ordering::Acquire) & MODE_MELODY, MODE_MELODY);
+
+        // In Melody: SHIFT+B2 cycles bars
+        assert_eq!(module.melody_bars, BarLength::Bars2);
+        module.on_button(button_ev(BUTTON_B2, true, true));
+        module.on_button(button_ev(BUTTON_B2, false, true));
+        assert_eq!(module.melody_bars, BarLength::Bars4);
+        module.on_button(button_ev(BUTTON_B2, true, true));
+        module.on_button(button_ev(BUTTON_B2, false, true));
+        assert_eq!(module.melody_bars, BarLength::Bars8);
+        module.on_button(button_ev(BUTTON_B2, true, true));
+        module.on_button(button_ev(BUTTON_B2, false, true));
+        assert_eq!(module.melody_bars, BarLength::Bars16);
+
+        // In Melody: SHIFT+B3 cycles melody variants
+        assert_eq!(module.melody_variant, MelodyVariant::Mel1);
+        module.on_button(button_ev(BUTTON_B3, true, true));
+        module.on_button(button_ev(BUTTON_B3, false, true));
+        assert_eq!(module.melody_variant, MelodyVariant::Mel2);
+
+        // In Melody with HOLD: test pad switching and single-pad latch
+        // Turn HOLD on (click DATA wheel)
+        module.on_button(button_ev(button::DATA, true, false));
+        module.on_button(button_ev(button::DATA, false, false));
+        assert_ne!(PREVIEW_STATE.load(Ordering::Acquire) & HOLD_ENABLED, 0);
+
+        // Strike Pad 1
+        observe_surface(surface(1, 0x99, 100));
+        observe_surface(surface(1, 0x89, 0));
+        assert_eq!(PREVIEW_STATE.load(Ordering::Acquire) & PAD_MASK, 1 << 1);
+
+        // Strike Pad 5: voice steals! Pad 1 turns off, Pad 5 latches!
+        observe_surface(surface(5, 0x99, 100));
+        observe_surface(surface(5, 0x89, 0));
+        assert_eq!(PREVIEW_STATE.load(Ordering::Acquire) & PAD_MASK, 1 << 5);
+
+        // Strike Pad 5 again: toggles off!
+        observe_surface(surface(5, 0x99, 100));
+        observe_surface(surface(5, 0x89, 0));
+        assert_eq!(PREVIEW_STATE.load(Ordering::Acquire) & PAD_MASK, 0);
+
+        // 3rd SHIFT+B1 -> returns to Off
+        module.on_button(button_ev(BUTTON_B1, true, true));
+        module.on_button(button_ev(BUTTON_B1, false, true));
+        assert_eq!(module.mode, EngineMode::Off);
+        assert!(!module.enabled);
+        assert_eq!(PREVIEW_STATE.load(Ordering::Acquire), 0);
 
         lighting::reset_lighting();
     }

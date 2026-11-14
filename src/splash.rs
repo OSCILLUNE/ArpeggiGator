@@ -1,6 +1,7 @@
 //! Small ArpeggiGator controls for the 16 Levels SHIFT menu.
 
 use mpc_sample_sdk::draw::Graphics;
+use crate::EngineMode;
 
 const INK: u32 = 0xff16082f;
 const BG: u32 = 0xff09051f;
@@ -27,17 +28,17 @@ const SHADOW: u32 = 0xff075c39;
 const MID: u32 = 0xff18a852;
 const HIGHLIGHT: u32 = 0xffa8ed67;
 
-/// Paint custom B1/B2/B3 captions while SHIFT is held and a small mascot only
-/// while the arpeggiator is enabled.
+/// Paint custom B1/B2/B3 captions while SHIFT is held and active overlay for
+/// ARP or MELODY engine modes.
 ///
 /// # Safety
 /// Call only from the SDK's live `on_paint` callback.
 pub unsafe fn draw_arp_overlay(
     graphics: &mut Graphics,
     show_shift_menu: bool,
-    enabled: bool,
-    pattern: &str,
-    additional_notes: u8,
+    mode: EngineMode,
+    b2_label: &str,
+    b3_label: &str,
     preview: (u8, bool, &str),
     now_ms: u64,
 ) {
@@ -45,32 +46,308 @@ pub unsafe fn draw_arp_overlay(
     // SAFETY: the caller owns the live Graphics handle for this paint.
     unsafe {
         if show_shift_menu {
-            draw_shift_labels(graphics, enabled, pattern, additional_notes);
+            draw_shift_labels(graphics, mode, b2_label, b3_label);
         }
-        if enabled {
-            graphics.colour(0xffd56aff);
-            graphics.text("PRESS DATA", 189, 73, 125, 15, 13.0);
-            graphics.colour(if hold { LIME } else { 0xffff4053 });
-            graphics.text(
-                if hold { "HOLD: ON" } else { "HOLD: OFF" },
-                189,
-                90,
-                125,
-                15,
-                13.0,
-            );
-            graphics.colour(0xff63ddec);
-            graphics.text("TURN DATA: RATE", 189, 147, 125, 15, 12.0);
-            graphics.colour(LIME);
-            graphics.text(rate, 194, 163, 116, 22, 19.0);
-            let phase = if held_pads > 0 { (now_ms / 150) % 8 } else { 0 };
-            let chewing = held_pads > 0 && (3..=5).contains(&phase);
-            draw_gator(graphics, chewing, phase, held_pads > 0, 0);
-            if held_pads > 0 {
-                let note_x = 264 - ((now_ms / 65) % 76) as i32;
-                draw_note(graphics, note_x, chewing);
+        match mode {
+            EngineMode::Arp => {
+                draw_arp_view(graphics, held_pads, hold, rate, now_ms);
+            }
+            EngineMode::Melody => {
+                draw_melody_view(graphics, b2_label, b3_label, held_pads, hold, rate, now_ms);
+            }
+            EngineMode::Off => {}
+        }
+    }
+}
+
+unsafe fn draw_arp_view(
+    graphics: &mut Graphics,
+    held_pads: u8,
+    hold: bool,
+    rate: &str,
+    now_ms: u64,
+) {
+    unsafe {
+        graphics.colour(0xffd56aff);
+        graphics.text("PRESS DATA", 189, 73, 125, 15, 13.0);
+        graphics.colour(if hold { LIME } else { 0xffff4053 });
+        graphics.text(
+            if hold { "HOLD: ON" } else { "HOLD: OFF" },
+            189,
+            90,
+            125,
+            15,
+            13.0,
+        );
+        graphics.colour(0xff63ddec);
+        graphics.text("TURN DATA: RATE", 189, 147, 125, 15, 12.0);
+        graphics.colour(LIME);
+        graphics.text(rate, 194, 163, 116, 22, 19.0);
+        let phase = if held_pads > 0 { (now_ms / 150) % 8 } else { 0 };
+        let chewing = held_pads > 0 && (3..=5).contains(&phase);
+        draw_gator(graphics, chewing, phase, held_pads > 0, 0);
+        if held_pads > 0 {
+            let note_x = 264 - ((now_ms / 65) % 76) as i32;
+            draw_note(graphics, note_x, chewing);
+        }
+    }
+}
+
+unsafe fn draw_melody_view(
+    graphics: &mut Graphics,
+    bars_label: &str,
+    mel_label: &str,
+    held_pads: u8,
+    hold: bool,
+    rate: &str,
+    now_ms: u64,
+) {
+    unsafe {
+        // Right side information column
+        graphics.colour(0xff63ddec);
+        graphics.text("MODE: MELODY", 189, 73, 125, 15, 13.0);
+        graphics.colour(if hold { LIME } else { 0xffff4053 });
+        graphics.text(
+            if hold { "HOLD: ON" } else { "HOLD: OFF" },
+            189,
+            90,
+            125,
+            15,
+            13.0,
+        );
+        graphics.colour(0xffff70d6);
+        graphics.text(&format!("{bars_label}  {mel_label}"), 189, 107, 125, 15, 13.0);
+        graphics.colour(0xff63ddec);
+        graphics.text("TURN DATA: RATE", 189, 147, 125, 15, 12.0);
+        graphics.colour(LIME);
+        graphics.text(rate, 194, 163, 116, 22, 19.0);
+
+        // Club scene on the left
+        draw_club_scene(graphics, held_pads > 0, now_ms);
+    }
+}
+
+unsafe fn draw_club_scene(graphics: &mut Graphics, active: bool, now_ms: u64) {
+    unsafe {
+        draw_lasers(graphics, active, now_ms);
+        draw_disco_ball(graphics, now_ms);
+        draw_dj_booth(graphics, active, now_ms);
+        draw_dj_gator(graphics, active, now_ms);
+    }
+}
+
+unsafe fn draw_lasers(graphics: &mut Graphics, active: bool, now_ms: u64) {
+    unsafe {
+        let pulse = if active { (now_ms / 100) % 4 } else { 0 };
+        graphics.colour(if active && (pulse == 0 || pulse == 2) { 0xff00ffff } else { 0xff005577 });
+        for i in 0..30 {
+            let x = 12 + i * 5;
+            let y = 50 + (i * 3);
+            graphics.rect(x, y, 3, 1);
+        }
+
+        graphics.colour(if active && (pulse == 1 || pulse == 3) { 0xffff0088 } else { 0xff770044 });
+        for i in 0..30 {
+            let x = 160 - (i * 5);
+            let y = 52 + (i * 3);
+            graphics.rect(x, y, 3, 1);
+        }
+
+        if active {
+            graphics.colour(0xffa6f52a);
+            let sweep = ((now_ms / 150) % 6) as i32 - 3;
+            for i in 0..25 {
+                let x = 88 + (sweep * i / 2);
+                let y = 70 + (i * 3);
+                graphics.rect(x, y, 2, 1);
             }
         }
+    }
+}
+
+unsafe fn draw_disco_ball(graphics: &mut Graphics, now_ms: u64) {
+    unsafe {
+        let cx = 88;
+        let cy = 64;
+
+        graphics.colour(0xff808898);
+        graphics.rect(cx, 45, 1, 11);
+
+        graphics.colour(0xff181c24);
+        graphics.rect(cx - 7, cy - 8, 15, 17);
+        graphics.rect(cx - 9, cy - 6, 19, 13);
+        graphics.rect(cx - 10, cy - 4, 21, 9);
+
+        let shimmer = ((now_ms / 120) % 4) as usize;
+        let colors = [0xffffffff, 0xffa0e8ff, 0xffc0c8d8, 0xff687890];
+
+        for row in 0..4 {
+            for col in 0..4 {
+                let c_idx = (row + col + shimmer) % 4;
+                graphics.colour(colors[c_idx]);
+                let x = cx - 8 + (col as i32 * 4);
+                let y = cy - 7 + (row as i32 * 4);
+                graphics.rect(x + 1, y + 1, 3, 3);
+            }
+        }
+
+        let spot_phase = (now_ms / 200) % 8;
+        let spots = [
+            (cx - 35 + (spot_phase as i32 * 2), 170),
+            (cx + 20 - (spot_phase as i32 * 2), 175),
+            (cx - 15 + (spot_phase as i32 * 3), 162),
+            (cx + 40 - (spot_phase as i32 * 3), 166),
+        ];
+        graphics.colour(0xffffffff);
+        for &(sx, sy) in &spots {
+            graphics.rect(sx, sy, 2, 2);
+        }
+    }
+}
+
+unsafe fn draw_dj_booth(graphics: &mut Graphics, active: bool, now_ms: u64) {
+    unsafe {
+        graphics.colour(0xff120524);
+        graphics.rect(26, 146, 132, 38);
+        graphics.colour(0xff220a40);
+        graphics.rect(28, 148, 128, 34);
+
+        graphics.colour(0xff00f0ff);
+        graphics.rect(26, 146, 132, 2);
+        graphics.colour(0xffff0088);
+        graphics.rect(26, 182, 132, 2);
+        graphics.colour(0xff7720a8);
+        graphics.rect(26, 148, 2, 34);
+        graphics.rect(156, 148, 2, 34);
+
+        graphics.colour(0xff35125a);
+        graphics.rect(48, 156, 88, 18);
+        graphics.colour(0xffd56aff);
+        graphics.text("ARPEGGI", 58, 157, 70, 16, 11.0);
+
+        draw_turntable(graphics, 34, 140, active, now_ms, 0xffff2050);
+        draw_turntable(graphics, 118, 140, active, now_ms, 0xff00e5ff);
+
+        graphics.colour(0xff252835);
+        graphics.rect(72, 141, 38, 12);
+        graphics.colour(0xff404858);
+        graphics.rect(76, 144, 30, 2);
+        let fader_pos = if active { ((now_ms / 150) % 5) as i32 * 4 } else { 8 };
+        graphics.colour(0xffffffff);
+        graphics.rect(78 + fader_pos, 143, 4, 4);
+
+        let vu_level = if active { ((now_ms / 100) % 4) as i32 } else { 1 };
+        for led in 0..3 {
+            let col = if led <= vu_level {
+                match led {
+                    0 => 0xff00ff66,
+                    1 => 0xffffdd00,
+                    _ => 0xffff2233,
+                }
+            } else {
+                0xff1a2028
+            };
+            graphics.colour(col);
+            graphics.rect(87, 148 + (led * 2), 2, 1);
+            graphics.rect(93, 148 + (led * 2), 2, 1);
+        }
+    }
+}
+
+unsafe fn draw_turntable(
+    graphics: &mut Graphics,
+    x: i32,
+    y: i32,
+    active: bool,
+    now_ms: u64,
+    label_color: u32,
+) {
+    unsafe {
+        graphics.colour(0xff303542);
+        graphics.rect(x - 2, y - 1, 36, 14);
+
+        graphics.colour(0xff111216);
+        graphics.rect(x, y, 32, 12);
+        graphics.colour(0xff1e222a);
+        graphics.rect(x + 2, y + 1, 28, 10);
+
+        graphics.colour(label_color);
+        graphics.rect(x + 12, y + 4, 8, 4);
+
+        let rot = if active { ((now_ms / 80) % 4) as i32 } else { 0 };
+        graphics.colour(0xffffffff);
+        let (dot_x, dot_y) = match rot {
+            0 => (x + 14, y + 2),
+            1 => (x + 22, y + 5),
+            2 => (x + 14, y + 9),
+            _ => (x + 6, y + 5),
+        };
+        graphics.rect(dot_x, dot_y, 2, 2);
+    }
+}
+
+unsafe fn draw_dj_gator(graphics: &mut Graphics, active: bool, now_ms: u64) {
+    unsafe {
+        let bob = if active {
+            [0, -1, -2, -1, 0, 1, 2, 1][((now_ms / 120) % 8) as usize]
+        } else {
+            0
+        };
+
+        let gx = 68;
+        let gy = 100 + bob;
+
+        graphics.colour(INK);
+        graphics.rect(gx + 6, gy + 32, 28, 15);
+        graphics.colour(SHADOW);
+        graphics.rect(gx + 8, gy + 34, 24, 13);
+        graphics.colour(GREEN);
+        graphics.rect(gx + 10, gy + 35, 20, 10);
+
+        graphics.colour(INK);
+        graphics.rect(gx + 8, gy + 12, 28, 22);
+        graphics.rect(gx + 22, gy + 18, 18, 14);
+
+        graphics.colour(GREEN);
+        graphics.rect(gx + 10, gy + 14, 24, 18);
+        graphics.rect(gx + 22, gy + 20, 16, 10);
+
+        graphics.colour(HIGHLIGHT);
+        graphics.rect(gx + 12, gy + 14, 14, 3);
+        graphics.rect(gx + 24, gy + 20, 10, 2);
+
+        graphics.colour(0xff7b1fa2);
+        graphics.rect(gx + 14, gy + 19, 18, 6);
+        graphics.colour(0xffe1bee7);
+        graphics.rect(gx + 16, gy + 20, 4, 2);
+        graphics.rect(gx + 24, gy + 20, 4, 2);
+
+        graphics.colour(INK);
+        graphics.rect(gx + 24, gy + 28, 14, 2);
+        graphics.colour(CREAM);
+        graphics.rect(gx + 26, gy + 27, 3, 2);
+        graphics.rect(gx + 32, gy + 27, 3, 2);
+
+        graphics.colour(0xffd50000);
+        graphics.rect(gx + 8, gy + 8, 24, 4);
+        graphics.rect(gx + 6, gy + 10, 4, 8);
+        graphics.rect(gx + 6, gy + 16, 5, 10);
+        graphics.colour(0xffff5252);
+        graphics.rect(gx + 7, gy + 18, 3, 6);
+
+        let scratch_offset = if active { ((now_ms / 100) % 3) as i32 - 1 } else { 0 };
+        graphics.colour(INK);
+        graphics.rect(gx - 10 + scratch_offset, gy + 36, 12, 6);
+        graphics.colour(GREEN);
+        graphics.rect(gx - 9 + scratch_offset, gy + 37, 10, 4);
+
+        let pump_y = gy + (if active { -4 + bob } else { 2 });
+        graphics.colour(INK);
+        graphics.rect(gx + 36, pump_y + 12, 8, 12);
+        graphics.colour(GREEN);
+        graphics.rect(gx + 37, pump_y + 13, 6, 10);
+        graphics.colour(HIGHLIGHT);
+        graphics.rect(gx + 39, pump_y + 9, 3, 5);
     }
 }
 
@@ -329,23 +606,75 @@ unsafe fn draw_splash_suited_gator(graphics: &mut Graphics) {
 
 unsafe fn draw_shift_labels(
     graphics: &mut Graphics,
-    enabled: bool,
-    pattern: &str,
-    additional_notes: u8,
+    mode: EngineMode,
+    b2_label: &str,
+    b3_label: &str,
 ) {
     // These three cells cover the MPC's B1/B2/B3 captions, leaving the rest
     // of the Sample or 16 Levels screen untouched.
     unsafe {
-        label_cell(graphics, 13, 5, 88, if enabled { LIME } else { BG });
+        let fill_b1 = match mode {
+            EngineMode::Off => BG,
+            EngineMode::Arp => LIME,
+            EngineMode::Melody => 0xffe6007e, // Neon club pink
+        };
+        label_cell(graphics, 13, 5, 88, fill_b1);
         label_cell(graphics, 111, 5, 98, BG);
         label_cell(graphics, 219, 5, 88, BG);
 
-        graphics.colour(if enabled { INK } else { PINK });
-        graphics.text("ARP", 17, 8, 80, 19, 15.0);
+        match mode {
+            EngineMode::Off => {
+                draw_mini_gator(graphics, 47, 10);
+            }
+            EngineMode::Arp => {
+                graphics.colour(INK);
+                graphics.text("ARP", 17, 8, 80, 19, 15.0);
+            }
+            EngineMode::Melody => {
+                graphics.colour(0xffffffff);
+                graphics.text("MELODY", 17, 8, 80, 19, 14.0);
+            }
+        }
         graphics.colour(CREAM);
-        graphics.text(pattern, 115, 8, 90, 19, 13.0);
+        graphics.text(b2_label, 115, 8, 90, 19, 13.0);
         graphics.colour(GOLD);
-        graphics.text(&format!("+{additional_notes}"), 223, 8, 80, 19, 15.0);
+        graphics.text(b3_label, 223, 8, 80, 19, 15.0);
+    }
+}
+
+unsafe fn draw_mini_gator(graphics: &mut Graphics, x: i32, y: i32) {
+    unsafe {
+        // Dark outline
+        graphics.colour(INK);
+        graphics.rect(x + 2, y + 2, 17, 12);
+        graphics.rect(x + 5, y + 5, 17, 8);
+
+        // Gator green head and snout
+        graphics.colour(GREEN);
+        graphics.rect(x + 3, y + 3, 14, 10);
+        graphics.rect(x + 8, y + 6, 13, 6);
+
+        // Highlight scales
+        graphics.colour(HIGHLIGHT);
+        graphics.rect(x + 5, y + 3, 6, 2);
+        graphics.rect(x + 12, y + 6, 6, 2);
+
+        // Dark sunglasses / visor
+        graphics.colour(0xffa62be8);
+        graphics.rect(x + 5, y + 5, 7, 4);
+        graphics.colour(0xfffff0d5);
+        graphics.rect(x + 6, y + 5, 2, 2);
+
+        // DJ headphone band on left
+        graphics.colour(0xffed3043);
+        graphics.rect(x + 1, y + 3, 3, 8);
+        graphics.rect(x + 2, y + 1, 6, 2);
+
+        // Cute white tooth
+        graphics.colour(CREAM);
+        graphics.rect(x + 16, y + 10, 2, 2);
+        graphics.colour(INK);
+        graphics.rect(x + 9, y + 11, 11, 1);
     }
 }
 
