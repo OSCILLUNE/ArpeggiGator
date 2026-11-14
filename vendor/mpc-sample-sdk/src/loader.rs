@@ -7,7 +7,7 @@
 use core::cell::Cell;
 use core::fmt;
 
-use crate::event::{AudioHooks, Mod, SurfaceEvent};
+use crate::event::{AudioHooks, Mod, NoteInterceptor, SurfaceEvent};
 use crate::image::{self, Firmware};
 use crate::sites;
 
@@ -89,6 +89,12 @@ static MODULE: std::sync::OnceLock<std::sync::Mutex<&'static mut dyn Mod>> =
 /// never drop an audio block.
 static AUDIO: std::sync::OnceLock<AudioHooks> = std::sync::OnceLock::new();
 static SURFACE_OBSERVER: std::sync::OnceLock<fn(SurfaceEvent)> = std::sync::OnceLock::new();
+static NOTE_INTERCEPTOR: std::sync::OnceLock<NoteInterceptor> = std::sync::OnceLock::new();
+
+/// Return the installed real-time note interceptor, if any.
+pub(crate) fn note_interceptor() -> Option<NoteInterceptor> {
+    NOTE_INTERCEPTOR.get().copied()
+}
 
 /// Observe surface events without taking the module mutex.
 pub(crate) fn observe_surface(event: SurfaceEvent) {
@@ -202,6 +208,9 @@ pub unsafe fn install(module: &'static mut dyn Mod) -> Result<(), InstallError> 
     // SAFETY: verified image, one installation before application threads.
     if !unsafe { sites::install(firmware.base()) } {
         return Err(InstallError::NoHooks);
+    }
+    if let Some(interceptor) = module.note_interceptor() {
+        let _ = NOTE_INTERCEPTOR.set(interceptor);
     }
     if let Some(observer) = module.surface_observer() {
         let _ = SURFACE_OBSERVER.set(observer);

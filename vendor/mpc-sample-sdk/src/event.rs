@@ -194,6 +194,14 @@ pub enum CcFlow {
     Consume,
 }
 
+/// A real-time MIDI interceptor called before the module mutex is attempted.
+///
+/// Return `None` without modifying the event to leave it to the normal callback.
+/// Return a flow to handle it immediately. This runs on the caller's thread,
+/// including the audio thread: it must not block, allocate, retain pointers,
+/// call `with_mod`, or use shared mutable state without real-time-safe atomics.
+pub type NoteInterceptor = for<'event> fn(&mut NoteEvent<'event>) -> Option<NoteFlow>;
+
 /// What the mod wants done with a MIDI note.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum NoteFlow {
@@ -283,6 +291,14 @@ pub trait Mod: Send + 'static {
     /// A control change arrived.
     fn on_cc(&mut self, _event: CcEvent) -> CcFlow {
         CcFlow::Forward
+    }
+
+    /// Optional real-time interceptor for MIDI events, copied at installation.
+    ///
+    /// Unlike `on_note`, this runs even when the module mutex is occupied. It
+    /// must follow the real-time restrictions documented on `NoteInterceptor`.
+    fn note_interceptor(&self) -> Option<NoteInterceptor> {
+        None
     }
 
     /// A MIDI note event arrived.

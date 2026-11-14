@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.0.1.6
+
+- Add an optional real-time MIDI interceptor to the vendored SDK; ordinary MIDI retains its existing path.
+- Verify isolated note interception while the emulator UI lock is occupied.
+- Generated audio remains experimental and is not enabled in the normal build.
+
 ## 0.0.1.5
 
 - Preserve an isolated emulator-only private MIDI audio proof of concept.

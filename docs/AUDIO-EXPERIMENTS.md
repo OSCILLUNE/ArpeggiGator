@@ -110,3 +110,22 @@ not yet a verified injection or scheduling interface. A private MIDI input
 remains an experiment, and the firmware path must not be shipped until source
 identity, note-off delivery, queue overload, cleanup and mode changes are
 proven under contention.
+
+
+## 2026-11-14: real-time note interception under UI contention
+
+The vendored SDK now has an optional `NoteInterceptor`. It is copied once at
+installation, receives only the current borrowed note event, and runs before
+attempting the module mutex. Returning `None` preserves the previous SDK path.
+Its contract prohibits blocking, allocation, pointer retention and module
+re-entry; the production ArpeggiGator does not install an interceptor yet.
+
+For an emulator-only test, `experiments/private-midi/build.py --contention`
+compiled a disposable mod which blocks its own paint callback for five seconds
+on SHIFT+B3. While this held the module mutex, all eight private marker events
+(four on and four off) reached the interceptor during the block. The experiment
+is not safe to install on hardware and does not establish bounded MIDI
+transport latency, audio cleanup on disconnect, or correct pitch mapping.
+A subsequent test of the ordinary no-interceptor build passed one and two pad
+press/release, five taps, and ARP-off-while-held. The private diagnostic module
+was removed from the running emulator afterward.

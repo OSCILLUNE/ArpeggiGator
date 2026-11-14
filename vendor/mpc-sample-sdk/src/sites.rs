@@ -8,8 +8,8 @@ use core::sync::atomic::{AtomicBool, Ordering};
 
 use crate::draw::{self, Graphics, Repaint};
 use crate::event::{
-    self, ButtonEvent, ButtonFlow, CcEvent, CcFlow, EncoderEvent, EncoderFlow, NoteFlow, PadAction,
-    PadEvent, PadFlow, PaintEvent, SurfaceEvent, SurfaceFlow,
+    self, ButtonEvent, ButtonFlow, CcEvent, CcFlow, EncoderEvent, EncoderFlow, NoteFlow,
+    NoteInterceptor, PadAction, PadEvent, PadFlow, PaintEvent, SurfaceEvent, SurfaceFlow,
 };
 use crate::hook;
 use crate::image;
@@ -549,7 +549,9 @@ unsafe extern "C" fn note(app: usize, context: usize, event: *mut u8, source: us
     };
     // SAFETY: the site supplies the app's own displaced pitch setter.
     let mut message = unsafe { NoteEvent::new(app, context, storage, source as u64, pitch_off) };
-    let flow = with_mod(|module| module.on_note(&mut message)).unwrap_or(NoteFlow::Forward);
+    let flow = choose_note_flow(&mut message, crate::loader::note_interceptor(), |message| {
+        with_mod(|module| module.on_note(message)).unwrap_or(NoteFlow::Forward)
+    });
     match flow {
         NoteFlow::Forward => {
             message.restore();
@@ -628,6 +630,17 @@ unsafe extern "C" fn page_paint(component: usize, graphics: usize) {
     };
     let mut handle = Graphics::new(graphics);
     with_mod(|module| module.on_paint(&mut handle, event));
+}
+
+// Try the real-time path first; it never accesses the module mutex.
+fn choose_note_flow(
+    message: &mut NoteEvent<'_>,
+    interceptor: Option<NoteInterceptor>,
+    fallback: impl FnOnce(&mut NoteEvent<'_>) -> NoteFlow,
+) -> NoteFlow {
+    interceptor
+        .and_then(|handle| handle(message))
+        .unwrap_or_else(|| fallback(message))
 }
 
 /// Install the page paint over the app's vtable slot.
@@ -777,7 +790,39 @@ pub unsafe fn send_note_off(input: usize, source: i32, pad: i32) {
 
 #[cfg(test)]
 mod tests {
-    use super::{notes_ready, table};
+    use super::{choose_note_flow, notes_ready, table};
+    use crate::{NoteEvent, NoteFlow};
+
+    fn consume(_event: &mut NoteEvent<'_>) -> Option<NoteFlow> {
+        Some(NoteFlow::Consume)
+    }
+
+    fn ignore(_event: &mut NoteEvent<'_>) -> Option<NoteFlow> {
+        None
+    }
+
+    #[test]
+    fn realtime_note_interceptor_runs_before_fallback_without_a_module_lock() {
+        let mut storage = [0_u8; 64];
+        // SAFETY: the storage is exclusively borrowed and no setter is used.
+        let mut event = unsafe { NoteEvent::new(0, 0, &mut storage, 0, None) };
+        let lock = std::sync::Mutex::new(());
+        let guard = lock.lock().unwrap();
+        let flow = choose_note_flow(&mut event, Some(consume), |_| {
+            assert!(lock.try_lock().is_ok(), "the fallback must not run");
+            NoteFlow::Forward
+        });
+        assert_eq!(flow, NoteFlow::Consume);
+        drop(guard);
+        assert_eq!(
+            choose_note_flow(&mut event, Some(ignore), |_| NoteFlow::Forward),
+            NoteFlow::Forward
+        );
+        assert_eq!(
+            choose_note_flow(&mut event, None, |_| NoteFlow::Consume),
+            NoteFlow::Consume
+        );
+    }
 
     #[test]
     fn the_table_has_one_entry_per_site() {

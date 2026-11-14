@@ -5,6 +5,7 @@ This deliberately never changes the checked-out SDK, the autorun card, or a
 running MPC. The output is for the virtual lab only, not physical hardware.
 """
 from pathlib import Path
+import argparse
 import os
 import shutil
 import subprocess
@@ -13,6 +14,9 @@ import tempfile
 ROOT = Path(__file__).resolve().parents[2]
 OUTPUT = ROOT / 'build' / 'private-midi-poc'
 SDK_REL = Path('vendor/mpc-sample-sdk')
+parser = argparse.ArgumentParser()
+parser.add_argument('--contention', action='store_true', help='emulator-only: block the UI for 5 seconds on SHIFT+B3')
+args = parser.parse_args()
 
 
 def replace_once(text, old, new):
@@ -52,24 +56,48 @@ with tempfile.TemporaryDirectory(prefix='arpeggigator-midi-poc-') as tmp:
 
     lib = scratch / 'src/lib.rs'
     data = lib.read_text()
-    data = replace_once(data, 'static SHIFT_ACTIVE:', '''#[unsafe(no_mangle)]
+    data = replace_once(data, 'static SHIFT_ACTIVE:', """#[unsafe(no_mangle)]
 pub static g_poc_events: AtomicU32 = AtomicU32::new(0);
 #[unsafe(no_mangle)]
 pub static g_poc_last: AtomicU32 = AtomicU32::new(0);
-static SHIFT_ACTIVE:''')
-    data = replace_once(data, '    fn surface_observer(&self)', '''    fn on_note(&mut self, event: &mut mpc_sample_sdk::NoteEvent) -> mpc_sample_sdk::NoteFlow {
-        // Only the virtual lab's explicitly named proof-of-concept port.
-        if event.source == 0x60ec_0937 && event.note_on && (event.note == 36 || event.note == 35) {
-            let is_off = event.note == 35;
-            g_poc_events.fetch_add(1, Ordering::AcqRel);
-            g_poc_last.store(if is_off { 2 } else { 1 }, Ordering::Release);
-            let ok = if is_off { event.test_replay_off(0, 0, 0) } else { event.replay_as_pad(0, 0, 0) };
-            if ok { return mpc_sample_sdk::NoteFlow::Replayed; }
-        }
-        mpc_sample_sdk::NoteFlow::Forward
+#[unsafe(no_mangle)]
+pub static g_poc_during_block: AtomicU32 = AtomicU32::new(0);
+static POC_BLOCK_REQUEST: AtomicBool = AtomicBool::new(false);
+static POC_BLOCK_ACTIVE: AtomicBool = AtomicBool::new(false);
+static SHIFT_ACTIVE:""")
+    data = replace_once(data, '#[derive(Default)]\nstruct ArpeggiGator', """fn poc_intercept(event: &mut mpc_sample_sdk::NoteEvent<'_>) -> Option<mpc_sample_sdk::NoteFlow> {
+    // This identifier and mapping are only valid for the measured emulator.
+    if event.source != 0x60ec_0937 || !event.note_on || (event.note != 36 && event.note != 35) {
+        return None;
+    }
+    let is_off = event.note == 35;
+    g_poc_events.fetch_add(1, Ordering::AcqRel);
+    if POC_BLOCK_ACTIVE.load(Ordering::Acquire) {
+        g_poc_during_block.fetch_add(1, Ordering::AcqRel);
+    }
+    g_poc_last.store(if is_off { 2 } else { 1 }, Ordering::Release);
+    let ok = if is_off { event.test_replay_off(0, 0, 0) } else { event.replay_as_pad(0, 0, 0) };
+    Some(if ok { mpc_sample_sdk::NoteFlow::Replayed } else { mpc_sample_sdk::NoteFlow::Forward })
+}
+
+#[derive(Default)]
+struct ArpeggiGator""")
+    data = replace_once(data, '    fn surface_observer(&self)', """    fn note_interceptor(&self) -> Option<mpc_sample_sdk::NoteInterceptor> {
+        Some(poc_intercept)
     }
 
-    fn surface_observer(&self)''')
+    fn surface_observer(&self)""")
+    if args.contention:
+        data = replace_once(data, '    fn on_button(&mut self, event: ButtonEvent) -> ButtonFlow {', """    fn on_button(&mut self, event: ButtonEvent) -> ButtonFlow {
+        if event.code == BUTTON_B3 && event.pressed && event.shift {
+            POC_BLOCK_REQUEST.store(true, Ordering::Release);
+        }""")
+        data = replace_once(data, '    fn on_paint(&mut self, graphics: &mut mpc_sample_sdk::draw::Graphics, event: PaintEvent) {', """    fn on_paint(&mut self, graphics: &mut mpc_sample_sdk::draw::Graphics, event: PaintEvent) {
+        if POC_BLOCK_REQUEST.swap(false, Ordering::AcqRel) {
+            POC_BLOCK_ACTIVE.store(true, Ordering::Release);
+            std::thread::sleep(std::time::Duration::from_secs(5));
+            POC_BLOCK_ACTIVE.store(false, Ordering::Release);
+        }""")
     lib.write_text(data)
     OUTPUT.mkdir(parents=True, exist_ok=True)
     env = os.environ.copy()
