@@ -95,31 +95,40 @@ pub fn set_additional_octaves(octaves: u8) {
 
 pub fn capture(event: &mut NoteEvent<'_>) -> Option<NoteFlow> {
     if !READY.load(Acquire)
-        || !event.note_on
         || event.source != u64::from(PAD_SOURCE)
         || event.context != 0
         || event.note >= 128
     {
         return None;
     }
-    let pad = event.physical_pad?;
-    let index = usize::try_from(pad.pad).ok().filter(|&pad| pad < 16)?;
-    if SHORTCUT_PADS.load(Acquire) & (1 << index) != 0 {
-        return Some(NoteFlow::Consume);
-    }
-    let pitch = i8::try_from(pad.pitch?).ok()?;
     let state = PREVIEW_STATE.load(Acquire);
     if state & PREVIEW_ENABLED == 0 || tempo::current_bpm().is_none() {
         return None;
     }
-    let serial = SERIAL.fetch_add(1, Relaxed).wrapping_add(1);
-    let velocity = (event.velocity.clamp(0.0, 1.0) * f32::from(u16::MAX)).round() as u16;
-    let bits = (u64::from(serial) << 32)
-        | (u64::from(velocity.max(1)) << 16)
-        | (u64::from(pitch as u8) << 8)
-        | u64::from(event.note);
-    PADS[index].store(bits, Release);
-    Some(NoteFlow::Consume)
+
+    if let Some(pad) = event.physical_pad {
+        let index = usize::try_from(pad.pad).ok().filter(|&pad| pad < 16)?;
+        if SHORTCUT_PADS.load(Acquire) & (1 << index) != 0 {
+            return Some(NoteFlow::Consume);
+        }
+        if event.note_on {
+            let pitch = i8::try_from(pad.pitch?).ok()?;
+            let serial = SERIAL.fetch_add(1, Relaxed).wrapping_add(1);
+            let velocity = (event.velocity.clamp(0.0, 1.0) * f32::from(u16::MAX)).round() as u16;
+            let bits = (u64::from(serial) << 32)
+                | (u64::from(velocity.max(1)) << 16)
+                | (u64::from(pitch as u8) << 8)
+                | u64::from(event.note);
+            PADS[index].store(bits, Release);
+        }
+        Some(NoteFlow::Consume)
+    } else if event.note_off || !event.note_on {
+        // Any pad NoteOff from the pad source when ARP is active must be consumed
+        // so the firmware engine does not prematurely close voices managed by ArpeggiGator.
+        Some(NoteFlow::Consume)
+    } else {
+        None
+    }
 }
 
 pub fn install() {
@@ -238,28 +247,31 @@ impl State {
                 .set_additional_octaves((ADDITIONAL_OCTAVES.load(Acquire) % 4) as u8);
             let mut pending = [(0, 0); 16];
             let mut count = 0;
-            for (pad, (input, slot)) in self.inputs.iter_mut().zip(&PADS).enumerate() {
+            let mut releases = [None; 16];
+            let mut release_count = 0;
+            for pad in 0..16 {
                 let next = if enabled && bpm.is_some() && preview & PAD_MASK & (1 << pad) != 0 {
-                    slot.load(Acquire)
+                    PADS[pad].load(Acquire)
                 } else {
                     0
                 };
-                if *input == next {
+                if self.inputs[pad] == next {
                     continue;
                 }
-                if *input != 0 {
-                    let off = self.playback.release(pad as u8);
-                    if off.is_some()
-                        && let Some(key) = self.voice.take()
-                    {
-                        send(engine, key, false);
+                if self.inputs[pad] != 0 {
+                    if let Some(off) = self.playback.release(pad as u8) {
+                        releases[release_count] = Some(off);
+                        release_count += 1;
                     }
                 }
-                *input = next;
+                self.inputs[pad] = next;
                 if next != 0 {
                     pending[count] = (pad, next);
                     count += 1;
                 }
+            }
+            for off in &releases[..release_count] {
+                self.output(engine, *off);
             }
             pending[..count].sort_unstable_by_key(|&(_, key)| Key::unpack(key).serial);
             for &(pad, bits) in &pending[..count] {
@@ -267,7 +279,9 @@ impl State {
                     pad as u8,
                     f32::from(Key::unpack(bits).velocity) / f32::from(u16::MAX),
                 );
-                debug_assert!(off.is_none());
+                if off.is_some() {
+                    self.output(engine, off);
+                }
             }
             let now = clock::now_ms().max(0) as u64 * 1000;
             for event in self.playback.tick(now, bpm) {

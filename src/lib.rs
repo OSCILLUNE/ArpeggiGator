@@ -322,6 +322,9 @@ impl Mod for ArpeggiGator {
                 PadAction::Release => {
                     self.engine.release(pad);
                     probe::source_pad_released(event);
+                    if self.enabled && self.is_16_levels_active() {
+                        return PadFlow::Consume;
+                    }
                 }
             }
         }
