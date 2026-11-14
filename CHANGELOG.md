@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.0.1.5
+
+- Preserve an isolated emulator-only private MIDI audio proof of concept.
+- Document repeated note-on/off, voice-release, source isolation and 16 Levels pitch observations.
+- Generated audio is not yet connected to the production arpeggiator.
+
 ## 0.0.1.4
 
 - Add a host-tested playback state machine for held pads, note pairing, BPM and rate changes.

@@ -62,3 +62,51 @@ It emits commands only and is not connected to an audio endpoint. Tests cover
 single and multiple pads, latched toggles, gate timing, rate/tempo changes,
 invalid tempo and cleanup. A production adapter must guarantee that every
 returned Note Off is actually delivered even on queue overflow or shutdown.
+
+## 2026-11-14: private MIDI port and repeated notes
+
+A temporary ALSA source port named `ArpeggiGator Private Test / Internal
+ArpeggiGator` was automatically discovered and subscribed by the running MPC.
+Its app-side source was `0x60ec0937`, distinct from the ordinary External MIDI
+input `0x90b6e9eb` in this session. The private source identifier remained the
+same when another ALSA client occupied the preceding client number. Two
+independent senders into the *same* external destination had previously shared
+a source ID, so the dedicated port matters. It is not yet proven stable across
+all boots, devices, or naming collisions.
+
+With an isolated temporary adapter filtering only the private source, a test
+sent four on/off-marker pairs at 250 ms intervals. The meter recorded audio
+(peak 0.364) and tracefs recorded four voice matches and four downstream voice
+releases. The identical note sent to External MIDI did not enter the private
+adapter. These are emulator observations, not a general playback or recording
+proof. Source detection and hardcoded pad/context remain unresolved, and the
+normal SDK note hook can still drop an event due to its try-lock.
+
+During physical 16 Levels Tune testing, pads 1, 2, 8, 9 and 16 produced pitch
+setter values -3, -2, 4, 5 and 12 respectively in the current project. Tracefs
+showed the physical pad callback, pitch setter and engine dispatcher in that
+order on the Audio Processing thread. This suggests a way to associate pitch
+with a pad without retaining pointers, but the values are contextual and must
+not be hardcoded. `experiments/private-midi/` preserves the restricted POC source.
+
+
+### Reproducibility and instrumentation cleanup
+
+The standalone experiment in `experiments/private-midi/` was built from a
+scratch copy of the pinned source. After removing all tracing probes and
+restarting the application, the rebuilt experiment again registered eight
+private marker events and an audio peak of 0.364 with Pad MIDI In Off. An
+earlier zero result was invalid: a previous uprobe remained installed at a
+firmware hook site, so the SDK firmware guard declined to install the mod.
+Future experiments must remove tracefs uprobes before restarting the SDK mod,
+and verify the hook actually installed rather than relying on a mapped library.
+In a separate isolated run, four of the eight markers were observed entering
+the voice-release function. The app's original `Pad MIDI In` setting was
+restored to Off after comparison.
+
+An idle trace of `snd_rawmidi_read` and readiness helpers recorded no calls;
+the controller uses `snd_rawmidi_tread` on an `MPC Hardware` thread. This is
+not yet a verified injection or scheduling interface. A private MIDI input
+remains an experiment, and the firmware path must not be shipped until source
+identity, note-off delivery, queue overload, cleanup and mode changes are
+proven under contention.
