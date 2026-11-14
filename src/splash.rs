@@ -49,18 +49,20 @@ pub unsafe fn draw_arp_overlay(
         }
         if enabled {
             graphics.colour(0xffd56aff);
-            graphics.text("PRESS DATA", 189, 77, 125, 18, 14.0);
+            graphics.text("PRESS DATA", 189, 73, 125, 15, 13.0);
             graphics.colour(if hold { LIME } else { 0xffff4053 });
             graphics.text(
                 if hold { "HOLD: ON" } else { "HOLD: OFF" },
                 189,
-                96,
+                90,
                 125,
-                18,
-                14.0,
+                15,
+                13.0,
             );
             graphics.colour(0xff63ddec);
-            graphics.text(rate, 194, 151, 116, 24, 19.0);
+            graphics.text("TURN DATA: RATE", 189, 147, 125, 15, 12.0);
+            graphics.colour(LIME);
+            graphics.text(rate, 194, 163, 116, 22, 19.0);
             let phase = if held_pads > 0 { (now_ms / 150) % 8 } else { 0 };
             let chewing = held_pads > 0 && (3..=5).contains(&phase);
             draw_gator(graphics, chewing, phase, held_pads > 0, 0);
@@ -388,20 +390,40 @@ unsafe fn draw_gator(
     const MID: u32 = 0xff18a852;
     const HIGHLIGHT: u32 = 0xffa8ed67;
     unsafe {
-        // Layered ripples leave the native screen visible around their edges.
+        // Layered ripples and expanded water pool around the mascot.
         graphics.colour(DEEP);
-        scene_rect(graphics, x + 3, 161, 83, 4);
-        scene_rect(graphics, x + 10, 165, 70, 4);
-        scene_rect(graphics, x + 20, 169, 49, 3);
+        scene_rect(graphics, x - 8, 160, 82, 5);
+        scene_rect(graphics, x - 5, 165, 76, 4);
+        scene_rect(graphics, x + 2, 169, 65, 4);
+        scene_rect(graphics, x + 10, 173, 48, 3);
+        // Outer water ripples
+        scene_rect(graphics, x - 12, 162, 5, 2);
+        scene_rect(graphics, x - 10, 166, 4, 1);
+        scene_rect(graphics, x + 72, 162, 5, 2);
+        scene_rect(graphics, x + 74, 165, 4, 1);
+
         graphics.colour(WATER);
-        scene_rect(graphics, x + 5 + wave, 159, 32, 3);
-        scene_rect(graphics, x + 54 - wave, 160, 32, 3);
-        scene_rect(graphics, x + 11, 165, 63, 2);
+        scene_rect(graphics, x - 6 + wave, 158, 38, 3);
+        scene_rect(graphics, x + 34 - wave, 159, 40, 3);
+        scene_rect(graphics, x - 2, 164, 70, 3);
+        scene_rect(graphics, x + 5, 168, 55, 2);
+        scene_rect(graphics, x + 14, 172, 36, 2);
+
         graphics.colour(FOAM);
-        scene_rect(graphics, x + 3 + wave, 158, 15, 2);
-        scene_rect(graphics, x + 69 - wave, 159, 16, 2);
-        scene_rect(graphics, x + 20 - wave, 168, 17, 1);
-        scene_rect(graphics, x + 57 + wave, 167, 15, 1);
+        scene_rect(graphics, x - 7 + wave, 157, 18, 2);
+        scene_rect(graphics, x + 16 - wave, 158, 20, 2);
+        scene_rect(graphics, x + 55 + wave, 158, 18, 2);
+        scene_rect(graphics, x - 4 - wave, 163, 16, 1);
+        scene_rect(graphics, x + 28 + wave, 164, 24, 1);
+        scene_rect(graphics, x + 58 - wave, 165, 14, 1);
+        scene_rect(graphics, x + 8 - wave, 169, 18, 1);
+        scene_rect(graphics, x + 40 + wave, 170, 18, 1);
+        scene_rect(graphics, x + 18 + wave, 173, 14, 1);
+        // Small splash droplets on the outer ripples
+        scene_rect(graphics, x - 10, 159, 2, 2);
+        scene_rect(graphics, x + 70, 160, 2, 2);
+        scene_rect(graphics, x - 6, 155, 2, 1);
+        scene_rect(graphics, x + 66, 156, 2, 1);
 
         // Tail, body and face have a dark silhouette with stepped contours.
         graphics.colour(INK);
@@ -497,7 +519,7 @@ unsafe fn draw_gator(
 }
 
 unsafe fn draw_note(graphics: &mut Graphics, x: i32, chewing: bool) {
-    let y = 115;
+    let y = 119;
     unsafe {
         // Two beamed eighth notes: a dark outline and highlights make the
         // red shape readable against both the waveform and the mascot.
