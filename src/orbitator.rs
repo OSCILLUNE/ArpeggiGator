@@ -133,6 +133,9 @@ impl OrbitatorEngine {
 
     pub fn set_atmosphere(&mut self, atmosphere: OrbitAtmosphere) {
         self.atmosphere = atmosphere;
+        if self.current_index >= atmosphere.scale().len() {
+            self.current_index = 0;
+        }
     }
 
     pub fn set_dynamics(&mut self, dynamics: OrbitDynamics) {
@@ -141,6 +144,9 @@ impl OrbitatorEngine {
 
     pub fn cycle_atmosphere(&mut self) -> OrbitAtmosphere {
         self.atmosphere = self.atmosphere.cycle();
+        if self.current_index >= self.atmosphere.scale().len() {
+            self.current_index = 0;
+        }
         self.atmosphere
     }
 
@@ -209,10 +215,11 @@ impl StepEngine for OrbitatorEngine {
         } else {
             // Orbital wander: step relative to current index in scale
             let step_choice = self.rng.next_bounded(3);
+            let curr = self.current_index % scale.len();
             let next_idx = match step_choice {
-                0 => self.current_index.saturating_sub(1),
-                1 => self.current_index,
-                _ => (self.current_index + 1) % scale.len(),
+                0 => curr.saturating_sub(1),
+                1 => curr,
+                _ => (curr + 1) % scale.len(),
             };
             self.current_index = next_idx;
             let note = scale[next_idx];
@@ -274,6 +281,30 @@ mod tests {
                 let s = engine.next_step().unwrap();
                 assert!(s.transpose.abs() <= max_off, "Transpose {} exceeded max {}", s.transpose, max_off);
                 assert!((-24..=24).contains(&s.transpose));
+            }
+        }
+    }
+
+    #[test]
+    fn atmosphere_cycling_with_varying_scale_lengths_is_safe() {
+        let mut engine = OrbitatorEngine::new();
+        engine.press(3, 0.85);
+
+        // Advance into Dark atmosphere (10 notes)
+        engine.set_atmosphere(OrbitAtmosphere::Dark);
+        for _ in 0..100 {
+            engine.next_step();
+        }
+
+        // Switch through all atmospheres with different scale lengths
+        for atmosphere in OrbitAtmosphere::ALL {
+            engine.set_atmosphere(atmosphere);
+            for _ in 0..50 {
+                assert!(engine.next_step().is_some());
+            }
+            engine.cycle_atmosphere();
+            for _ in 0..50 {
+                assert!(engine.next_step().is_some());
             }
         }
     }
