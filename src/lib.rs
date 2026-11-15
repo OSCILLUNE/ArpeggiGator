@@ -102,7 +102,9 @@ fn repaint_component() -> usize {
         return 0;
     }
     let now = clock::now_ms();
-    if now < DASHBOARD_REFRESH_UNTIL_MS.load(Ordering::Acquire) {
+    if now < DASHBOARD_REFRESH_UNTIL_MS.load(Ordering::Acquire)
+        || PREVIEW_STATE.load(Ordering::Acquire) & PAD_MASK != 0
+    {
         screen
     } else {
         0

@@ -41,7 +41,7 @@ pub unsafe fn draw_arp_overlay(
         if enabled {
             match mode {
                 EngineMode::Arp => {
-                    draw_arp_view(graphics, held_pads, hold, rate, now_ms);
+                    draw_arp_view(graphics, b2_label, b3_label, held_pads, hold, rate, now_ms);
                 }
                 EngineMode::Melody => {
                     draw_melody_view(graphics, b2_label, b3_label, held_pads, hold, rate, now_ms);
@@ -61,34 +61,90 @@ pub unsafe fn draw_arp_overlay(
     }
 }
 
+unsafe fn draw_engine_right_panel(
+    graphics: &mut Graphics,
+    mode_title: &str,
+    param_line: &str,
+    hold: bool,
+    rate: &str,
+    mode_color: u32,
+    param_color: u32,
+    card_bg: u32,
+    card_border: u32,
+) {
+    unsafe {
+        // Vertical divider separating the animation stage from control column
+        graphics.colour(card_border);
+        graphics.rect(180, 50, 1, 136);
+
+        // 1. Mode title
+        graphics.colour(mode_color);
+        graphics.text(mode_title, 185, 54, 118, 16, 13.0);
+
+        // 2. HOLD status
+        graphics.colour(if hold { LIME } else { 0xffff4053 });
+        graphics.text(
+            if hold { "HOLD: ON" } else { "HOLD: OFF" },
+            185,
+            72,
+            118,
+            16,
+            13.0,
+        );
+
+        // 3. Parameters
+        graphics.colour(param_color);
+        graphics.text(param_line, 185, 90, 118, 16, 13.0);
+
+        // 4. Rate Card
+        graphics.colour(card_bg);
+        graphics.rect(184, 114, 118, 68);
+        graphics.colour(card_border);
+        graphics.rect(184, 114, 118, 1);
+        graphics.rect(184, 181, 118, 1);
+        graphics.rect(184, 114, 1, 68);
+        graphics.rect(301, 114, 1, 68);
+
+        graphics.colour(mode_color);
+        graphics.text("TURN DATA: RATE", 186, 118, 114, 14, 11.0);
+        graphics.colour(LIME);
+        graphics.text(rate, 186, 134, 114, 42, 22.0);
+    }
+}
+
 unsafe fn draw_arp_view(
     graphics: &mut Graphics,
+    pattern_label: &str,
+    octaves_label: &str,
     held_pads: u8,
     hold: bool,
     rate: &str,
     now_ms: u64,
 ) {
     unsafe {
-        graphics.colour(0xffd56aff);
-        graphics.text("PRESS DATA", 189, 73, 125, 15, 13.0);
-        graphics.colour(if hold { LIME } else { 0xffff4053 });
-        graphics.text(
-            if hold { "HOLD: ON" } else { "HOLD: OFF" },
-            189,
-            90,
-            125,
-            15,
-            13.0,
+        // Solid full-width background covering native sample waveform & playhead cursor
+        graphics.colour(0xff09051f);
+        graphics.rect(14, 48, 292, 140);
+
+        // Right side info panel
+        let param_str = format!("{pattern_label}  {octaves_label}");
+        draw_engine_right_panel(
+            graphics,
+            "MODE: ARP",
+            &param_str,
+            hold,
+            rate,
+            0xff00ffff,
+            0xffff70d6,
+            0xff120b2e,
+            0xff3d1e6d,
         );
-        graphics.colour(0xff63ddec);
-        graphics.text("TURN DATA: RATE", 189, 147, 125, 15, 12.0);
-        graphics.colour(LIME);
-        graphics.text(rate, 194, 163, 116, 22, 19.0);
+
         let phase = if held_pads > 0 { (now_ms / 150) % 8 } else { 0 };
         let chewing = held_pads > 0 && (3..=5).contains(&phase);
         draw_gator(graphics, chewing, phase, held_pads > 0, 0);
         if held_pads > 0 {
-            let note_x = 264 - ((now_ms / 65) % 76) as i32;
+            let note_x = 168 - ((now_ms / 65) % 55) as i32;
             draw_note(graphics, note_x, chewing);
         }
     }
@@ -104,24 +160,23 @@ unsafe fn draw_melody_view(
     now_ms: u64,
 ) {
     unsafe {
-        // Right side information column
-        graphics.colour(0xff63ddec);
-        graphics.text("MODE: MELODY", 189, 73, 125, 15, 13.0);
-        graphics.colour(if hold { LIME } else { 0xffff4053 });
-        graphics.text(
-            if hold { "HOLD: ON" } else { "HOLD: OFF" },
-            189,
-            90,
-            125,
-            15,
-            13.0,
+        // Solid full-width background covering native sample waveform & playhead cursor
+        graphics.colour(0xff070818);
+        graphics.rect(14, 48, 292, 140);
+
+        // Right side info panel
+        let param_str = format!("{bars_label}  {mel_label}");
+        draw_engine_right_panel(
+            graphics,
+            "MODE: MELODY",
+            &param_str,
+            hold,
+            rate,
+            0xff63ddec,
+            0xffff70d6,
+            0xff140b24,
+            0xff4a154b,
         );
-        graphics.colour(0xffff70d6);
-        graphics.text(&format!("{bars_label}  {mel_label}"), 189, 107, 125, 15, 13.0);
-        graphics.colour(0xff63ddec);
-        graphics.text("TURN DATA: RATE", 189, 147, 125, 15, 12.0);
-        graphics.colour(LIME);
-        graphics.text(rate, 194, 163, 116, 22, 19.0);
 
         // Club scene on the left
         draw_club_scene(graphics, held_pads > 0, now_ms);
@@ -138,31 +193,23 @@ unsafe fn draw_mutator_view(
     now_ms: u64,
 ) {
     unsafe {
-        // Right side information column
-        graphics.colour(0xff00e5ff); // Electric Cyan
-        graphics.text("MODE: MUTATOR", 189, 73, 125, 15, 13.0);
-        graphics.colour(if hold { LIME } else { 0xffff4053 });
-        graphics.text(
-            if hold { "HOLD: ON" } else { "HOLD: OFF" },
-            189,
-            90,
-            125,
-            15,
-            13.0,
+        // Solid full-width background covering native sample waveform & playhead cursor
+        graphics.colour(0xff061014);
+        graphics.rect(14, 48, 292, 140);
+
+        // Right side info panel
+        let param_str = format!("{intensity_label}  {motif_label}");
+        draw_engine_right_panel(
+            graphics,
+            "MODE: MUTATOR",
+            &param_str,
+            hold,
+            rate,
+            0xff00e5ff,
+            0xffffaa00,
+            0xff0a1c22,
+            0xff14424a,
         );
-        graphics.colour(0xffffaa00); // Cyber amber
-        graphics.text(
-            &format!("{intensity_label}  {motif_label}"),
-            189,
-            107,
-            125,
-            15,
-            13.0,
-        );
-        graphics.colour(0xff00e5ff);
-        graphics.text("TURN DATA: RATE", 189, 147, 125, 15, 12.0);
-        graphics.colour(LIME);
-        graphics.text(rate, 194, 163, 116, 22, 19.0);
 
         // Cyber Mutator Lab on the left
         draw_mutator_lab(graphics, held_pads > 0, now_ms);
@@ -217,31 +264,23 @@ unsafe fn draw_acordator_view(
     now_ms: u64,
 ) {
     unsafe {
-        // Right side information column
-        graphics.colour(0xffffaa00); // Warm amber
-        graphics.text("MODE: ACORDATOR", 189, 73, 125, 15, 12.0);
-        graphics.colour(if hold { LIME } else { 0xffff4053 });
-        graphics.text(
-            if hold { "HOLD: ON" } else { "HOLD: OFF" },
-            189,
-            90,
-            125,
-            15,
-            13.0,
+        // Solid full-width background covering native sample waveform & playhead cursor
+        graphics.colour(0xff160a14);
+        graphics.rect(14, 48, 292, 140);
+
+        // Right side info panel
+        let param_str = format!("{mood_label}  {style_label}");
+        draw_engine_right_panel(
+            graphics,
+            "MODE: ACORD",
+            &param_str,
+            hold,
+            rate,
+            0xffffaa00, // Warm Amber
+            0xffffdd66, // Warm Gold
+            0xff24101e,
+            0xff52203e,
         );
-        graphics.colour(0xffffdd66); // Warm gold
-        graphics.text(
-            &format!("{mood_label}  {style_label}"),
-            189,
-            107,
-            125,
-            15,
-            13.0,
-        );
-        graphics.colour(0xffffaa00);
-        graphics.text("TURN DATA: RATE", 189, 147, 125, 15, 12.0);
-        graphics.colour(LIME);
-        graphics.text(rate, 194, 163, 116, 22, 19.0);
 
         // Warm chord stage on the left
         draw_acordator_stage(graphics, held_pads > 0, now_ms);
@@ -285,31 +324,23 @@ unsafe fn draw_orbitator_view(
     now_ms: u64,
 ) {
     unsafe {
-        // Right side information column
-        graphics.colour(0xff9d4edd); // Cosmic violet
-        graphics.text("MODE: ORBITATOR", 189, 73, 125, 15, 12.0);
-        graphics.colour(if hold { LIME } else { 0xffff4053 });
-        graphics.text(
-            if hold { "HOLD: ON" } else { "HOLD: OFF" },
-            189,
-            90,
-            125,
-            15,
-            13.0,
+        // Solid full-width background covering native sample waveform & playhead cursor
+        graphics.colour(0xff050212);
+        graphics.rect(14, 48, 292, 140);
+
+        // Right side info panel
+        let param_str = format!("{atmo_label}  {dyn_label}");
+        draw_engine_right_panel(
+            graphics,
+            "MODE: ORBIT",
+            &param_str,
+            hold,
+            rate,
+            0xffc77dff, // Cosmic Violet
+            0xff00ffff, // Nebula Cyan
+            0xff110826,
+            0xff431878,
         );
-        graphics.colour(0xff00ffff); // Electric Cyan
-        graphics.text(
-            &format!("{atmo_label}  {dyn_label}"),
-            189,
-            107,
-            125,
-            15,
-            13.0,
-        );
-        graphics.colour(0xff9d4edd);
-        graphics.text("TURN DATA: RATE", 189, 147, 125, 15, 12.0);
-        graphics.colour(LIME);
-        graphics.text(rate, 194, 163, 116, 22, 19.0);
 
         // Deep Space Orbitator Scene on the left
         draw_orbitator_space(graphics, held_pads > 0, now_ms);
