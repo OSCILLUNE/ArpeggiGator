@@ -853,6 +853,12 @@ impl MelodyEngine {
         self.current_step = 0;
     }
 
+    /// Update root pad preserving the current phrase step.
+    pub fn set_root(&mut self, pad: u8, velocity: f32) {
+        self.root_pad = Some(pad);
+        self.root_velocity = velocity.clamp(0.01, 1.0);
+    }
+
     pub fn release(&mut self, pad: u8) {
         if self.root_pad == Some(pad) {
             self.root_pad = None;

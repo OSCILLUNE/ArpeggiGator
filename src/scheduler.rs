@@ -46,7 +46,7 @@ impl StepRate {
     ];
 
     /// Step duration as a rational fraction of one quarter note.
-    const fn quarter_fraction(self) -> (u64, u64) {
+    pub(crate) const fn quarter_fraction(self) -> (u64, u64) {
         match self {
             Self::Quarter => (1, 1),
             Self::QuarterTriplet => (2, 3),

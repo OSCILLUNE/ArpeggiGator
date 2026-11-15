@@ -17,6 +17,8 @@ mod scheduler;
 mod splash;
 pub(crate) mod splash_art;
 mod tempo;
+mod transport_clock;
+mod transport_playback;
 
 pub use acordator::{AcordatorEngine, ChordMood, VoicingStyle};
 pub use arp::{ArpEngine, Pattern, Step, StepEngine};

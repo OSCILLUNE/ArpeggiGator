@@ -7,7 +7,8 @@ use mpc_sample_sdk::{NoteEvent, NoteFlow, hook, image, platform::clock};
 use crate::{
     BarLength, ChordMood, EngineMode, MelodyVariant, MutationIntensity, OrbitAtmosphere,
     OrbitDynamics, PAD_MASK, PREVIEW_ENABLED, PREVIEW_STATE, Pattern, Playback, SHORTCUT_PADS,
-    ScheduledEvent, StepRate, VoicingStyle, tempo,
+    ScheduledEvent, StepRate, VoicingStyle, tempo, transport_clock,
+    transport_playback::TransportPlayback,
 };
 
 const RENDER_OFFSET: usize = 0x18dbcc0;
@@ -49,6 +50,14 @@ static g_arp_audio_on: AtomicU32 = AtomicU32::new(0);
 static g_arp_audio_off: AtomicU32 = AtomicU32::new(0);
 #[unsafe(no_mangle)]
 static g_arp_audio_last: AtomicU32 = AtomicU32::new(0);
+#[unsafe(no_mangle)]
+static g_arp_transport_pulse: AtomicU64 = AtomicU64::new(0);
+#[unsafe(no_mangle)]
+static g_arp_transport_mode: AtomicU32 = AtomicU32::new(0);
+#[unsafe(no_mangle)]
+static g_arp_transport_resets: AtomicU32 = AtomicU32::new(0);
+#[unsafe(no_mangle)]
+static g_arp_mode: AtomicU32 = AtomicU32::new(0);
 
 #[derive(Clone, Copy)]
 struct Key {
@@ -73,6 +82,9 @@ impl Key {
 
 struct State {
     playback: Playback,
+    transport_playback: TransportPlayback,
+    transport_clock: transport_clock::UnwrapClock,
+    synced: bool,
     inputs: [u64; 16],
     voice: Option<Key>,
     pattern: Pattern,
@@ -83,6 +95,9 @@ impl Default for State {
     fn default() -> Self {
         Self {
             playback: Playback::default(),
+            transport_playback: TransportPlayback::new(StepRate::Sixteenth, 960).unwrap(),
+            transport_clock: transport_clock::UnwrapClock::default(),
+            synced: false,
             inputs: [0; 16],
             voice: None,
             pattern: Pattern::Up,
@@ -110,6 +125,7 @@ static ORBIT_DYNAMICS: AtomicUsize = AtomicUsize::new(0);
 
 pub fn set_mode(mode: EngineMode) {
     MODE.store(mode as usize, Release);
+    g_arp_mode.store(mode as u32, Release);
 }
 
 pub fn set_melody_bars(bars: BarLength) {
@@ -179,7 +195,7 @@ pub fn capture(event: &mut NoteEvent<'_>) -> Option<NoteFlow> {
             return Some(NoteFlow::Consume);
         }
         if event.note_on {
-            let pitch = i8::try_from(pad.pitch?).ok()?;
+            let pitch = pad.pitch.and_then(|p| i8::try_from(p).ok()).unwrap_or(0);
             let serial = SERIAL.fetch_add(1, Relaxed).wrapping_add(1);
             let velocity = (event.velocity.clamp(0.0, 1.0) * f32::from(u16::MAX)).round() as u16;
             let bits = (u64::from(serial) << 32)
@@ -335,13 +351,101 @@ impl State {
             5 => EngineMode::Orbitator,
             _ => EngineMode::Off,
         };
+        let transport_snapshot = transport_clock::snapshot(engine, image::base());
+        let synced = enabled && bpm.is_some() && transport_snapshot.is_some_and(|s| s.playing);
+
         // SAFETY: the only native argument is the live engine from this render.
         unsafe {
+            if self.synced != synced {
+                let off = self.playback.set_mode(EngineMode::Off);
+                self.output(engine, off);
+                let off = self.transport_playback.stop();
+                self.output(engine, off);
+                self.inputs = [0; 16];
+                self.synced = synced;
+                self.transport_clock = transport_clock::UnwrapClock::default();
+                g_arp_transport_mode.store(u32::from(synced), Release);
+            }
+
             let active_mode = if enabled && bpm.is_some() && !panic_requested {
                 mode
             } else {
                 EngineMode::Off
             };
+
+            let rate_idx = RATE.load(Acquire) % StepRate::ALL.len();
+            let rate = StepRate::ALL[rate_idx];
+
+            if synced {
+                let off = self.transport_playback.set_mode(active_mode);
+                self.output(engine, off);
+                let off = self.transport_playback.set_rate(rate);
+                self.output(engine, off);
+
+                if mode == EngineMode::Arp {
+                    let pattern_idx = PATTERN.load(Acquire) % Pattern::ALL.len();
+                    self.transport_playback.set_pattern(Pattern::ALL[pattern_idx]);
+                    self.transport_playback
+                        .set_additional_octaves((ADDITIONAL_OCTAVES.load(Acquire) % 4) as u8);
+                } else if mode == EngineMode::Melody {
+                    let bars_idx = MELODY_BARS.load(Acquire) % BarLength::ALL.len();
+                    self.transport_playback.set_melody_bars(BarLength::ALL[bars_idx]);
+                    let var_idx = MELODY_VARIANT.load(Acquire) % MelodyVariant::ALL.len();
+                    self.transport_playback.set_melody_variant(MelodyVariant::ALL[var_idx]);
+                } else if mode == EngineMode::Mutator {
+                    let int_idx = MUTATOR_INTENSITY.load(Acquire) % MutationIntensity::ALL.len();
+                    self.transport_playback
+                        .set_mutator_intensity(MutationIntensity::ALL[int_idx]);
+                    let var_idx = MUTATOR_VARIANT.load(Acquire) % MelodyVariant::ALL.len();
+                    self.transport_playback.set_mutator_variant(MelodyVariant::ALL[var_idx]);
+                } else if mode == EngineMode::Acordator {
+                    let mood_idx = CHORD_MOOD.load(Acquire) % ChordMood::ALL.len();
+                    self.transport_playback.set_chord_mood(ChordMood::ALL[mood_idx]);
+                    let style_idx = VOICING_STYLE.load(Acquire) % VoicingStyle::ALL.len();
+                    self.transport_playback.set_voicing_style(VoicingStyle::ALL[style_idx]);
+                } else if mode == EngineMode::Orbitator {
+                    let atmo_idx = ORBIT_ATMOSPHERE.load(Acquire) % OrbitAtmosphere::ALL.len();
+                    self.transport_playback.set_orbit_atmosphere(OrbitAtmosphere::ALL[atmo_idx]);
+                    let dyn_idx = ORBIT_DYNAMICS.load(Acquire) % OrbitDynamics::ALL.len();
+                    self.transport_playback.set_orbit_dynamics(OrbitDynamics::ALL[dyn_idx]);
+                }
+
+                for pad in 0..16 {
+                    let next = if enabled && preview & PAD_MASK & (1 << pad) != 0 {
+                        PADS[pad].load(Acquire)
+                    } else {
+                        0
+                    };
+                    if self.inputs[pad] != next {
+                        self.inputs[pad] = next;
+                        let vel = if next != 0 {
+                            Some(f32::from(Key::unpack(next, pad as u8).velocity) / f32::from(u16::MAX))
+                        } else {
+                            None
+                        };
+                        self.transport_playback.set_pad(pad as u8, vel);
+                    }
+                }
+
+                let now = clock::now_ms().max(0) as u64 * 1000;
+                let snapshot = transport_snapshot.unwrap();
+                let (pulse, reset) =
+                    self.transport_clock.observe(snapshot, now / 1000, bpm.unwrap());
+                if reset {
+                    g_arp_transport_resets.fetch_add(1, Relaxed);
+                    let off = self.transport_playback.stop();
+                    self.output(engine, off);
+                }
+                g_arp_transport_pulse.store(pulse, Release);
+                if let Some(events) = self.transport_playback.tick(pulse) {
+                    for event in events {
+                        self.output(engine, event);
+                    }
+                }
+                return;
+            }
+
+            // Free-running playback while transport is stopped (preview mode)
             let off = self.playback.set_mode(active_mode);
             self.output(engine, off);
             if active_mode == EngineMode::Off
@@ -381,8 +485,7 @@ impl State {
                 let dyn_idx = ORBIT_DYNAMICS.load(Acquire) % OrbitDynamics::ALL.len();
                 self.playback.set_orbit_dynamics(OrbitDynamics::ALL[dyn_idx]);
             }
-            let rate_idx = RATE.load(Acquire) % StepRate::ALL.len();
-            let off = self.playback.set_rate(StepRate::ALL[rate_idx]);
+            let off = self.playback.set_rate(rate);
             self.output(engine, off);
             let mut pending = [(0, 0); 16];
             let mut count = 0;
