@@ -4,7 +4,7 @@
 
 **Standalone arpeggiator mod for the AKAI MPC Sample.**
 
-**Version 0.0.2.2 — experimental emulator audio.**
+**Version 0.0.4.9 — experimental emulator audio.**
 
 ArpeggiGator targets stock MPC Sample firmware **1.3.0.12**. It is independent of SampQOL.
 
@@ -63,6 +63,11 @@ When the virtual MPC is running with the matching ArpeggiGator autorun card,
 the build also updates its module on that card. If the card is unavailable,
 the build prints a warning; run `python3 scripts/sync-emulator-autorun.py`
 after starting the emulator to update it. Restart the MPC to load the update.
+
+The 0.0.4.9 autorun package installs a systemd post-stop helper that sends
+pad-off SysEx to the ALSA `Surface` device. Shutdown and restart were tested in
+the emulator; physical hardware and environments without that device are not
+verified. The cleanup requires the autorun service integration.
 
 ## Technical notes
 

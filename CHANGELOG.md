@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.0.4.9
+
+- Turn off all pads when resetting the engine, on double STOP and when the module drops.
+- Add a systemd post-stop pad cleanup to the autorun package; shutdown and restart were verified in the emulator. Physical hardware is not yet verified.
+
 ## 0.0.2.2
 
 - Fix ArpeggiGator SHIFT menu visibility and state tracking across view transitions (Sample, SEQ, Pad FX, Sample Select, Mute, shortcuts).

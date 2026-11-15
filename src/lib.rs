@@ -267,7 +267,7 @@ impl ArpeggiGator {
         BACKGROUND_PLAYBACK_ACTIVE.store(false, Ordering::Release);
         LAST_STOP_MS.store(0, Ordering::Release);
         native_audio::set_active_sample_pad(0xff, 36);
-        lighting::restore_pad_rgbs();
+        extinguish_pads();
         self.led_mask = 0;
     }
 
@@ -279,10 +279,11 @@ impl ArpeggiGator {
                 self.reset_engine_state();
             }
             if chop_mode {
-                self.in_16_levels = false;
-                self.reset_engine_state();
-            }
-            if lighting::has_native_lighting() {
+                if self.in_16_levels || self.enabled || self.mode != EngineMode::Off {
+                    self.in_16_levels = false;
+                    self.reset_engine_state();
+                }
+            } else if lighting::has_native_lighting() {
                 let native_16_levels = lighting::is_16_levels_lit();
                 if self.in_16_levels != native_16_levels {
                     self.in_16_levels = native_16_levels;
@@ -300,13 +301,22 @@ impl ArpeggiGator {
                     }
                 }
             }
-        } else {
+        } else if self.current_screen != Screen::Other || self.in_16_levels || self.enabled || self.mode != EngineMode::Off {
             self.current_screen = Screen::Other;
             self.in_16_levels = false;
             self.reset_engine_state();
         }
         IN_16_LEVELS_ACTIVE.store(self.is_16_levels_active(), Ordering::Release);
     }
+}
+
+// Send the off state before releasing overrides: clearing them alone does not
+// update the panel, which retains the last colour it received.
+fn extinguish_pads() {
+    for pad in 0..16 {
+        let _ = lighting::send_pad_light(pad, 0, 0.0);
+    }
+    lighting::clear_pad_rgbs();
 }
 
 impl Mod for ArpeggiGator {
@@ -735,10 +745,7 @@ impl Mod for ArpeggiGator {
 
 impl Drop for ArpeggiGator {
     fn drop(&mut self) {
-        lighting::restore_pad_rgbs();
-        for pad in 0..16 {
-            let _ = lighting::set_pad_light(pad, 0, 0.0);
-        }
+        extinguish_pads();
     }
 }
 

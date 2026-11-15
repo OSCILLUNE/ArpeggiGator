@@ -70,6 +70,8 @@ print(pathlib.Path(sdk["manifest_path"]).parent)
     --firmware-sha256 44507c7a7d3029c411b2e3780ea286ca3e08b7e3ffd7b5047d52f73bf5299d1f \
     --display-name "ArpeggiGator"
 
+python3 "$ROOT/scripts/package-pad-cleanup.py"
+
 # Keep the running emulator's existing autorun card in sync with each build.
 # The sync checks the mounted card and exact autorun script before changing it.
 # A machine without the emulator can still build; the warning makes the missing
