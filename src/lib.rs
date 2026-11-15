@@ -279,16 +279,12 @@ impl ArpeggiGator {
             }
             if lighting::has_native_lighting() {
                 let native_16_levels = lighting::is_16_levels_lit();
-                if self.in_16_levels != native_16_levels {
-                    self.in_16_levels = native_16_levels;
-                    if !native_16_levels {
-                        if self.should_continue_in_background() {
-                            BACKGROUND_PLAYBACK_ACTIVE.store(true, Ordering::Release);
-                        } else {
-                            self.reset_engine_state();
-                            BACKGROUND_PLAYBACK_ACTIVE.store(false, Ordering::Release);
-                        }
+                if !native_16_levels && self.in_16_levels {
+                    self.in_16_levels = false;
+                    if self.should_continue_in_background() {
+                        BACKGROUND_PLAYBACK_ACTIVE.store(true, Ordering::Release);
                     } else {
+                        self.reset_engine_state();
                         BACKGROUND_PLAYBACK_ACTIVE.store(false, Ordering::Release);
                     }
                 }
@@ -384,11 +380,7 @@ impl Mod for ArpeggiGator {
         } else if event.code == button::LEVELS && event.pressed {
             if !event.shift {
                 if self.current_screen == Screen::Sample {
-                    let entering = if lighting::has_native_lighting() {
-                        !lighting::is_16_levels_lit()
-                    } else {
-                        !self.in_16_levels
-                    };
+                    let entering = !self.in_16_levels;
                     self.in_16_levels = entering;
                     IN_16_LEVELS_ACTIVE.store(self.is_16_levels_active(), Ordering::Release);
                     action = if entering { 4 } else { 5 };
