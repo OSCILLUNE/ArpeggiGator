@@ -4,24 +4,32 @@
 //! for a future verified output adapter; it does not call firmware or MIDI.
 
 use crate::{
-    ArpEngine, ArpScheduler, BarLength, MelodyEngine, MelodyVariant, Pattern, ScheduledEvent,
-    StepRate,
+    ArpEngine, ArpScheduler, BarLength, ChordMood, MelodyEngine, MelodyVariant, MutatorEngine,
+    MutationIntensity, OrbitAtmosphere, OrbitDynamics, OrbitatorEngine, Pattern, ScheduledEvent,
+    StepRate, VoicingStyle, AcordatorEngine,
 };
 
-/// High-level engine mode: disabled, arpeggiator, or melodic phrase sequencer.
+/// High-level engine mode: disabled, arpeggiator, melodic phrase sequencer, or generative modes.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Default)]
+#[repr(usize)]
 pub enum EngineMode {
     #[default]
-    Off,
-    Arp,
-    Melody,
+    Off = 0,
+    Arp = 1,
+    Melody = 2,
+    Mutator = 3,
+    Acordator = 4,
+    Orbitator = 5,
 }
 
-/// Playback state and exact note-off handoff for ARP and MELODY engines.
+/// Playback state and exact note-off handoff for ARP, MELODY, and generative engines.
 #[derive(Default)]
 pub struct Playback {
     arp_engine: ArpEngine,
     melody_engine: MelodyEngine,
+    mutator_engine: MutatorEngine,
+    acordator_engine: AcordatorEngine,
+    orbitator_engine: OrbitatorEngine,
     scheduler: ArpScheduler,
     physical: u16,
     selected: u16,
@@ -92,6 +100,46 @@ impl Playback {
         self.melody_engine.set_variant(variant);
     }
 
+    /// Set mutation intensity for the MUTATOR engine.
+    pub fn set_mutator_intensity(&mut self, intensity: MutationIntensity) {
+        self.mutator_engine.set_intensity(intensity);
+    }
+
+    /// Set base melody preset for the MUTATOR engine.
+    pub fn set_mutator_variant(&mut self, variant: MelodyVariant) {
+        self.mutator_engine.set_variant(variant);
+    }
+
+    /// Set phrase length for the MUTATOR engine.
+    pub fn set_mutator_bars(&mut self, bars: BarLength) {
+        self.mutator_engine.set_bars(bars);
+    }
+
+    /// Freeze or unfreeze the MUTATOR engine.
+    pub fn set_mutator_frozen(&mut self, frozen: bool) {
+        self.mutator_engine.set_frozen(frozen);
+    }
+
+    /// Set chord mood for the ACORDATOR engine.
+    pub fn set_chord_mood(&mut self, mood: ChordMood) {
+        self.acordator_engine.set_mood(mood);
+    }
+
+    /// Set voicing style for the ACORDATOR engine.
+    pub fn set_voicing_style(&mut self, style: VoicingStyle) {
+        self.acordator_engine.set_style(style);
+    }
+
+    /// Set atmosphere for the ORBITATOR engine.
+    pub fn set_orbit_atmosphere(&mut self, atmosphere: OrbitAtmosphere) {
+        self.orbitator_engine.set_atmosphere(atmosphere);
+    }
+
+    /// Set dynamics for the ORBITATOR engine.
+    pub fn set_orbit_dynamics(&mut self, dynamics: OrbitDynamics) {
+        self.orbitator_engine.set_dynamics(dynamics);
+    }
+
     /// Change division. A sounding note must be released before restarting.
     pub fn set_rate(&mut self, rate: StepRate) -> Option<ScheduledEvent> {
         if self.scheduler.rate() == rate {
@@ -122,7 +170,7 @@ impl Playback {
             self.selected |= bit;
             self.arp_engine.press(pad, velocity);
             None
-        } else {
+        } else if self.mode == EngineMode::Melody {
             // In MELODY mode: monophonic voice-stealing / retrigger from this root pad.
             if self.hold && self.selected == bit {
                 self.selected = 0;
@@ -137,6 +185,53 @@ impl Playback {
             self.selected = bit;
             self.melody_engine.press(pad, velocity);
             off
+        } else if self.mode == EngineMode::Mutator {
+            // In MUTATOR mode: single-pad latch with voice stealing and reset to motif.
+            if self.hold && self.selected == bit {
+                self.selected = 0;
+                self.mutator_engine.clear();
+                return self.stop_if_empty();
+            }
+            let off = if self.selected != 0 {
+                self.scheduler.stop()
+            } else {
+                None
+            };
+            self.selected = bit;
+            self.mutator_engine.press(pad, velocity);
+            off
+        } else if self.mode == EngineMode::Acordator {
+            // In ACORDATOR mode: single-pad chord latch with voice stealing.
+            if self.hold && self.selected == bit {
+                self.selected = 0;
+                self.acordator_engine.clear();
+                return self.stop_if_empty();
+            }
+            let off = if self.selected != 0 {
+                self.scheduler.stop()
+            } else {
+                None
+            };
+            self.selected = bit;
+            self.acordator_engine.press(pad, velocity);
+            off
+        } else if self.mode == EngineMode::Orbitator {
+            // In ORBITATOR mode: single-pad orbit center with voice stealing.
+            if self.hold && self.selected == bit {
+                self.selected = 0;
+                self.orbitator_engine.clear();
+                return self.stop_if_empty();
+            }
+            let off = if self.selected != 0 {
+                self.scheduler.stop()
+            } else {
+                None
+            };
+            self.selected = bit;
+            self.orbitator_engine.press(pad, velocity);
+            off
+        } else {
+            None
         }
     }
 
@@ -151,7 +246,7 @@ impl Playback {
             self.selected &= !bit;
             self.arp_engine.release(pad);
             self.stop_if_empty()
-        } else {
+        } else if self.mode == EngineMode::Melody {
             if self.selected == bit {
                 self.selected = 0;
                 self.melody_engine.release(pad);
@@ -159,6 +254,32 @@ impl Playback {
             } else {
                 None
             }
+        } else if self.mode == EngineMode::Mutator {
+            if self.selected == bit {
+                self.selected = 0;
+                self.mutator_engine.release(pad);
+                self.stop_if_empty()
+            } else {
+                None
+            }
+        } else if self.mode == EngineMode::Acordator {
+            if self.selected == bit {
+                self.selected = 0;
+                self.acordator_engine.release(pad);
+                self.stop_if_empty()
+            } else {
+                None
+            }
+        } else if self.mode == EngineMode::Orbitator {
+            if self.selected == bit {
+                self.selected = 0;
+                self.orbitator_engine.release(pad);
+                self.stop_if_empty()
+            } else {
+                None
+            }
+        } else {
+            None
         }
     }
 
@@ -192,7 +313,10 @@ impl Playback {
         let events = match self.mode {
             EngineMode::Arp => self.scheduler.tick(now_us, &mut self.arp_engine),
             EngineMode::Melody => self.scheduler.tick(now_us, &mut self.melody_engine),
-            EngineMode::Off => [None, None],
+            EngineMode::Mutator => self.scheduler.tick(now_us, &mut self.mutator_engine),
+            EngineMode::Acordator => self.scheduler.tick(now_us, &mut self.acordator_engine),
+            EngineMode::Orbitator => self.scheduler.tick(now_us, &mut self.orbitator_engine),
+            _ => [None, None],
         };
         if old_off.is_some() {
             // Restart begins with a NoteOn; preserve the preceding NoteOff.
@@ -215,6 +339,9 @@ impl Playback {
         self.selected = 0;
         self.arp_engine.clear();
         self.melody_engine.clear();
+        self.mutator_engine.clear();
+        self.acordator_engine.clear();
+        self.orbitator_engine.clear();
         self.bpm = None;
         self.scheduler.stop()
     }
@@ -365,5 +492,75 @@ mod tests {
         let toggle_off = p.press(8, 0.9);
         assert_eq!(p.selected(), 0);
         assert!(toggle_off.is_none());
+    }
+
+    #[test]
+    fn mutator_mode_advances_and_plays_steps() {
+        let mut p = Playback::default();
+        p.set_mode(EngineMode::Mutator);
+        p.set_mutator_intensity(MutationIntensity::Subtle);
+        p.set_mutator_variant(MelodyVariant::Mel1);
+        p.press(2, 0.85);
+        assert_eq!(p.selected(), 1 << 2);
+
+        let first = p.tick(0, Some(120.0));
+        assert!(matches!(first[0], Some(ScheduledEvent::NoteOn(Step { pad: 2, .. }))));
+
+        assert_eq!(p.release(2), Some(ScheduledEvent::NoteOff { pad: 2 }));
+        assert_eq!(p.selected(), 0);
+    }
+
+    #[test]
+    fn mutator_mode_hold_switches_active_pad() {
+        let mut p = Playback::default();
+        p.set_mode(EngineMode::Mutator);
+        p.set_hold(true);
+
+        p.press(3, 0.8);
+        p.release(3);
+        assert_eq!(p.selected(), 1 << 3);
+
+        let _ = p.tick(0, Some(120.0));
+
+        let off = p.press(7, 0.9);
+        assert_eq!(off, Some(ScheduledEvent::NoteOff { pad: 3 }));
+        assert_eq!(p.selected(), 1 << 7);
+        p.release(7);
+
+        let toggle_off = p.press(7, 0.9);
+        assert_eq!(p.selected(), 0);
+        assert!(toggle_off.is_none());
+    }
+
+    #[test]
+    fn acordator_mode_advances_and_plays_steps() {
+        let mut p = Playback::default();
+        p.set_mode(EngineMode::Acordator);
+        p.set_chord_mood(ChordMood::Warm);
+        p.set_voicing_style(VoicingStyle::Strum);
+        p.press(1, 0.9);
+        assert_eq!(p.selected(), 1 << 1);
+
+        let first = p.tick(0, Some(120.0));
+        assert!(matches!(first[0], Some(ScheduledEvent::NoteOn(Step { pad: 1, transpose: 0, .. }))));
+
+        assert_eq!(p.release(1), Some(ScheduledEvent::NoteOff { pad: 1 }));
+        assert_eq!(p.selected(), 0);
+    }
+
+    #[test]
+    fn orbitator_mode_advances_and_plays_steps() {
+        let mut p = Playback::default();
+        p.set_mode(EngineMode::Orbitator);
+        p.set_orbit_atmosphere(OrbitAtmosphere::Space);
+        p.set_orbit_dynamics(OrbitDynamics::Calm);
+        p.press(4, 0.85);
+        assert_eq!(p.selected(), 1 << 4);
+
+        let first = p.tick(0, Some(120.0));
+        assert!(matches!(first[0], Some(ScheduledEvent::NoteOn(Step { pad: 4, .. }))));
+
+        assert_eq!(p.release(4), Some(ScheduledEvent::NoteOff { pad: 4 }));
+        assert_eq!(p.selected(), 0);
     }
 }

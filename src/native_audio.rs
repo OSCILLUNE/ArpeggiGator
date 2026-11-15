@@ -5,8 +5,9 @@ use core::sync::atomic::{AtomicBool, AtomicU32, AtomicU64, AtomicUsize, Ordering
 use mpc_sample_sdk::{NoteEvent, NoteFlow, hook, image, platform::clock};
 
 use crate::{
-    BarLength, EngineMode, MelodyVariant, PAD_MASK, PREVIEW_ENABLED, PREVIEW_STATE, Pattern,
-    Playback, SHORTCUT_PADS, ScheduledEvent, StepRate, tempo,
+    BarLength, ChordMood, EngineMode, MelodyVariant, MutationIntensity, OrbitAtmosphere,
+    OrbitDynamics, PAD_MASK, PREVIEW_ENABLED, PREVIEW_STATE, Pattern, Playback, SHORTCUT_PADS,
+    ScheduledEvent, StepRate, VoicingStyle, tempo,
 };
 
 const RENDER_OFFSET: usize = 0x18dbcc0;
@@ -100,6 +101,12 @@ pub fn begin_press(_pad: usize) {
 static MODE: AtomicUsize = AtomicUsize::new(0);
 static MELODY_BARS: AtomicUsize = AtomicUsize::new(0);
 static MELODY_VARIANT: AtomicUsize = AtomicUsize::new(0);
+static MUTATOR_INTENSITY: AtomicUsize = AtomicUsize::new(0);
+static MUTATOR_VARIANT: AtomicUsize = AtomicUsize::new(0);
+static CHORD_MOOD: AtomicUsize = AtomicUsize::new(0);
+static VOICING_STYLE: AtomicUsize = AtomicUsize::new(0);
+static ORBIT_ATMOSPHERE: AtomicUsize = AtomicUsize::new(0);
+static ORBIT_DYNAMICS: AtomicUsize = AtomicUsize::new(0);
 
 pub fn set_mode(mode: EngineMode) {
     MODE.store(mode as usize, Release);
@@ -111,6 +118,30 @@ pub fn set_melody_bars(bars: BarLength) {
 
 pub fn set_melody_variant(variant: MelodyVariant) {
     MELODY_VARIANT.store(variant as usize, Release);
+}
+
+pub fn set_mutator_intensity(intensity: MutationIntensity) {
+    MUTATOR_INTENSITY.store(intensity as usize, Release);
+}
+
+pub fn set_mutator_variant(variant: MelodyVariant) {
+    MUTATOR_VARIANT.store(variant as usize, Release);
+}
+
+pub fn set_chord_mood(mood: ChordMood) {
+    CHORD_MOOD.store(mood as usize, Release);
+}
+
+pub fn set_voicing_style(style: VoicingStyle) {
+    VOICING_STYLE.store(style as usize, Release);
+}
+
+pub fn set_orbit_atmosphere(atmosphere: OrbitAtmosphere) {
+    ORBIT_ATMOSPHERE.store(atmosphere as usize, Release);
+}
+
+pub fn set_orbit_dynamics(dynamics: OrbitDynamics) {
+    ORBIT_DYNAMICS.store(dynamics as usize, Release);
 }
 
 pub fn set_pattern(pattern: Pattern) {
@@ -299,6 +330,9 @@ impl State {
         let mode = match MODE.load(Acquire) {
             1 => EngineMode::Arp,
             2 => EngineMode::Melody,
+            3 => EngineMode::Mutator,
+            4 => EngineMode::Acordator,
+            5 => EngineMode::Orbitator,
             _ => EngineMode::Off,
         };
         // SAFETY: the only native argument is the live engine from this render.
@@ -330,6 +364,22 @@ impl State {
                 self.playback.set_melody_bars(BarLength::ALL[bars_idx]);
                 let var_idx = MELODY_VARIANT.load(Acquire) % MelodyVariant::ALL.len();
                 self.playback.set_melody_variant(MelodyVariant::ALL[var_idx]);
+            } else if mode == EngineMode::Mutator {
+                let int_idx = MUTATOR_INTENSITY.load(Acquire) % MutationIntensity::ALL.len();
+                self.playback
+                    .set_mutator_intensity(MutationIntensity::ALL[int_idx]);
+                let var_idx = MUTATOR_VARIANT.load(Acquire) % MelodyVariant::ALL.len();
+                self.playback.set_mutator_variant(MelodyVariant::ALL[var_idx]);
+            } else if mode == EngineMode::Acordator {
+                let mood_idx = CHORD_MOOD.load(Acquire) % ChordMood::ALL.len();
+                self.playback.set_chord_mood(ChordMood::ALL[mood_idx]);
+                let style_idx = VOICING_STYLE.load(Acquire) % VoicingStyle::ALL.len();
+                self.playback.set_voicing_style(VoicingStyle::ALL[style_idx]);
+            } else if mode == EngineMode::Orbitator {
+                let atmo_idx = ORBIT_ATMOSPHERE.load(Acquire) % OrbitAtmosphere::ALL.len();
+                self.playback.set_orbit_atmosphere(OrbitAtmosphere::ALL[atmo_idx]);
+                let dyn_idx = ORBIT_DYNAMICS.load(Acquire) % OrbitDynamics::ALL.len();
+                self.playback.set_orbit_dynamics(OrbitDynamics::ALL[dyn_idx]);
             }
             let rate_idx = RATE.load(Acquire) % StepRate::ALL.len();
             let off = self.playback.set_rate(StepRate::ALL[rate_idx]);

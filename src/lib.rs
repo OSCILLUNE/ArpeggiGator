@@ -4,10 +4,13 @@
 //! softkey captions only while SHIFT is held. The opt-in emulator build
 //! runs generated pad retriggers on the native audio thread.
 
+mod acordator;
 mod arp;
 mod melody;
+mod mutator;
 #[cfg(feature = "emulator-audio")]
 mod native_audio;
+mod orbitator;
 mod playback;
 mod probe;
 mod scheduler;
@@ -15,8 +18,11 @@ mod splash;
 pub(crate) mod splash_art;
 mod tempo;
 
+pub use acordator::{AcordatorEngine, ChordMood, VoicingStyle};
 pub use arp::{ArpEngine, Pattern, Step, StepEngine};
 pub use melody::{BarLength, MelodyEngine, MelodyVariant};
+pub use mutator::{MutatorEngine, MutationIntensity};
+pub use orbitator::{OrbitAtmosphere, OrbitDynamics, OrbitatorEngine};
 pub use playback::{EngineMode, Playback};
 pub use scheduler::{ArpScheduler, ScheduledEvent, StepRate};
 
@@ -145,10 +151,19 @@ enum Screen {
 struct ArpeggiGator {
     engine: ArpEngine,
     melody_engine: MelodyEngine,
+    mutator_engine: MutatorEngine,
+    acordator_engine: AcordatorEngine,
+    chord_mood: ChordMood,
+    voicing_style: VoicingStyle,
+    orbitator_engine: OrbitatorEngine,
+    orbit_atmosphere: OrbitAtmosphere,
+    orbit_dynamics: OrbitDynamics,
     scheduler: ArpScheduler,
     mode: EngineMode,
     melody_bars: BarLength,
     melody_variant: MelodyVariant,
+    mutator_intensity: MutationIntensity,
+    mutator_variant: MelodyVariant,
     enabled: bool,
     current_screen: Screen,
     in_16_levels: bool,
@@ -182,6 +197,9 @@ impl ArpeggiGator {
         }
         self.engine.clear();
         self.melody_engine.clear();
+        self.mutator_engine.clear();
+        self.acordator_engine.clear();
+        self.orbitator_engine.clear();
         PREVIEW_STATE.store(0, Ordering::Release);
         lighting::restore_pad_rgbs();
         self.led_mask = 0;
@@ -346,12 +364,18 @@ impl Mod for ArpeggiGator {
                 self.mode = match self.mode {
                     EngineMode::Off => EngineMode::Arp,
                     EngineMode::Arp => EngineMode::Melody,
-                    EngineMode::Melody => EngineMode::Off,
+                    EngineMode::Melody => EngineMode::Mutator,
+                    EngineMode::Mutator => EngineMode::Acordator,
+                    EngineMode::Acordator => EngineMode::Orbitator,
+                    EngineMode::Orbitator => EngineMode::Off,
                 };
                 self.enabled = self.mode != EngineMode::Off;
                 if self.mode == EngineMode::Off {
                     self.engine.clear();
                     self.melody_engine.clear();
+                    self.mutator_engine.clear();
+                    self.acordator_engine.clear();
+                    self.orbitator_engine.clear();
                     PREVIEW_STATE.store(0, Ordering::Release);
                 } else if self.mode == EngineMode::Arp {
                     PREVIEW_STATE.store(PREVIEW_ENABLED, Ordering::Release);
@@ -363,6 +387,9 @@ impl Mod for ArpeggiGator {
                 action = match self.mode {
                     EngineMode::Arp => 1,
                     EngineMode::Melody => 8,
+                    EngineMode::Mutator => 9,
+                    EngineMode::Acordator => 10,
+                    EngineMode::Orbitator => 11,
                     EngineMode::Off => 2,
                 };
                 ButtonFlow::Consume
@@ -372,6 +399,21 @@ impl Mod for ArpeggiGator {
                     self.melody_bars = self.melody_bars.cycle();
                     #[cfg(feature = "emulator-audio")]
                     native_audio::set_melody_bars(self.melody_bars);
+                } else if self.mode == EngineMode::Mutator {
+                    self.mutator_intensity = self.mutator_intensity.cycle();
+                    self.mutator_engine.set_intensity(self.mutator_intensity);
+                    #[cfg(feature = "emulator-audio")]
+                    native_audio::set_mutator_intensity(self.mutator_intensity);
+                } else if self.mode == EngineMode::Acordator {
+                    self.chord_mood = self.chord_mood.cycle();
+                    self.acordator_engine.set_mood(self.chord_mood);
+                    #[cfg(feature = "emulator-audio")]
+                    native_audio::set_chord_mood(self.chord_mood);
+                } else if self.mode == EngineMode::Orbitator {
+                    self.orbit_atmosphere = self.orbit_atmosphere.cycle();
+                    self.orbitator_engine.set_atmosphere(self.orbit_atmosphere);
+                    #[cfg(feature = "emulator-audio")]
+                    native_audio::set_orbit_atmosphere(self.orbit_atmosphere);
                 } else {
                     let _pattern = self.engine.cycle_pattern();
                     #[cfg(feature = "emulator-audio")]
@@ -385,6 +427,21 @@ impl Mod for ArpeggiGator {
                     self.melody_variant = self.melody_variant.cycle();
                     #[cfg(feature = "emulator-audio")]
                     native_audio::set_melody_variant(self.melody_variant);
+                } else if self.mode == EngineMode::Mutator {
+                    self.mutator_variant = self.mutator_variant.cycle();
+                    self.mutator_engine.set_variant(self.mutator_variant);
+                    #[cfg(feature = "emulator-audio")]
+                    native_audio::set_mutator_variant(self.mutator_variant);
+                } else if self.mode == EngineMode::Acordator {
+                    self.voicing_style = self.voicing_style.cycle();
+                    self.acordator_engine.set_style(self.voicing_style);
+                    #[cfg(feature = "emulator-audio")]
+                    native_audio::set_voicing_style(self.voicing_style);
+                } else if self.mode == EngineMode::Orbitator {
+                    self.orbit_dynamics = self.orbit_dynamics.cycle();
+                    self.orbitator_engine.set_dynamics(self.orbit_dynamics);
+                    #[cfg(feature = "emulator-audio")]
+                    native_audio::set_orbit_dynamics(self.orbit_dynamics);
                 } else {
                     self.additional_notes = (self.additional_notes + 1) % 4;
                     #[cfg(feature = "emulator-audio")]
@@ -446,17 +503,21 @@ impl Mod for ArpeggiGator {
             }
             match event.action {
                 PadAction::Press => {
-                    if self.mode == EngineMode::Melody {
-                        self.melody_engine.press(pad, event.velocity);
-                    } else {
-                        self.engine.press(pad, event.velocity);
+                    match self.mode {
+                        EngineMode::Melody => self.melody_engine.press(pad, event.velocity),
+                        EngineMode::Mutator => self.mutator_engine.press(pad, event.velocity),
+                        EngineMode::Acordator => self.acordator_engine.press(pad, event.velocity),
+                        EngineMode::Orbitator => self.orbitator_engine.press(pad, event.velocity),
+                        _ => self.engine.press(pad, event.velocity),
                     }
                 }
                 PadAction::Release => {
-                    if self.mode == EngineMode::Melody {
-                        self.melody_engine.release(pad);
-                    } else {
-                        self.engine.release(pad);
+                    match self.mode {
+                        EngineMode::Melody => self.melody_engine.release(pad),
+                        EngineMode::Mutator => self.mutator_engine.release(pad),
+                        EngineMode::Acordator => self.acordator_engine.release(pad),
+                        EngineMode::Orbitator => self.orbitator_engine.release(pad),
+                        _ => self.engine.release(pad),
                     }
                     if self.enabled && self.is_16_levels_active() {
                         return PadFlow::Consume;
@@ -515,17 +576,23 @@ impl Mod for ArpeggiGator {
         if !show_shift_menu && !show_overlay {
             return;
         }
-        let b2_label = if self.mode == EngineMode::Melody {
-            self.melody_bars.label()
-        } else {
-            self.engine.pattern().label()
+        let b2_label = match self.mode {
+            EngineMode::Melody => self.melody_bars.label(),
+            EngineMode::Mutator => self.mutator_intensity.label(),
+            EngineMode::Acordator => self.chord_mood.label(),
+            EngineMode::Orbitator => self.orbit_atmosphere.label(),
+            _ => self.engine.pattern().label(),
         };
         let b3_formatted;
-        let b3_label = if self.mode == EngineMode::Melody {
-            self.melody_variant.label()
-        } else {
-            b3_formatted = format!("+{}", self.additional_notes);
-            &b3_formatted
+        let b3_label = match self.mode {
+            EngineMode::Melody => self.melody_variant.label(),
+            EngineMode::Mutator => self.mutator_variant.label(),
+            EngineMode::Acordator => self.voicing_style.label(),
+            EngineMode::Orbitator => self.orbit_dynamics.label(),
+            _ => {
+                b3_formatted = format!("+{}", self.additional_notes);
+                &b3_formatted
+            }
         };
         // SAFETY: on_paint supplies the live Graphics object on the app's
         // paint path.
@@ -544,6 +611,15 @@ impl Mod for ArpeggiGator {
                 ),
                 now as u64,
             )
+        }
+    }
+}
+
+impl Drop for ArpeggiGator {
+    fn drop(&mut self) {
+        lighting::restore_pad_rgbs();
+        for pad in 0..16 {
+            let _ = lighting::set_pad_light(pad, 0, 0.0);
         }
     }
 }
@@ -929,7 +1005,97 @@ mod animation_input_tests {
         observe_surface(surface(5, 0x89, 0));
         assert_eq!(PREVIEW_STATE.load(Ordering::Acquire) & PAD_MASK, 0);
 
-        // 3rd SHIFT+B1 -> returns to Off
+        // 3rd SHIFT+B1 -> advances to Mutator
+        module.on_button(button_ev(BUTTON_B1, true, true));
+        module.on_button(button_ev(BUTTON_B1, false, true));
+        assert_eq!(module.mode, EngineMode::Mutator);
+        assert!(module.enabled);
+
+        // In Mutator: SHIFT+B2 cycles intensity (Subtle -> Wild -> Chaos -> Subtle)
+        assert_eq!(module.mutator_intensity, MutationIntensity::Subtle);
+        module.on_button(button_ev(BUTTON_B2, true, true));
+        module.on_button(button_ev(BUTTON_B2, false, true));
+        assert_eq!(module.mutator_intensity, MutationIntensity::Wild);
+        module.on_button(button_ev(BUTTON_B2, true, true));
+        module.on_button(button_ev(BUTTON_B2, false, true));
+        assert_eq!(module.mutator_intensity, MutationIntensity::Chaos);
+        module.on_button(button_ev(BUTTON_B2, true, true));
+        module.on_button(button_ev(BUTTON_B2, false, true));
+        assert_eq!(module.mutator_intensity, MutationIntensity::Subtle);
+
+        // In Mutator: SHIFT+B3 cycles variants
+        assert_eq!(module.mutator_variant, MelodyVariant::Mel1);
+        module.on_button(button_ev(BUTTON_B3, true, true));
+        module.on_button(button_ev(BUTTON_B3, false, true));
+        assert_eq!(module.mutator_variant, MelodyVariant::Mel2);
+
+        // 4th SHIFT+B1 -> advances to Acordator
+        module.on_button(button_ev(BUTTON_B1, true, true));
+        module.on_button(button_ev(BUTTON_B1, false, true));
+        assert_eq!(module.mode, EngineMode::Acordator);
+        assert!(module.enabled);
+
+        // In Acordator: SHIFT+B2 cycles mood (Warm -> Sad -> Space -> Cinema -> Warm)
+        assert_eq!(module.chord_mood, ChordMood::Warm);
+        module.on_button(button_ev(BUTTON_B2, true, true));
+        module.on_button(button_ev(BUTTON_B2, false, true));
+        assert_eq!(module.chord_mood, ChordMood::Sad);
+        module.on_button(button_ev(BUTTON_B2, true, true));
+        module.on_button(button_ev(BUTTON_B2, false, true));
+        assert_eq!(module.chord_mood, ChordMood::Space);
+        module.on_button(button_ev(BUTTON_B2, true, true));
+        module.on_button(button_ev(BUTTON_B2, false, true));
+        assert_eq!(module.chord_mood, ChordMood::Cinema);
+        module.on_button(button_ev(BUTTON_B2, true, true));
+        module.on_button(button_ev(BUTTON_B2, false, true));
+        assert_eq!(module.chord_mood, ChordMood::Warm);
+
+        // In Acordator: SHIFT+B3 cycles style (Strum -> Pulse -> Wave -> Strum)
+        assert_eq!(module.voicing_style, VoicingStyle::Strum);
+        module.on_button(button_ev(BUTTON_B3, true, true));
+        module.on_button(button_ev(BUTTON_B3, false, true));
+        assert_eq!(module.voicing_style, VoicingStyle::Pulse);
+        module.on_button(button_ev(BUTTON_B3, true, true));
+        module.on_button(button_ev(BUTTON_B3, false, true));
+        assert_eq!(module.voicing_style, VoicingStyle::Wave);
+        module.on_button(button_ev(BUTTON_B3, true, true));
+        module.on_button(button_ev(BUTTON_B3, false, true));
+        assert_eq!(module.voicing_style, VoicingStyle::Strum);
+
+        // 5th SHIFT+B1 -> advances to Orbitator
+        module.on_button(button_ev(BUTTON_B1, true, true));
+        module.on_button(button_ev(BUTTON_B1, false, true));
+        assert_eq!(module.mode, EngineMode::Orbitator);
+        assert!(module.enabled);
+
+        // In Orbitator: SHIFT+B2 cycles atmosphere (Ambient -> Space -> Dark -> Rhythm -> Ambient)
+        assert_eq!(module.orbit_atmosphere, OrbitAtmosphere::Ambient);
+        module.on_button(button_ev(BUTTON_B2, true, true));
+        module.on_button(button_ev(BUTTON_B2, false, true));
+        assert_eq!(module.orbit_atmosphere, OrbitAtmosphere::Space);
+        module.on_button(button_ev(BUTTON_B2, true, true));
+        module.on_button(button_ev(BUTTON_B2, false, true));
+        assert_eq!(module.orbit_atmosphere, OrbitAtmosphere::Dark);
+        module.on_button(button_ev(BUTTON_B2, true, true));
+        module.on_button(button_ev(BUTTON_B2, false, true));
+        assert_eq!(module.orbit_atmosphere, OrbitAtmosphere::Rhythm);
+        module.on_button(button_ev(BUTTON_B2, true, true));
+        module.on_button(button_ev(BUTTON_B2, false, true));
+        assert_eq!(module.orbit_atmosphere, OrbitAtmosphere::Ambient);
+
+        // In Orbitator: SHIFT+B3 cycles dynamics (Calm -> Flow -> Wild -> Calm)
+        assert_eq!(module.orbit_dynamics, OrbitDynamics::Calm);
+        module.on_button(button_ev(BUTTON_B3, true, true));
+        module.on_button(button_ev(BUTTON_B3, false, true));
+        assert_eq!(module.orbit_dynamics, OrbitDynamics::Flow);
+        module.on_button(button_ev(BUTTON_B3, true, true));
+        module.on_button(button_ev(BUTTON_B3, false, true));
+        assert_eq!(module.orbit_dynamics, OrbitDynamics::Wild);
+        module.on_button(button_ev(BUTTON_B3, true, true));
+        module.on_button(button_ev(BUTTON_B3, false, true));
+        assert_eq!(module.orbit_dynamics, OrbitDynamics::Calm);
+
+        // 6th SHIFT+B1 -> returns to Off
         module.on_button(button_ev(BUTTON_B1, true, true));
         module.on_button(button_ev(BUTTON_B1, false, true));
         assert_eq!(module.mode, EngineMode::Off);

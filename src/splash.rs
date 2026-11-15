@@ -46,7 +46,16 @@ pub unsafe fn draw_arp_overlay(
                 EngineMode::Melody => {
                     draw_melody_view(graphics, b2_label, b3_label, held_pads, hold, rate, now_ms);
                 }
-                EngineMode::Off => {}
+                EngineMode::Mutator => {
+                    draw_mutator_view(graphics, b2_label, b3_label, held_pads, hold, rate, now_ms);
+                }
+                EngineMode::Acordator => {
+                    draw_acordator_view(graphics, b2_label, b3_label, held_pads, hold, rate, now_ms);
+                }
+                EngineMode::Orbitator => {
+                    draw_orbitator_view(graphics, b2_label, b3_label, held_pads, hold, rate, now_ms);
+                }
+                _ => {}
             }
         }
     }
@@ -116,6 +125,295 @@ unsafe fn draw_melody_view(
 
         // Club scene on the left
         draw_club_scene(graphics, held_pads > 0, now_ms);
+    }
+}
+
+unsafe fn draw_mutator_view(
+    graphics: &mut Graphics,
+    intensity_label: &str,
+    motif_label: &str,
+    held_pads: u8,
+    hold: bool,
+    rate: &str,
+    now_ms: u64,
+) {
+    unsafe {
+        // Right side information column
+        graphics.colour(0xff00e5ff); // Electric Cyan
+        graphics.text("MODE: MUTATOR", 189, 73, 125, 15, 13.0);
+        graphics.colour(if hold { LIME } else { 0xffff4053 });
+        graphics.text(
+            if hold { "HOLD: ON" } else { "HOLD: OFF" },
+            189,
+            90,
+            125,
+            15,
+            13.0,
+        );
+        graphics.colour(0xffffaa00); // Cyber amber
+        graphics.text(
+            &format!("{intensity_label}  {motif_label}"),
+            189,
+            107,
+            125,
+            15,
+            13.0,
+        );
+        graphics.colour(0xff00e5ff);
+        graphics.text("TURN DATA: RATE", 189, 147, 125, 15, 12.0);
+        graphics.colour(LIME);
+        graphics.text(rate, 194, 163, 116, 22, 19.0);
+
+        // Cyber Mutator Lab on the left
+        draw_mutator_lab(graphics, held_pads > 0, now_ms);
+    }
+}
+
+unsafe fn draw_mutator_lab(graphics: &mut Graphics, active: bool, now_ms: u64) {
+    unsafe {
+        // DNA scanner lines / cyber grid in background
+        let scan_phase = ((now_ms / 80) % 30) as i32;
+        graphics.colour(0xff0c2438);
+        for col in 0..7 {
+            let x = 18 + col * 24;
+            graphics.rect(x, 48, 1, 140);
+        }
+        for row in 0..6 {
+            let y = 52 + row * 24;
+            graphics.rect(14, y, 166, 1);
+        }
+
+        // Animated horizontal scanner laser
+        graphics.colour(if active { 0xff00e5ff } else { 0xff006688 });
+        let laser_y = 50 + scan_phase * 4;
+        graphics.rect(14, laser_y, 166, 2);
+
+        // Bubbling mutagen beaker on left side (x: 18..36, y: 130..175)
+        graphics.colour(0xff16082f);
+        graphics.rect(18, 140, 18, 32);
+        graphics.rect(23, 128, 8, 12);
+        // Beaker liquid
+        graphics.colour(if active { 0xff39ff14 } else { 0xff188820 });
+        graphics.rect(20, 148, 14, 22);
+        // Bubbles in beaker
+        let bubble_phase = ((now_ms / 120) % 5) as i32;
+        graphics.colour(0xffffffff);
+        graphics.rect(24, 160 - bubble_phase * 4, 3, 3);
+        graphics.rect(28, 166 - ((bubble_phase + 2) % 5) * 4, 2, 2);
+
+        // Draw Gator in Cyber Lab behind synth console
+        draw_dj_booth(graphics, active, now_ms);
+        draw_dj_gator(graphics, active, now_ms);
+
+        // Cyber visor overlay on gator
+        let bob = if active {
+            [0, -2, -3, -1, 0, 2, 3, 1][((now_ms / 110) % 8) as usize]
+        } else {
+            0
+        };
+        let gx = 60;
+        let gy = 78 + bob;
+        // Visor glow: cyan or electric lime
+        graphics.colour(if active { 0xff00ffff } else { 0xff00aacc });
+        graphics.rect(gx + 22, gy + 17, 18, 8);
+        graphics.colour(0xffffffff);
+        graphics.rect(gx + 24, gy + 19, 4, 3);
+        graphics.rect(gx + 32, gy + 19, 4, 3);
+    }
+}
+
+unsafe fn draw_acordator_view(
+    graphics: &mut Graphics,
+    mood_label: &str,
+    style_label: &str,
+    held_pads: u8,
+    hold: bool,
+    rate: &str,
+    now_ms: u64,
+) {
+    unsafe {
+        // Right side information column
+        graphics.colour(0xffffaa00); // Warm amber
+        graphics.text("MODE: ACORDATOR", 189, 73, 125, 15, 12.0);
+        graphics.colour(if hold { LIME } else { 0xffff4053 });
+        graphics.text(
+            if hold { "HOLD: ON" } else { "HOLD: OFF" },
+            189,
+            90,
+            125,
+            15,
+            13.0,
+        );
+        graphics.colour(0xffffdd66); // Warm gold
+        graphics.text(
+            &format!("{mood_label}  {style_label}"),
+            189,
+            107,
+            125,
+            15,
+            13.0,
+        );
+        graphics.colour(0xffffaa00);
+        graphics.text("TURN DATA: RATE", 189, 147, 125, 15, 12.0);
+        graphics.colour(LIME);
+        graphics.text(rate, 194, 163, 116, 22, 19.0);
+
+        // Warm chord stage on the left
+        draw_acordator_stage(graphics, held_pads > 0, now_ms);
+    }
+}
+
+unsafe fn draw_acordator_stage(graphics: &mut Graphics, active: bool, now_ms: u64) {
+    unsafe {
+        // Warm sunset synthwave glow background
+        graphics.colour(0xff2a0820);
+        graphics.rect(14, 48, 166, 140);
+
+        // 4 warm chord harmony pillars behind gator
+        let pulse = ((now_ms / 140) % 4) as usize;
+        let pillar_colors = [0xffff4422, 0xffff8800, 0xffffbb00, 0xffffee55];
+        for col in 0..4 {
+            let x = 24 + (col as i32 * 40);
+            let h = if active {
+                35 + (((col + pulse) % 4) as i32 * 12)
+            } else {
+                25
+            };
+            graphics.colour(pillar_colors[col]);
+            graphics.rect(x, 140 - h, 20, h);
+            graphics.colour(0xffffffff);
+            graphics.rect(x + 2, 142 - h, 16, 2);
+        }
+
+        draw_dj_booth(graphics, active, now_ms);
+        draw_dj_gator(graphics, active, now_ms);
+
+        // Warm amber sunglasses on gator
+        let bob = if active {
+            [0, -2, -3, -1, 0, 2, 3, 1][((now_ms / 110) % 8) as usize]
+        } else {
+            0
+        };
+        let gx = 60;
+        let gy = 78 + bob;
+        graphics.colour(0xffffaa00);
+        graphics.rect(gx + 22, gy + 17, 18, 8);
+        graphics.colour(0xfffff0d5);
+        graphics.rect(gx + 24, gy + 19, 4, 3);
+        graphics.rect(gx + 32, gy + 19, 4, 3);
+    }
+}
+
+unsafe fn draw_orbitator_view(
+    graphics: &mut Graphics,
+    atmo_label: &str,
+    dyn_label: &str,
+    held_pads: u8,
+    hold: bool,
+    rate: &str,
+    now_ms: u64,
+) {
+    unsafe {
+        // Right side information column
+        graphics.colour(0xff9d4edd); // Cosmic violet
+        graphics.text("MODE: ORBITATOR", 189, 73, 125, 15, 12.0);
+        graphics.colour(if hold { LIME } else { 0xffff4053 });
+        graphics.text(
+            if hold { "HOLD: ON" } else { "HOLD: OFF" },
+            189,
+            90,
+            125,
+            15,
+            13.0,
+        );
+        graphics.colour(0xff00ffff); // Electric Cyan
+        graphics.text(
+            &format!("{atmo_label}  {dyn_label}"),
+            189,
+            107,
+            125,
+            15,
+            13.0,
+        );
+        graphics.colour(0xff9d4edd);
+        graphics.text("TURN DATA: RATE", 189, 147, 125, 15, 12.0);
+        graphics.colour(LIME);
+        graphics.text(rate, 194, 163, 116, 22, 19.0);
+
+        // Deep Space Orbitator Scene on the left
+        draw_orbitator_space(graphics, held_pads > 0, now_ms);
+    }
+}
+
+unsafe fn draw_orbitator_space(graphics: &mut Graphics, active: bool, now_ms: u64) {
+    unsafe {
+        // Deep space black/indigo canvas
+        graphics.colour(0xff060312);
+        graphics.rect(14, 48, 166, 140);
+
+        // Twinkling stars
+        let star_twinkle = ((now_ms / 150) % 3) as usize;
+        let stars = [
+            (22, 58), (40, 72), (75, 52), (130, 60), (160, 54),
+            (28, 110), (145, 95), (162, 130), (35, 165), (150, 168)
+        ];
+        for (i, &(sx, sy)) in stars.iter().enumerate() {
+            let col = if (i + star_twinkle) % 3 == 0 {
+                0xffffffff
+            } else {
+                0xff7b68ee
+            };
+            graphics.colour(col);
+            graphics.rect(sx, sy, 2, 2);
+        }
+
+        // Central Planet with orbiting ring behind gator
+        let px = 97;
+        let py = 105;
+        // Planet body
+        graphics.colour(0xff1a1040);
+        graphics.rect(px - 16, py - 16, 32, 32);
+        graphics.colour(0xff3a1f7a);
+        graphics.rect(px - 14, py - 14, 28, 28);
+        graphics.colour(0xff5c35b5);
+        graphics.rect(px - 10, py - 10, 20, 20);
+
+        // Orbiting celestial ring
+        graphics.colour(0xff00d4ff);
+        graphics.rect(px - 26, py, 52, 2);
+        graphics.rect(px - 22, py - 3, 44, 1);
+        graphics.rect(px - 22, py + 3, 44, 1);
+
+        // Orbiting satellite dot
+        let orbit_angle = ((now_ms / 60) % 32) as i32;
+        let sat_x = px - 28 + (orbit_angle * 56 / 32);
+        let sat_y = py - 4 + ((orbit_angle - 16).abs() / 3);
+        graphics.colour(if active { 0xffa6f52a } else { 0xffffffff });
+        graphics.rect(sat_x, sat_y, 4, 4);
+
+        // Astronaut Gator
+        draw_dj_booth(graphics, active, now_ms);
+        draw_dj_gator(graphics, active, now_ms);
+
+        // Space Helmet bubble on Gator!
+        let bob = if active {
+            [0, -2, -3, -1, 0, 2, 3, 1][((now_ms / 110) % 8) as usize]
+        } else {
+            0
+        };
+        let gx = 60;
+        let gy = 78 + bob;
+        // Translucent blue-tinted visor dome outline
+        graphics.colour(0xff00e5ff);
+        graphics.rect(gx + 18, gy + 12, 26, 1);
+        graphics.rect(gx + 16, gy + 13, 2, 16);
+        graphics.rect(gx + 44, gy + 13, 2, 16);
+        graphics.rect(gx + 18, gy + 29, 26, 1);
+        // Visor gold solar reflection
+        graphics.colour(0xffffcf36);
+        graphics.rect(gx + 22, gy + 16, 18, 9);
+        graphics.colour(0xffffffff);
+        graphics.rect(gx + 24, gy + 17, 4, 3);
     }
 }
 
@@ -566,6 +864,9 @@ unsafe fn draw_shift_labels(
             EngineMode::Off => BG,
             EngineMode::Arp => LIME,
             EngineMode::Melody => 0xffe6007e, // Neon club pink
+            EngineMode::Mutator => 0xff00d4ff, // Electric cyan
+            EngineMode::Acordator => 0xffff9900, // Warm amber
+            EngineMode::Orbitator => 0xff9d4edd, // Cosmic violet
         };
         label_cell(graphics, 13, 5, 88, fill_b1);
         label_cell(graphics, 111, 5, 98, BG);
@@ -582,6 +883,18 @@ unsafe fn draw_shift_labels(
             EngineMode::Melody => {
                 graphics.colour(0xffffffff);
                 graphics.text("MELODY", 17, 8, 80, 19, 14.0);
+            }
+            EngineMode::Mutator => {
+                graphics.colour(INK);
+                graphics.text("MUTATOR", 15, 8, 84, 19, 13.0);
+            }
+            EngineMode::Acordator => {
+                graphics.colour(INK);
+                graphics.text("ACORDATOR", 13, 8, 88, 19, 12.0);
+            }
+            EngineMode::Orbitator => {
+                graphics.colour(0xffffffff);
+                graphics.text("ORBITATOR", 14, 8, 86, 19, 12.0);
             }
         }
         graphics.colour(CREAM);
