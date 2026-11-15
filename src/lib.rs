@@ -288,6 +288,7 @@ impl ArpeggiGator {
                     self.in_16_levels = native_16_levels;
                     if !native_16_levels {
                         CLEAR_FRAMES.store(3, Ordering::Release);
+                        draw::repaint_painted();
                         if self.should_continue_in_background() {
                             BACKGROUND_PLAYBACK_ACTIVE.store(true, Ordering::Release);
                         } else {
@@ -404,6 +405,7 @@ impl Mod for ArpeggiGator {
                         LAST_STOP_MS.store(0, Ordering::Release);
                     } else {
                         CLEAR_FRAMES.store(3, Ordering::Release);
+                        draw::repaint_painted();
                         if self.should_continue_in_background() {
                             BACKGROUND_PLAYBACK_ACTIVE.store(true, Ordering::Release);
                         } else {
