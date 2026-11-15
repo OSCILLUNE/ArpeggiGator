@@ -88,12 +88,17 @@ impl Drop for UiEventGuard {
     }
 }
 
+static CLEAR_FRAMES: AtomicU32 = AtomicU32::new(0);
+
 fn repaint_component() -> usize {
     let screen = page::screen();
     if !page::is_sample_page(screen) {
         return 0;
     }
     if SPLASH_ACTIVE.load(Ordering::Acquire) {
+        return screen;
+    }
+    if CLEAR_FRAMES.load(Ordering::Acquire) > 0 {
         return screen;
     }
     if !IN_16_LEVELS_ACTIVE.load(Ordering::Acquire) {
@@ -279,12 +284,17 @@ impl ArpeggiGator {
             }
             if lighting::has_native_lighting() {
                 let native_16_levels = lighting::is_16_levels_lit();
-                if !native_16_levels && self.in_16_levels {
-                    self.in_16_levels = false;
-                    if self.should_continue_in_background() {
-                        BACKGROUND_PLAYBACK_ACTIVE.store(true, Ordering::Release);
+                if self.in_16_levels != native_16_levels {
+                    self.in_16_levels = native_16_levels;
+                    if !native_16_levels {
+                        CLEAR_FRAMES.store(3, Ordering::Release);
+                        if self.should_continue_in_background() {
+                            BACKGROUND_PLAYBACK_ACTIVE.store(true, Ordering::Release);
+                        } else {
+                            self.reset_engine_state();
+                            BACKGROUND_PLAYBACK_ACTIVE.store(false, Ordering::Release);
+                        }
                     } else {
-                        self.reset_engine_state();
                         BACKGROUND_PLAYBACK_ACTIVE.store(false, Ordering::Release);
                     }
                 }
@@ -305,6 +315,7 @@ impl Mod for ArpeggiGator {
         self.led_mask = 0;
         self.loop_audition_active = false;
         IN_16_LEVELS_ACTIVE.store(false, Ordering::Release);
+        CLEAR_FRAMES.store(0, Ordering::Release);
         SPLASH_ACTIVE.store(true, Ordering::Release);
         DASHBOARD_REFRESH_UNTIL_MS.store(0, Ordering::Release);
         PREVIEW_STATE.store(0, Ordering::Release);
@@ -380,18 +391,25 @@ impl Mod for ArpeggiGator {
         } else if event.code == button::LEVELS && event.pressed {
             if !event.shift {
                 if self.current_screen == Screen::Sample {
-                    let entering = !self.in_16_levels;
+                    let entering = if lighting::has_native_lighting() {
+                        !lighting::is_16_levels_lit()
+                    } else {
+                        !self.in_16_levels
+                    };
                     self.in_16_levels = entering;
                     IN_16_LEVELS_ACTIVE.store(self.is_16_levels_active(), Ordering::Release);
                     action = if entering { 4 } else { 5 };
                     if entering {
                         BACKGROUND_PLAYBACK_ACTIVE.store(false, Ordering::Release);
                         LAST_STOP_MS.store(0, Ordering::Release);
-                    } else if self.should_continue_in_background() {
-                        BACKGROUND_PLAYBACK_ACTIVE.store(true, Ordering::Release);
                     } else {
-                        self.reset_engine_state();
-                        BACKGROUND_PLAYBACK_ACTIVE.store(false, Ordering::Release);
+                        CLEAR_FRAMES.store(3, Ordering::Release);
+                        if self.should_continue_in_background() {
+                            BACKGROUND_PLAYBACK_ACTIVE.store(true, Ordering::Release);
+                        } else {
+                            self.reset_engine_state();
+                            BACKGROUND_PLAYBACK_ACTIVE.store(false, Ordering::Release);
+                        }
                     }
                 }
             }
@@ -657,6 +675,17 @@ impl Mod for ArpeggiGator {
             }
         }
         self.led_mask = target_leds;
+        if !self.is_16_levels_active() {
+            let frames = CLEAR_FRAMES.load(Ordering::Acquire);
+            if frames > 0 {
+                CLEAR_FRAMES.store(frames - 1, Ordering::Release);
+                unsafe {
+                    graphics.colour(0xff000000);
+                    graphics.rect(14, 48, 292, 30);
+                }
+            }
+            return;
+        }
         let shift_active = SHIFT_ACTIVE.load(Ordering::Acquire);
         let show_shift_menu = self.is_16_levels_active() && shift_active;
         let show_overlay = self.is_16_levels_active() && self.enabled;
