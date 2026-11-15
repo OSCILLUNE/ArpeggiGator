@@ -71,6 +71,12 @@ impl Playback {
         self.mode
     }
 
+    /// Whether HOLD is currently active.
+    #[must_use]
+    pub const fn hold(&self) -> bool {
+        self.hold
+    }
+
     /// Disable HOLD by clearing the latched notes and releasing any voice.
     pub fn set_hold(&mut self, hold: bool) -> Option<ScheduledEvent> {
         if self.mode == EngineMode::Off || self.hold == hold {
@@ -546,6 +552,41 @@ mod tests {
 
         assert_eq!(p.release(1), Some(ScheduledEvent::NoteOff { pad: 1 }));
         assert_eq!(p.selected(), 0);
+    }
+
+    #[test]
+    fn hold_persists_across_mode_changes_until_turned_off() {
+        let mut p = Playback::default();
+        p.set_mode(EngineMode::Arp);
+        assert!(!p.hold());
+
+        // Enable HOLD in Arp
+        assert_eq!(p.set_hold(true), None);
+        assert!(p.hold());
+
+        // Cycle through all active modes: HOLD must persist
+        for mode in [
+            EngineMode::Melody,
+            EngineMode::Mutator,
+            EngineMode::Acordator,
+            EngineMode::Orbitator,
+        ] {
+            p.set_mode(mode);
+            assert!(p.hold(), "HOLD should persist in mode {:?}", mode);
+        }
+
+        // Switching to Off resets HOLD to false
+        p.set_mode(EngineMode::Off);
+        assert!(!p.hold());
+
+        // Re-entering Arp starts with HOLD off
+        p.set_mode(EngineMode::Arp);
+        assert!(!p.hold());
+
+        // While in Off, set_hold is rejected
+        p.set_mode(EngineMode::Off);
+        assert_eq!(p.set_hold(true), None);
+        assert!(!p.hold());
     }
 
     #[test]

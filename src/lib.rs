@@ -363,6 +363,7 @@ impl Mod for ArpeggiGator {
                 ButtonFlow::Forward
             } else if bit == 1 {
                 self.consumed_buttons |= bit;
+                let hold_bit = PREVIEW_STATE.load(Ordering::Acquire) & HOLD_ENABLED;
                 self.mode = match self.mode {
                     EngineMode::Off => EngineMode::Arp,
                     EngineMode::Arp => EngineMode::Melody,
@@ -372,20 +373,24 @@ impl Mod for ArpeggiGator {
                     EngineMode::Orbitator => EngineMode::Off,
                 };
                 self.enabled = self.mode != EngineMode::Off;
+                self.engine.clear();
+                self.melody_engine.clear();
+                self.mutator_engine.clear();
+                self.acordator_engine.clear();
+                self.orbitator_engine.clear();
                 if self.mode == EngineMode::Off {
-                    self.engine.clear();
-                    self.melody_engine.clear();
-                    self.mutator_engine.clear();
-                    self.acordator_engine.clear();
-                    self.orbitator_engine.clear();
                     PREVIEW_STATE.store(0, Ordering::Release);
                 } else if self.mode == EngineMode::Arp {
-                    PREVIEW_STATE.store(PREVIEW_ENABLED, Ordering::Release);
+                    PREVIEW_STATE.store(PREVIEW_ENABLED | hold_bit, Ordering::Release);
                 } else {
-                    PREVIEW_STATE.store(PREVIEW_ENABLED | MODE_MELODY, Ordering::Release);
+                    PREVIEW_STATE
+                        .store(PREVIEW_ENABLED | MODE_MELODY | hold_bit, Ordering::Release);
                 }
                 #[cfg(feature = "emulator-audio")]
-                native_audio::set_mode(self.mode);
+                {
+                    native_audio::panic();
+                    native_audio::set_mode(self.mode);
+                }
                 action = match self.mode {
                     EngineMode::Arp => 1,
                     EngineMode::Melody => 8,
@@ -1212,5 +1217,64 @@ mod animation_input_tests {
         module.on_button(button_ev(BUTTON_SEQ, true, false));
         assert!(!IN_16_LEVELS_ACTIVE.load(Ordering::Acquire));
         assert_eq!(repaint_component(), 0);
+    }
+
+    #[test]
+    fn hold_persists_across_engine_modes_and_resets_in_off() {
+        let _guard = INPUT_TEST_LOCK.lock().unwrap();
+        lighting::reset_lighting();
+        let mut module = ArpeggiGator::default();
+        module.on_start();
+
+        // 1. Enter 16 Levels
+        module.on_button(button_ev(button::LEVELS, true, false));
+        assert!(module.is_16_levels_active());
+
+        // Initially HOLD is off
+        assert_eq!(PREVIEW_STATE.load(Ordering::Acquire) & HOLD_ENABLED, 0);
+
+        // Turn on ARP (SHIFT + B1)
+        module.on_button(button_ev(BUTTON_B1, true, true));
+        module.on_button(button_ev(BUTTON_B1, false, true));
+        assert_eq!(module.mode, EngineMode::Arp);
+        assert_eq!(PREVIEW_STATE.load(Ordering::Acquire) & HOLD_ENABLED, 0);
+
+        // 2. Enable HOLD (click DATA wheel)
+        module.on_button(button_ev(button::DATA, true, false));
+        module.on_button(button_ev(button::DATA, false, false));
+        assert_ne!(PREVIEW_STATE.load(Ordering::Acquire) & HOLD_ENABLED, 0);
+
+        // 3. Cycle through active modes: Melody -> Mutator -> Acordator -> Orbitator
+        for expected_mode in [
+            EngineMode::Melody,
+            EngineMode::Mutator,
+            EngineMode::Acordator,
+            EngineMode::Orbitator,
+        ] {
+            module.on_button(button_ev(BUTTON_B1, true, true));
+            module.on_button(button_ev(BUTTON_B1, false, true));
+            assert_eq!(module.mode, expected_mode);
+            assert_ne!(
+                PREVIEW_STATE.load(Ordering::Acquire) & HOLD_ENABLED,
+                0,
+                "HOLD should persist when transitioning to {:?}",
+                expected_mode
+            );
+        }
+
+        // 4. Next SHIFT + B1 transitions Orbitator -> Off
+        module.on_button(button_ev(BUTTON_B1, true, true));
+        module.on_button(button_ev(BUTTON_B1, false, true));
+        assert_eq!(module.mode, EngineMode::Off);
+        assert_eq!(PREVIEW_STATE.load(Ordering::Acquire), 0);
+        assert_eq!(PREVIEW_STATE.load(Ordering::Acquire) & HOLD_ENABLED, 0);
+
+        // 5. Next SHIFT + B1 transitions Off -> Arp: starts with default HOLD: OFF
+        module.on_button(button_ev(BUTTON_B1, true, true));
+        module.on_button(button_ev(BUTTON_B1, false, true));
+        assert_eq!(module.mode, EngineMode::Arp);
+        assert_eq!(PREVIEW_STATE.load(Ordering::Acquire) & HOLD_ENABLED, 0);
+
+        lighting::reset_lighting();
     }
 }
