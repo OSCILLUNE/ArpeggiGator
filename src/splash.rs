@@ -81,34 +81,24 @@ unsafe fn draw_engine_right_panel(
         graphics.colour(mode_color);
         graphics.text(mode_title, 185, 54, 118, 16, 13.0);
 
-        // 2. HOLD status
-        graphics.colour(if hold { LIME } else { 0xffff4053 });
-        graphics.text(
-            if hold { "HOLD: ON" } else { "HOLD: OFF" },
-            185,
-            72,
-            118,
-            16,
-            13.0,
-        );
-
-        // 3. Parameters
         graphics.colour(param_color);
-        graphics.text(param_line, 185, 90, 118, 16, 13.0);
+        graphics.text(param_line, 185, 72, 118, 16, 13.0);
 
-        // 4. Rate Card
         graphics.colour(card_bg);
-        graphics.rect(184, 114, 118, 68);
+        graphics.rect(184, 96, 118, 88);
         graphics.colour(card_border);
-        graphics.rect(184, 114, 118, 1);
-        graphics.rect(184, 181, 118, 1);
-        graphics.rect(184, 114, 1, 68);
-        graphics.rect(301, 114, 1, 68);
-
+        graphics.rect(184, 96, 118, 1);
+        graphics.rect(184, 183, 118, 1);
+        graphics.rect(184, 96, 1, 88);
+        graphics.rect(301, 96, 1, 88);
         graphics.colour(mode_color);
-        graphics.text("TURN DATA: RATE", 186, 118, 114, 14, 11.0);
-        graphics.colour(LIME);
-        graphics.text(rate, 186, 134, 114, 42, 22.0);
+        graphics.text("TURN DATA: RATE", 186, 100, 114, 12, 10.5);
+        graphics.colour(0xffa6ff00);
+        graphics.text(rate, 186, 114, 114, 24, 22.0);
+        graphics.colour(0xffc0c7d0);
+        graphics.text("PUSH DATA: HOLD", 186, 142, 114, 12, 10.0);
+        graphics.colour(if hold { 0xffa6ff00 } else { 0xffff4053 });
+        graphics.text(if hold { "HOLD: ON" } else { "HOLD: OFF" }, 186, 158, 114, 16, 12.0);
     }
 }
 
@@ -309,7 +299,6 @@ unsafe fn draw_acordator_stage(graphics: &mut Graphics, active: bool, now_ms: u6
             graphics.rect(x + 2, 142 - h, 16, 2);
         }
 
-        draw_dj_booth(graphics, active, now_ms);
         draw_acordator_gator(graphics, active, now_ms);
     }
 }
@@ -1007,181 +996,99 @@ unsafe fn draw_mutator_gator(graphics: &mut Graphics, active: bool, now_ms: u64)
     }
 }
 
-/// Acordator mode mascot: Dark-green alligator with normal face as in Melody.
+/// Acordator mascot playing an accordion with pumping bellows.
 unsafe fn draw_acordator_gator(graphics: &mut Graphics, active: bool, now_ms: u64) {
     unsafe {
-        let bob = if active {
-            [0, -2, -3, -1, 0, 2, 3, 1][((now_ms / 110) % 8) as usize]
-        } else {
-            0
-        };
-
-        let gx = 60;
+        const GATOR: u32 = 0xff28a745;
+        const MINT: u32 = 0xff34d399;
+        const OUTLINE: u32 = 0xff0d1117;
+        const IVORY: u32 = 0xfff0fdf4;
+        const ACCORD_GOLD: u32 = 0xffffc107;
+        let bob = if active { [0, -1, -2, -1, 0, 1, 2, 1][((now_ms / 110) % 8) as usize] } else { 0 };
+        let spread = if active { [0, 2, 5, 8, 10, 8, 4, 1][((now_ms / 100) % 8) as usize] } else { 2 };
+        let left = 65 - spread / 2;
+        let right = 109 + (spread + 1) / 2;
         let gy = 78 + bob;
 
-        // Dark green palette for ACORDATOR
-        const ACORD_DARK_GREEN: u32 = 0xff0d5a23;
-        const ACORD_DARK_SHADOW: u32 = 0xff063313;
-        const ACORD_DARK_MID: u32 = 0xff1b7834;
-        const ACORD_DARK_HIGHLIGHT: u32 = 0xff2ea84b;
-        const ACORD_BELLY: u32 = 0xff4b8535;
-        const ACORD_BELLY_STRIPE: u32 = 0xff27571b;
+        // Torso and belly behind the instrument.
+        graphics.colour(OUTLINE);
+        graphics.rect(66, 116, 48, 50);
+        graphics.rect(60, 160, 20, 8);
+        graphics.rect(103, 160, 20, 8);
+        graphics.colour(GATOR);
+        graphics.rect(68, 118, 44, 46);
+        graphics.rect(62, 161, 17, 5);
+        graphics.rect(104, 161, 17, 5);
+        graphics.colour(0xff8bc34a);
+        graphics.rect(79, 121, 24, 40);
+        graphics.colour(0xff558b2f);
+        for y in (125..158).step_by(5) { graphics.rect(81, y, 20, 1); }
 
-        // Torso / DJ body behind booth (y: gy + 38 to 68)
-        graphics.colour(INK);
-        graphics.rect(gx + 6, gy + 38, 44, 28);
-        graphics.colour(ACORD_DARK_SHADOW);
-        graphics.rect(gx + 8, gy + 40, 40, 25);
-        graphics.colour(ACORD_DARK_GREEN);
-        graphics.rect(gx + 10, gy + 41, 36, 23);
+        // Bobbing head, eyes and smiling snout.
+        graphics.colour(OUTLINE);
+        graphics.rect(70, gy + 12, 36, 28);
+        graphics.rect(92, gy + 20, 32, 18);
+        graphics.colour(GATOR);
+        graphics.rect(72, gy + 14, 32, 24);
+        graphics.rect(94, gy + 22, 28, 14);
+        graphics.colour(MINT);
+        graphics.rect(75, gy + 15, 23, 3);
+        graphics.rect(96, gy + 22, 22, 2);
+        graphics.colour(IVORY);
+        graphics.rect(78, gy + 18, 9, 8);
+        graphics.rect(91, gy + 18, 9, 8);
+        graphics.colour(OUTLINE);
+        graphics.rect(83, gy + 20, 3, 4);
+        graphics.rect(96, gy + 20, 3, 4);
+        graphics.rect(116, gy + 25, 3, 2);
+        graphics.rect(95, gy + 32, 26, 2);
+        graphics.colour(IVORY);
+        for x in [98, 104, 110, 116] { graphics.rect(x, gy + 30, 3, 3); }
 
-        // Gator chest / belly scutes (dark muted sage)
-        graphics.colour(ACORD_BELLY);
-        graphics.rect(gx + 22, gy + 42, 14, 21);
-        graphics.colour(ACORD_BELLY_STRIPE);
+        // Arms and fingers follow the moving end boxes.
+        graphics.colour(OUTLINE);
+        graphics.rect(left - 8, 122, 12, 24);
+        graphics.rect(right + 13, 122, 12, 24);
+        graphics.colour(GATOR);
+        graphics.rect(left - 6, 124, 10, 20);
+        graphics.rect(right + 13, 124, 10, 20);
+
+        // Pleated bellows between bass and keyboard ends.
+        graphics.colour(OUTLINE);
+        graphics.rect(left + 13, 124, right - left - 13, 31);
+        graphics.colour(0xfff0c67a);
+        graphics.rect(left + 14, 126, right - left - 15, 27);
+        graphics.colour(0xff8c332d);
+        let mut fold = left + 16;
+        while fold < right - 1 {
+            graphics.rect(fold, 126, 2, 27);
+            fold += 5;
+        }
+        graphics.colour(ACCORD_GOLD);
+        graphics.rect(left + 14, 126, right - left - 15, 2);
+        graphics.rect(left + 14, 151, right - left - 15, 2);
+        graphics.colour(OUTLINE);
+        graphics.rect(left, 121, 14, 37);
+        graphics.rect(right, 121, 17, 37);
+        graphics.colour(0xffb71c1c);
+        graphics.rect(left + 1, 122, 12, 35);
+        graphics.rect(right + 1, 122, 15, 35);
+        graphics.colour(IVORY);
         for row in 0..4 {
-            graphics.rect(gx + 23, gy + 46 + (row * 4), 12, 1);
+            for col in 0..2 { graphics.rect(left + 3 + col * 5, 126 + row * 7, 2, 2); }
         }
-
-        // Gold chain with 'G' pendant
-        graphics.colour(GOLD);
-        graphics.rect(gx + 18, gy + 40, 2, 6);
-        graphics.rect(gx + 38, gy + 40, 2, 6);
-        graphics.rect(gx + 20, gy + 45, 18, 2);
-        graphics.rect(gx + 27, gy + 47, 5, 5);
-        graphics.colour(CREAM);
-        graphics.rect(gx + 28, gy + 48, 3, 3);
-
-        // Head and snout outline
-        graphics.colour(INK);
-        graphics.rect(gx + 10, gy + 12, 36, 28);
-        graphics.rect(gx + 32, gy + 20, 32, 18);
-        graphics.rect(gx + 58, gy + 18, 6, 4);
-
-        // Dark green head body
-        graphics.colour(ACORD_DARK_SHADOW);
-        graphics.rect(gx + 12, gy + 14, 32, 24);
-        graphics.rect(gx + 34, gy + 22, 28, 15);
-        graphics.rect(gx + 59, gy + 19, 4, 3);
-        graphics.colour(ACORD_DARK_GREEN);
-        graphics.rect(gx + 14, gy + 16, 28, 20);
-        graphics.rect(gx + 34, gy + 21, 27, 13);
-        graphics.rect(gx + 59, gy + 19, 4, 3);
-
-        // Highlights on crown and snout
-        graphics.colour(ACORD_DARK_HIGHLIGHT);
-        graphics.rect(gx + 16, gy + 16, 22, 3);
-        graphics.rect(gx + 36, gy + 21, 22, 2);
-        graphics.rect(gx + 59, gy + 19, 3, 2);
-
-        // Nostril
-        graphics.colour(INK);
-        graphics.rect(gx + 59, gy + 21, 3, 2);
-
-        // Mouth & sharp teeth (identical to MELODY)
-        graphics.colour(INK);
-        graphics.rect(gx + 32, gy + 32, 30, 2);
-        graphics.colour(CREAM);
-        graphics.rect(gx + 36, gy + 30, 3, 3);
-        graphics.rect(gx + 42, gy + 30, 3, 4);
-        graphics.rect(gx + 48, gy + 30, 3, 3);
-        graphics.rect(gx + 54, gy + 30, 3, 4);
-        graphics.rect(gx + 60, gy + 30, 2, 3);
-
-        if active {
-            // Mouth slightly open to the beat
-            graphics.colour(INK);
-            graphics.rect(gx + 34, gy + 33, 28, 4);
-            graphics.colour(PINK);
-            graphics.rect(gx + 38, gy + 34, 18, 2);
-            graphics.colour(CREAM);
-            graphics.rect(gx + 38, gy + 35, 2, 2);
-            graphics.rect(gx + 44, gy + 35, 2, 2);
-            graphics.rect(gx + 50, gy + 35, 2, 2);
-            graphics.rect(gx + 56, gy + 35, 2, 2);
-            graphics.colour(ACORD_DARK_MID);
-            graphics.rect(gx + 34, gy + 37, 28, 2);
+        graphics.rect(right + 4, 124, 10, 31);
+        graphics.colour(OUTLINE);
+        for row in 1..6 { graphics.rect(right + 4, 124 + row * 5, 10, 1); }
+        for row in [0, 1, 3, 4] { graphics.rect(right + 4, 127 + row * 5, 6, 3); }
+        graphics.colour(GATOR);
+        graphics.rect(left - 3, 138, 7, 10);
+        graphics.rect(right + 12, 138, 7, 10);
+        graphics.colour(IVORY);
+        for y in [139, 142, 145] {
+            graphics.rect(left + 2, y, 3, 2);
+            graphics.rect(right + 12, y, 3, 2);
         }
-
-        // DJ Cyber Visor / Sunglasses (Normal face like in MELODY!)
-        graphics.colour(INK);
-        graphics.rect(gx + 18, gy + 22, 26, 9);
-        graphics.colour(0xff7b1fa2);
-        graphics.rect(gx + 19, gy + 23, 24, 7);
-        // Glint animation
-        let glint_x = gx + 20 + if active { ((now_ms / 120) % 5) as i32 * 4 } else { 8 };
-        graphics.colour(0xffffffff);
-        graphics.rect(glint_x, gy + 24, 3, 5);
-        graphics.colour(0xff00ffff);
-        graphics.rect(glint_x - 1, gy + 25, 1, 3);
-        graphics.rect(glint_x + 3, gy + 25, 1, 3);
-
-        // Big Over-Ear Red DJ Headphones
-        graphics.colour(INK);
-        graphics.rect(gx + 10, gy + 6, 36, 8);
-        graphics.colour(0xff990000);
-        graphics.rect(gx + 12, gy + 8, 32, 4);
-        graphics.colour(0xffff3355);
-        graphics.rect(gx + 14, gy + 8, 26, 2);
-
-        // Left headphone ear-cup
-        graphics.colour(INK);
-        graphics.rect(gx + 6, gy + 14, 10, 20);
-        graphics.colour(0xff990000);
-        graphics.rect(gx + 7, gy + 15, 8, 18);
-        graphics.colour(0xffff1a35);
-        graphics.rect(gx + 8, gy + 17, 6, 14);
-        graphics.colour(0xffff8090);
-        graphics.rect(gx + 9, gy + 18, 3, 10);
-
-        // Right headphone ear-cup tip
-        graphics.colour(INK);
-        graphics.rect(gx + 44, gy + 14, 6, 12);
-        graphics.colour(0xffff1a35);
-        graphics.rect(gx + 45, gy + 15, 4, 10);
-
-        // Left arm: Pumping the crowd / hyping the club in the air
-        let pump_dy = if active {
-            [-4, -7, -9, -7, -4, -1, 1, 0][((now_ms / 100) % 8) as usize]
-        } else {
-            0
-        };
-        let hand_y = gy + 16 + pump_dy;
-
-        // Left bicep / arm rising (dark green)
-        graphics.colour(INK);
-        graphics.rect(gx - 6, gy + 30, 12, 16);
-        graphics.colour(ACORD_DARK_GREEN);
-        graphics.rect(gx - 5, gy + 31, 10, 14);
-
-        // Fist and claws in the air
-        graphics.colour(INK);
-        graphics.rect(gx - 14, hand_y, 14, 16);
-        graphics.colour(ACORD_DARK_GREEN);
-        graphics.rect(gx - 13, hand_y + 1, 12, 14);
-        graphics.colour(ACORD_DARK_HIGHLIGHT);
-        graphics.rect(gx - 12, hand_y + 2, 4, 10);
-        graphics.colour(CREAM);
-        graphics.rect(gx - 13, hand_y - 2, 3, 3);
-        graphics.rect(gx - 9, hand_y - 3, 3, 4);
-        graphics.rect(gx - 5, hand_y - 2, 3, 3);
-
-        // Right arm: Mixing and scratching the vinyl / fader
-        let scratch_dx = if active { ((now_ms / 80) % 4) as i32 - 1 } else { 0 };
-        graphics.colour(INK);
-        graphics.rect(gx + 44, gy + 42, 14, 12);
-        graphics.colour(ACORD_DARK_GREEN);
-        graphics.rect(gx + 45, gy + 43, 12, 10);
-
-        // Hand & claws on turntable platter / mixer
-        graphics.colour(INK);
-        graphics.rect(gx + 50 + scratch_dx, gy + 53, 16, 7);
-        graphics.colour(ACORD_DARK_GREEN);
-        graphics.rect(gx + 51 + scratch_dx, gy + 54, 14, 5);
-        graphics.colour(CREAM);
-        graphics.rect(gx + 51 + scratch_dx, gy + 57, 3, 2);
-        graphics.rect(gx + 55 + scratch_dx, gy + 57, 3, 2);
-        graphics.rect(gx + 59 + scratch_dx, gy + 57, 3, 2);
     }
 }
 
