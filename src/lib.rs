@@ -8,7 +8,6 @@ mod acordator;
 mod arp;
 mod melody;
 mod mutator;
-#[cfg(feature = "emulator-audio")]
 mod native_audio;
 mod orbitator;
 mod playback;
@@ -56,7 +55,9 @@ static PHYSICAL_PADS: AtomicU32 = AtomicU32::new(0);
 static SHORTCUT_PADS: AtomicU32 = AtomicU32::new(0);
 static PREVIEW_STATE: AtomicU32 = AtomicU32::new(0);
 static SHIFT_ACTIVE: AtomicBool = AtomicBool::new(false);
-static IN_16_LEVELS_ACTIVE: AtomicBool = AtomicBool::new(false);
+pub(crate) static IN_16_LEVELS_ACTIVE: AtomicBool = AtomicBool::new(false);
+pub(crate) static BACKGROUND_PLAYBACK_ACTIVE: AtomicBool = AtomicBool::new(false);
+static LAST_STOP_MS: AtomicI64 = AtomicI64::new(0);
 static SPLASH_ACTIVE: AtomicBool = AtomicBool::new(true);
 static IS_PAINTING: AtomicBool = AtomicBool::new(false);
 static IS_DISPATCHING_EVENT: AtomicBool = AtomicBool::new(false);
@@ -133,6 +134,18 @@ fn observe_surface(event: SurfaceEvent) {
                     SHORTCUT_PADS.fetch_or(bit, Ordering::AcqRel);
                     return;
                 }
+                let is_background = BACKGROUND_PLAYBACK_ACTIVE.load(Ordering::Acquire)
+                    && !IN_16_LEVELS_ACTIVE.load(Ordering::Acquire)
+                    && (PREVIEW_STATE.load(Ordering::Acquire) & PREVIEW_ENABLED != 0);
+                if is_background {
+                    let note = if event.note != 0 {
+                        event.note
+                    } else {
+                        36 + pad as u8
+                    };
+                    native_audio::set_active_sample_pad(pad as u8, note);
+                    return;
+                }
                 #[cfg(feature = "emulator-audio")]
                 native_audio::begin_press(pad as usize);
                 let _ = PREVIEW_STATE.try_update(Ordering::AcqRel, Ordering::Acquire, |state| {
@@ -157,6 +170,11 @@ fn observe_surface(event: SurfaceEvent) {
         (0x80, _) | (0x90, 0) => {
             PHYSICAL_PADS.fetch_and(!bit, Ordering::AcqRel);
             if SHORTCUT_PADS.fetch_and(!bit, Ordering::AcqRel) & bit != 0 {
+                return;
+            }
+            if BACKGROUND_PLAYBACK_ACTIVE.load(Ordering::Acquire)
+                && !IN_16_LEVELS_ACTIVE.load(Ordering::Acquire)
+            {
                 return;
             }
             let _ = PREVIEW_STATE.try_update(Ordering::AcqRel, Ordering::Acquire, |state| {
@@ -220,6 +238,13 @@ impl ArpeggiGator {
         }
     }
 
+    fn should_continue_in_background(&self) -> bool {
+        let state = PREVIEW_STATE.load(Ordering::Acquire);
+        let is_holding = (state & HOLD_ENABLED != 0) && (state & PAD_MASK != 0);
+        let is_transport_playing = native_audio::is_transport_playing();
+        self.mode != EngineMode::Off && self.enabled && (is_holding || is_transport_playing)
+    }
+
     fn reset_engine_state(&mut self) {
         self.enabled = false;
         self.mode = EngineMode::Off;
@@ -234,6 +259,9 @@ impl ArpeggiGator {
         self.acordator_engine.clear();
         self.orbitator_engine.clear();
         PREVIEW_STATE.store(0, Ordering::Release);
+        BACKGROUND_PLAYBACK_ACTIVE.store(false, Ordering::Release);
+        LAST_STOP_MS.store(0, Ordering::Release);
+        native_audio::set_active_sample_pad(0xff, 36);
         lighting::restore_pad_rgbs();
         self.led_mask = 0;
     }
@@ -254,7 +282,14 @@ impl ArpeggiGator {
                 if self.in_16_levels != native_16_levels {
                     self.in_16_levels = native_16_levels;
                     if !native_16_levels {
-                        self.reset_engine_state();
+                        if self.should_continue_in_background() {
+                            BACKGROUND_PLAYBACK_ACTIVE.store(true, Ordering::Release);
+                        } else {
+                            self.reset_engine_state();
+                            BACKGROUND_PLAYBACK_ACTIVE.store(false, Ordering::Release);
+                        }
+                    } else {
+                        BACKGROUND_PLAYBACK_ACTIVE.store(false, Ordering::Release);
                     }
                 }
             }
@@ -308,11 +343,14 @@ impl Mod for ArpeggiGator {
                 self.loop_audition_active = false;
             }
         }
-        #[cfg(feature = "emulator-audio")]
-        if event.pressed && matches!(event.code, 81 | 6 | 7 | button::LEVELS) {
-            // STOP, SAMPLE, SEQ and 16 LEVELS discard the current selection and kill sounding voices.
-            PREVIEW_STATE.fetch_and(!(PAD_MASK | HOLD_ENABLED), Ordering::AcqRel);
-            native_audio::panic();
+        if event.code == 81 && event.pressed {
+            let now = clock::now_ms();
+            let prev = LAST_STOP_MS.swap(now, Ordering::AcqRel);
+            let is_double_stop = (now - prev) >= 0 && (now - prev) <= 650;
+            if is_double_stop {
+                LAST_STOP_MS.store(0, Ordering::Release);
+                self.reset_engine_state();
+            }
         }
         if event.code == button::SHIFT {
             SHIFT_ACTIVE.store(event.pressed, Ordering::Release);
@@ -354,8 +392,14 @@ impl Mod for ArpeggiGator {
                     self.in_16_levels = entering;
                     IN_16_LEVELS_ACTIVE.store(self.is_16_levels_active(), Ordering::Release);
                     action = if entering { 4 } else { 5 };
-                    if !entering {
+                    if entering {
+                        BACKGROUND_PLAYBACK_ACTIVE.store(false, Ordering::Release);
+                        LAST_STOP_MS.store(0, Ordering::Release);
+                    } else if self.should_continue_in_background() {
+                        BACKGROUND_PLAYBACK_ACTIVE.store(true, Ordering::Release);
+                    } else {
                         self.reset_engine_state();
+                        BACKGROUND_PLAYBACK_ACTIVE.store(false, Ordering::Release);
                     }
                 }
             }
@@ -534,7 +578,17 @@ impl Mod for ArpeggiGator {
             IN_16_LEVELS_ACTIVE.store(false, Ordering::Release);
             self.reset_engine_state();
         }
-        if !self.enabled || !self.is_16_levels_active() {
+        if !self.is_16_levels_active() {
+            if event.action == PadAction::Press && self.current_screen == Screen::Sample {
+                if let Ok(pad) = u8::try_from(event.pad) {
+                    if pad < 16 {
+                        native_audio::set_active_sample_pad(pad, 36 + pad);
+                    }
+                }
+            }
+            return PadFlow::Forward;
+        }
+        if !self.enabled {
             return PadFlow::Forward;
         }
         if let Ok(pad) = u8::try_from(event.pad) {
@@ -715,6 +769,7 @@ mod animation_input_tests {
         SHIFT_ACTIVE.store(false, Ordering::Release);
         PHYSICAL_PADS.store(0, Ordering::Release);
         SHORTCUT_PADS.store(0, Ordering::Release);
+        BACKGROUND_PLAYBACK_ACTIVE.store(false, Ordering::Release);
         PREVIEW_STATE.store(0, Ordering::Release);
         observe_surface(surface(0, 0x99, 100));
         assert_eq!(PREVIEW_STATE.load(Ordering::Acquire) & PAD_MASK, 0);
@@ -929,6 +984,8 @@ mod animation_input_tests {
     #[test]
     fn native_lighting_synchronizes_16_levels_state() {
         let _guard = INPUT_TEST_LOCK.lock().unwrap();
+        LAST_STOP_MS.store(0, Ordering::Release);
+        BACKGROUND_PLAYBACK_ACTIVE.store(false, Ordering::Release);
         lighting::reset_lighting();
         let mut module = ArpeggiGator::default();
         module.on_start();
@@ -973,6 +1030,8 @@ mod animation_input_tests {
     #[test]
     fn melody_mode_softkey_selection_and_pad_switching() {
         let _guard = INPUT_TEST_LOCK.lock().unwrap();
+        LAST_STOP_MS.store(0, Ordering::Release);
+        BACKGROUND_PLAYBACK_ACTIVE.store(false, Ordering::Release);
         lighting::reset_lighting();
         let mut module = ArpeggiGator::default();
         module.on_start();
@@ -1149,6 +1208,8 @@ mod animation_input_tests {
     #[test]
     fn melody_mode_navigating_away_and_returning_to_16_levels_resets_cleanly() {
         let _guard = INPUT_TEST_LOCK.lock().unwrap();
+        LAST_STOP_MS.store(0, Ordering::Release);
+        BACKGROUND_PLAYBACK_ACTIVE.store(false, Ordering::Release);
         lighting::reset_lighting();
         let mut module = ArpeggiGator::default();
         module.on_start();
@@ -1268,6 +1329,8 @@ mod animation_input_tests {
     #[test]
     fn hold_persists_across_engine_modes_and_resets_in_off() {
         let _guard = INPUT_TEST_LOCK.lock().unwrap();
+        LAST_STOP_MS.store(0, Ordering::Release);
+        BACKGROUND_PLAYBACK_ACTIVE.store(false, Ordering::Release);
         lighting::reset_lighting();
         let mut module = ArpeggiGator::default();
         module.on_start();
@@ -1320,6 +1383,134 @@ mod animation_input_tests {
         module.on_button(button_ev(BUTTON_B1, false, true));
         assert_eq!(module.mode, EngineMode::Arp);
         assert_eq!(PREVIEW_STATE.load(Ordering::Acquire) & HOLD_ENABLED, 0);
+
+        lighting::reset_lighting();
+    }
+
+    #[test]
+    fn live_sample_browsing_persists_hold_and_redirects_pads_until_double_stop() {
+        let _guard = INPUT_TEST_LOCK.lock().unwrap();
+        LAST_STOP_MS.store(0, Ordering::Release);
+        BACKGROUND_PLAYBACK_ACTIVE.store(false, Ordering::Release);
+        lighting::reset_lighting();
+        let mut module = ArpeggiGator::default();
+        module.on_start();
+
+        // 1. Enter 16 Levels
+        module.on_button(button_ev(button::LEVELS, true, false));
+        assert!(module.is_16_levels_active());
+
+        // 2. Turn on Mutator Mode (3x SHIFT+B1)
+        for _ in 0..3 {
+            module.on_button(button_ev(BUTTON_B1, true, true));
+            module.on_button(button_ev(BUTTON_B1, false, true));
+        }
+        assert_eq!(module.mode, EngineMode::Mutator);
+        assert!(module.enabled);
+
+        // 3. Enable HOLD (click DATA wheel)
+        module.on_button(button_ev(button::DATA, true, false));
+        module.on_button(button_ev(button::DATA, false, false));
+        assert_ne!(PREVIEW_STATE.load(Ordering::Acquire) & HOLD_ENABLED, 0);
+
+        // 4. Latch Pad 0 in 16 Levels
+        observe_surface(surface(0, 0x99, 100));
+        observe_surface(surface(0, 0x89, 0));
+        assert_ne!(PREVIEW_STATE.load(Ordering::Acquire) & PAD_MASK, 0);
+        assert_eq!(PREVIEW_STATE.load(Ordering::Acquire) & 1, 1);
+
+        // 5. User exits 16 Levels to main SAMPLE screen (press 16 LEVELS)
+        module.on_button(button_ev(button::LEVELS, true, false));
+        assert!(!module.is_16_levels_active());
+        assert_eq!(module.current_screen, Screen::Sample);
+
+        // Assert: ArpeggiGator continues running in background!
+        assert!(BACKGROUND_PLAYBACK_ACTIVE.load(Ordering::Acquire));
+        assert!(module.enabled);
+        assert_eq!(module.mode, EngineMode::Mutator);
+        assert_ne!(PREVIEW_STATE.load(Ordering::Acquire) & HOLD_ENABLED, 0);
+        assert_eq!(PREVIEW_STATE.load(Ordering::Acquire) & 1, 1);
+
+        // 6. On SAMPLE screen, user hits physical Pad 5 (selects sample slot 5)
+        observe_surface(surface(5, 0x99, 100));
+        observe_surface(surface(5, 0x89, 0));
+        assert_eq!(native_audio::active_sample_pad(), Some(5));
+        assert_eq!(native_audio::active_sample_note(), 41); // 36 + 5
+        // Assert: latched 16 Levels chord was NOT corrupted or overwritten
+        assert_eq!(PREVIEW_STATE.load(Ordering::Acquire) & 1, 1);
+        assert_eq!(PREVIEW_STATE.load(Ordering::Acquire) & (1 << 5), 0);
+
+        // 7. User hits physical Pad 9 (selects sample slot 9)
+        observe_surface(surface(9, 0x99, 100));
+        observe_surface(surface(9, 0x89, 0));
+        assert_eq!(native_audio::active_sample_pad(), Some(9));
+        assert_eq!(native_audio::active_sample_note(), 45); // 36 + 9
+
+        // 8. Press STOP once: stops sequence only, background arpeggiator STILL PLAYS!
+        assert_eq!(module.on_button(button_ev(81, true, false)), ButtonFlow::Forward);
+        assert!(BACKGROUND_PLAYBACK_ACTIVE.load(Ordering::Acquire));
+        assert!(module.enabled);
+        assert_eq!(module.mode, EngineMode::Mutator);
+        assert_ne!(PREVIEW_STATE.load(Ordering::Acquire) & HOLD_ENABLED, 0);
+
+        // 9. Press STOP second time (double STOP): completely halts voices and resets engine!
+        assert_eq!(module.on_button(button_ev(81, true, false)), ButtonFlow::Forward);
+        assert!(!BACKGROUND_PLAYBACK_ACTIVE.load(Ordering::Acquire));
+        assert!(!module.enabled);
+        assert_eq!(module.mode, EngineMode::Off);
+        assert_eq!(PREVIEW_STATE.load(Ordering::Acquire), 0);
+        assert_eq!(native_audio::active_sample_pad(), None);
+
+        lighting::reset_lighting();
+    }
+
+    #[test]
+    fn live_sample_browsing_reentering_16_levels_resumes_seamlessly() {
+        let _guard = INPUT_TEST_LOCK.lock().unwrap();
+        LAST_STOP_MS.store(0, Ordering::Release);
+        BACKGROUND_PLAYBACK_ACTIVE.store(false, Ordering::Release);
+        lighting::reset_lighting();
+        let mut module = ArpeggiGator::default();
+        module.on_start();
+
+        // 1. Enter 16 Levels, turn on ARP, enable HOLD, latch Pad 0
+        module.on_button(button_ev(button::LEVELS, true, false));
+        module.on_button(button_ev(BUTTON_B1, true, true));
+        module.on_button(button_ev(BUTTON_B1, false, true));
+        module.on_button(button_ev(button::DATA, true, false));
+        module.on_button(button_ev(button::DATA, false, false));
+        observe_surface(surface(0, 0x99, 100));
+        observe_surface(surface(0, 0x89, 0));
+        assert_eq!(module.mode, EngineMode::Arp);
+
+        // 2. Exit to Sample screen
+        module.on_button(button_ev(button::LEVELS, true, false));
+        assert!(!module.is_16_levels_active());
+        assert!(BACKGROUND_PLAYBACK_ACTIVE.load(Ordering::Acquire));
+
+        // 3. Browse to Pad 3
+        observe_surface(surface(3, 0x99, 100));
+        observe_surface(surface(3, 0x89, 0));
+        assert_eq!(native_audio::active_sample_pad(), Some(3));
+
+        // 4. Re-enter 16 Levels
+        module.on_button(button_ev(button::LEVELS, true, false));
+        assert!(module.is_16_levels_active());
+        assert!(!BACKGROUND_PLAYBACK_ACTIVE.load(Ordering::Acquire));
+        assert!(module.enabled);
+        assert_eq!(module.mode, EngineMode::Arp);
+
+        // 5. Turn off HOLD via DATA wheel
+        module.on_button(button_ev(button::DATA, true, false));
+        module.on_button(button_ev(button::DATA, false, false));
+        assert_eq!(PREVIEW_STATE.load(Ordering::Acquire) & HOLD_ENABLED, 0);
+
+        // 6. Now exit 16 Levels: with HOLD disabled, engine resets cleanly
+        module.on_button(button_ev(button::LEVELS, true, false));
+        assert!(!module.is_16_levels_active());
+        assert!(!BACKGROUND_PLAYBACK_ACTIVE.load(Ordering::Acquire));
+        assert!(!module.enabled);
+        assert_eq!(module.mode, EngineMode::Off);
 
         lighting::reset_lighting();
     }

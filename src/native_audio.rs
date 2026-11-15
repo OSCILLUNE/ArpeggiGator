@@ -1,6 +1,8 @@
 //! Experimental native audio path for the virtual MPC running 1.3.0.12.
 
-use core::sync::atomic::{AtomicBool, AtomicU32, AtomicU64, AtomicUsize, Ordering::*};
+#![allow(dead_code)]
+
+use core::sync::atomic::{AtomicBool, AtomicU8, AtomicU32, AtomicU64, AtomicUsize, Ordering::*};
 
 use mpc_sample_sdk::{NoteEvent, NoteFlow, hook, image, platform::clock};
 
@@ -43,6 +45,32 @@ static PATTERN: AtomicUsize = AtomicUsize::new(0);
 static RATE: AtomicUsize = AtomicUsize::new(StepRate::Sixteenth as usize);
 static ADDITIONAL_OCTAVES: AtomicUsize = AtomicUsize::new(0);
 static PANIC: AtomicBool = AtomicBool::new(false);
+pub static ACTIVE_SAMPLE_PAD: AtomicU8 = AtomicU8::new(0xff);
+pub static ACTIVE_SAMPLE_NOTE: AtomicU8 = AtomicU8::new(36);
+
+pub fn set_active_sample_pad(pad: u8, note: u8) {
+    ACTIVE_SAMPLE_PAD.store(pad, Release);
+    ACTIVE_SAMPLE_NOTE.store(note, Release);
+}
+
+#[allow(dead_code)]
+pub fn active_sample_pad() -> Option<u8> {
+    let pad = ACTIVE_SAMPLE_PAD.load(Acquire);
+    if pad < 16 {
+        Some(pad)
+    } else {
+        None
+    }
+}
+
+#[allow(dead_code)]
+pub fn active_sample_note() -> u8 {
+    ACTIVE_SAMPLE_NOTE.load(Acquire)
+}
+
+pub fn is_transport_playing() -> bool {
+    g_arp_transport_mode.load(Acquire) != 0
+}
 
 #[unsafe(no_mangle)]
 static g_arp_audio_on: AtomicU32 = AtomicU32::new(0);
@@ -59,7 +87,7 @@ static g_arp_transport_resets: AtomicU32 = AtomicU32::new(0);
 #[unsafe(no_mangle)]
 static g_arp_mode: AtomicU32 = AtomicU32::new(0);
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 struct Key {
     pad: u8,
     note: u8,
@@ -174,6 +202,8 @@ pub fn set_additional_octaves(octaves: u8) {
 
 pub fn panic() {
     PANIC.store(true, Release);
+    ACTIVE_SAMPLE_PAD.store(0xff, Release);
+    ACTIVE_SAMPLE_NOTE.store(36, Release);
 }
 
 pub fn capture(event: &mut NoteEvent<'_>) -> Option<NoteFlow> {
@@ -194,7 +224,19 @@ pub fn capture(event: &mut NoteEvent<'_>) -> Option<NoteFlow> {
         if SHORTCUT_PADS.load(Acquire) & (1 << index) != 0 {
             return Some(NoteFlow::Consume);
         }
+        if crate::BACKGROUND_PLAYBACK_ACTIVE.load(Acquire) {
+            // On SAMPLE screen outside 16 Levels:
+            // Forward pad strike to firmware so MPC switches active sample pad in UI.
+            // Dynamically update active sample pad & note for background playback.
+            if event.note_on {
+                set_active_sample_pad(index as u8, event.note);
+            }
+            return None;
+        }
         if event.note_on {
+            if ACTIVE_SAMPLE_PAD.load(Acquire) == 0xff {
+                ACTIVE_SAMPLE_NOTE.store(event.note, Release);
+            }
             let pitch = pad.pitch.and_then(|p| i8::try_from(p).ok()).unwrap_or(0);
             let serial = SERIAL.fetch_add(1, Relaxed).wrapping_add(1);
             let velocity = (event.velocity.clamp(0.0, 1.0) * f32::from(u16::MAX)).round() as u16;
@@ -206,6 +248,9 @@ pub fn capture(event: &mut NoteEvent<'_>) -> Option<NoteFlow> {
         }
         Some(NoteFlow::Consume)
     } else if event.note_off || !event.note_on {
+        if crate::BACKGROUND_PLAYBACK_ACTIVE.load(Acquire) {
+            return None;
+        }
         // Any pad NoteOff from the pad source when ARP is active must be consumed
         // so the firmware engine does not prematurely close voices managed by ArpeggiGator.
         Some(NoteFlow::Consume)
@@ -307,6 +352,8 @@ impl State {
 
         let panic_requested = PANIC.swap(false, Acquire);
         if panic_requested {
+            ACTIVE_SAMPLE_PAD.store(0xff, Release);
+            ACTIVE_SAMPLE_NOTE.store(36, Release);
             unsafe {
                 if let Some(key) = self.voice.take() {
                     send(engine, key, false);
@@ -557,6 +604,12 @@ impl State {
                         return;
                     }
 
+                    let active_pad = ACTIVE_SAMPLE_PAD.load(Acquire);
+                    if active_pad < 16 {
+                        key.pad = active_pad;
+                        key.note = ACTIVE_SAMPLE_NOTE.load(Acquire);
+                    }
+
                     // Protect against extreme pitch transposition. Firmware 16 Levels range is [-24, +24].
                     let total_pitch = i32::from(key.pitch) + i32::from(step.transpose);
                     key.pitch = total_pitch.clamp(-24, 24) as i8;
@@ -568,7 +621,12 @@ impl State {
                     if let Some(key) = self.voice.take() {
                         send(engine, key, false);
                     } else if self.inputs[usize::from(pad)] != 0 {
-                        let key = Key::unpack(self.inputs[usize::from(pad)], pad);
+                        let mut key = Key::unpack(self.inputs[usize::from(pad)], pad);
+                        let active_pad = ACTIVE_SAMPLE_PAD.load(Acquire);
+                        if active_pad < 16 {
+                            key.pad = active_pad;
+                            key.note = ACTIVE_SAMPLE_NOTE.load(Acquire);
+                        }
                         send(engine, key, false);
                     }
                 }
@@ -652,5 +710,20 @@ mod tests {
             assert_eq!(tag & 0xff, 3);
             assert_eq!((tag >> 12) & 0xf, u32::from(pad));
         }
+    }
+
+    #[test]
+    fn active_sample_pad_updates_and_resets() {
+        set_active_sample_pad(0xff, 36);
+        assert_eq!(active_sample_pad(), None);
+        assert_eq!(active_sample_note(), 36);
+
+        set_active_sample_pad(4, 40);
+        assert_eq!(active_sample_pad(), Some(4));
+        assert_eq!(active_sample_note(), 40);
+
+        panic();
+        assert_eq!(active_sample_pad(), None);
+        assert_eq!(active_sample_note(), 36);
     }
 }
