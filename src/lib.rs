@@ -58,6 +58,34 @@ static PREVIEW_STATE: AtomicU32 = AtomicU32::new(0);
 static SHIFT_ACTIVE: AtomicBool = AtomicBool::new(false);
 static IN_16_LEVELS_ACTIVE: AtomicBool = AtomicBool::new(false);
 static SPLASH_ACTIVE: AtomicBool = AtomicBool::new(true);
+static IS_PAINTING: AtomicBool = AtomicBool::new(false);
+static IS_DISPATCHING_EVENT: AtomicBool = AtomicBool::new(false);
+
+struct PaintGuard;
+impl PaintGuard {
+    fn enter() -> Self {
+        IS_PAINTING.store(true, Ordering::Release);
+        Self
+    }
+}
+impl Drop for PaintGuard {
+    fn drop(&mut self) {
+        IS_PAINTING.store(false, Ordering::Release);
+    }
+}
+
+struct UiEventGuard;
+impl UiEventGuard {
+    fn enter() -> Self {
+        IS_DISPATCHING_EVENT.store(true, Ordering::Release);
+        Self
+    }
+}
+impl Drop for UiEventGuard {
+    fn drop(&mut self) {
+        IS_DISPATCHING_EVENT.store(false, Ordering::Release);
+    }
+}
 
 fn repaint_component() -> usize {
     let screen = page::screen();
@@ -70,10 +98,11 @@ fn repaint_component() -> usize {
     if !IN_16_LEVELS_ACTIVE.load(Ordering::Acquire) {
         return 0;
     }
+    if IS_PAINTING.load(Ordering::Acquire) || IS_DISPATCHING_EVENT.load(Ordering::Acquire) {
+        return 0;
+    }
     let now = clock::now_ms();
-    if now < DASHBOARD_REFRESH_UNTIL_MS.load(Ordering::Acquire)
-        || PREVIEW_STATE.load(Ordering::Acquire) & PAD_MASK != 0
-    {
+    if now < DASHBOARD_REFRESH_UNTIL_MS.load(Ordering::Acquire) {
         screen
     } else {
         0
@@ -258,6 +287,7 @@ impl Mod for ArpeggiGator {
     }
 
     fn on_button(&mut self, event: ButtonEvent) -> ButtonFlow {
+        let _guard = UiEventGuard::enter();
         let mut action = 0;
         if event.code == 74 {
             if self.is_16_levels_active() {
@@ -473,6 +503,7 @@ impl Mod for ArpeggiGator {
     }
 
     fn on_encoder(&mut self, event: EncoderEvent) -> EncoderFlow {
+        let _guard = UiEventGuard::enter();
         if !self.enabled || !self.is_16_levels_active() || SHIFT_ACTIVE.load(Ordering::Acquire) {
             return EncoderFlow::Forward;
         }
@@ -546,6 +577,7 @@ impl Mod for ArpeggiGator {
     }
 
     fn on_paint(&mut self, graphics: &mut mpc_sample_sdk::draw::Graphics, event: PaintEvent) {
+        let _guard = PaintGuard::enter();
         self.sync_navigation(event.sample_page, event.chop_mode);
         if !event.sample_page {
             return;
@@ -1217,6 +1249,18 @@ mod animation_input_tests {
         module.on_button(button_ev(BUTTON_SEQ, true, false));
         assert!(!IN_16_LEVELS_ACTIVE.load(Ordering::Acquire));
         assert_eq!(repaint_component(), 0);
+
+        // When painting or dispatching events, repaint_component yields to prevent JUCE races
+        IN_16_LEVELS_ACTIVE.store(true, Ordering::Release);
+        SPLASH_ACTIVE.store(false, Ordering::Release);
+        DASHBOARD_REFRESH_UNTIL_MS.store(clock::now_ms() + 10_000, Ordering::Release);
+        IS_PAINTING.store(true, Ordering::Release);
+        assert_eq!(repaint_component(), 0);
+        IS_PAINTING.store(false, Ordering::Release);
+
+        IS_DISPATCHING_EVENT.store(true, Ordering::Release);
+        assert_eq!(repaint_component(), 0);
+        IS_DISPATCHING_EVENT.store(false, Ordering::Release);
     }
 
     #[test]
