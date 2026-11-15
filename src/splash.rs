@@ -203,22 +203,7 @@ unsafe fn draw_mutator_lab(graphics: &mut Graphics, active: bool, now_ms: u64) {
 
         // Draw Gator in Cyber Lab behind synth console
         draw_dj_booth(graphics, active, now_ms);
-        draw_dj_gator(graphics, active, now_ms);
-
-        // Cyber visor overlay on gator
-        let bob = if active {
-            [0, -2, -3, -1, 0, 2, 3, 1][((now_ms / 110) % 8) as usize]
-        } else {
-            0
-        };
-        let gx = 60;
-        let gy = 78 + bob;
-        // Visor glow: cyan or electric lime
-        graphics.colour(if active { 0xff00ffff } else { 0xff00aacc });
-        graphics.rect(gx + 22, gy + 17, 18, 8);
-        graphics.colour(0xffffffff);
-        graphics.rect(gx + 24, gy + 19, 4, 3);
-        graphics.rect(gx + 32, gy + 19, 4, 3);
+        draw_mutator_gator(graphics, active, now_ms);
     }
 }
 
@@ -286,21 +271,7 @@ unsafe fn draw_acordator_stage(graphics: &mut Graphics, active: bool, now_ms: u6
         }
 
         draw_dj_booth(graphics, active, now_ms);
-        draw_dj_gator(graphics, active, now_ms);
-
-        // Warm amber sunglasses on gator
-        let bob = if active {
-            [0, -2, -3, -1, 0, 2, 3, 1][((now_ms / 110) % 8) as usize]
-        } else {
-            0
-        };
-        let gx = 60;
-        let gy = 78 + bob;
-        graphics.colour(0xffffaa00);
-        graphics.rect(gx + 22, gy + 17, 18, 8);
-        graphics.colour(0xfffff0d5);
-        graphics.rect(gx + 24, gy + 19, 4, 3);
-        graphics.rect(gx + 32, gy + 19, 4, 3);
+        draw_acordator_gator(graphics, active, now_ms);
     }
 }
 
@@ -391,29 +362,9 @@ unsafe fn draw_orbitator_space(graphics: &mut Graphics, active: bool, now_ms: u6
         graphics.colour(if active { 0xffa6f52a } else { 0xffffffff });
         graphics.rect(sat_x, sat_y, 4, 4);
 
-        // Astronaut Gator
+        // Astronaut Gator in full NASA space suit & helmet
         draw_dj_booth(graphics, active, now_ms);
-        draw_dj_gator(graphics, active, now_ms);
-
-        // Space Helmet bubble on Gator!
-        let bob = if active {
-            [0, -2, -3, -1, 0, 2, 3, 1][((now_ms / 110) % 8) as usize]
-        } else {
-            0
-        };
-        let gx = 60;
-        let gy = 78 + bob;
-        // Translucent blue-tinted visor dome outline
-        graphics.colour(0xff00e5ff);
-        graphics.rect(gx + 18, gy + 12, 26, 1);
-        graphics.rect(gx + 16, gy + 13, 2, 16);
-        graphics.rect(gx + 44, gy + 13, 2, 16);
-        graphics.rect(gx + 18, gy + 29, 26, 1);
-        // Visor gold solar reflection
-        graphics.colour(0xffffcf36);
-        graphics.rect(gx + 22, gy + 16, 18, 9);
-        graphics.colour(0xffffffff);
-        graphics.rect(gx + 24, gy + 17, 4, 3);
+        draw_orbitator_gator(graphics, active, now_ms);
     }
 }
 
@@ -788,6 +739,588 @@ unsafe fn draw_dj_gator(graphics: &mut Graphics, active: bool, now_ms: u64) {
         graphics.rect(gx + 51 + scratch_dx, gy + 57, 3, 2);
         graphics.rect(gx + 55 + scratch_dx, gy + 57, 3, 2);
         graphics.rect(gx + 59 + scratch_dx, gy + 57, 3, 2);
+    }
+}
+
+/// Mutator mode mascot: Two-headed mutant alligator with both hands down scratching the turntables.
+unsafe fn draw_mutator_gator(graphics: &mut Graphics, active: bool, now_ms: u64) {
+    unsafe {
+        let bob_left = if active {
+            [-1, -3, -2, 0, 2, 3, 1, 0][((now_ms / 110) % 8) as usize]
+        } else {
+            0
+        };
+        let bob_right = if active {
+            [1, 0, -2, -3, -1, 0, 2, 3][((now_ms / 110) % 8) as usize]
+        } else {
+            0
+        };
+        let bob_body = (bob_left + bob_right) / 2;
+
+        let gx = 60;
+        let gy = 78 + bob_body;
+
+        // Torso / mutant DJ body behind booth (y: gy + 38 to 68)
+        graphics.colour(INK);
+        graphics.rect(gx + 6, gy + 38, 44, 28);
+        graphics.colour(SHADOW);
+        graphics.rect(gx + 8, gy + 40, 40, 25);
+        graphics.colour(GREEN);
+        graphics.rect(gx + 10, gy + 41, 36, 23);
+
+        // Gator chest / belly scutes (yellowish green)
+        graphics.colour(LIME);
+        graphics.rect(gx + 20, gy + 42, 16, 21);
+        graphics.colour(MID);
+        for row in 0..4 {
+            graphics.rect(gx + 21, gy + 46 + (row * 4), 14, 1);
+        }
+
+        // Gold chains for two heads
+        graphics.colour(GOLD);
+        graphics.rect(gx + 14, gy + 40, 2, 6);
+        graphics.rect(gx + 40, gy + 40, 2, 6);
+        graphics.rect(gx + 16, gy + 45, 24, 2);
+        graphics.rect(gx + 26, gy + 47, 5, 5);
+        graphics.colour(CREAM);
+        graphics.rect(gx + 27, gy + 48, 3, 3);
+
+        // --- LEFT HEAD (Facing LEFT with sharp teeth & cyan cyber visor) ---
+        let h1x = gx + 4;
+        let h1y = gy + bob_left;
+
+        // Left neck connecting to torso
+        graphics.colour(INK);
+        graphics.rect(h1x - 2, h1y + 26, 18, 14);
+        graphics.colour(SHADOW);
+        graphics.rect(h1x, h1y + 27, 15, 12);
+        graphics.colour(GREEN);
+        graphics.rect(h1x + 1, h1y + 28, 13, 10);
+
+        // Left Head Skull
+        graphics.colour(INK);
+        graphics.rect(h1x - 6, h1y + 10, 26, 22);
+        graphics.colour(SHADOW);
+        graphics.rect(h1x - 4, h1y + 12, 22, 18);
+        graphics.colour(GREEN);
+        graphics.rect(h1x - 3, h1y + 13, 20, 16);
+        graphics.colour(HIGHLIGHT);
+        graphics.rect(h1x - 2, h1y + 13, 16, 2);
+
+        // Left Snout pointing left
+        graphics.colour(INK);
+        graphics.rect(h1x - 26, h1y + 18, 24, 15);
+        graphics.colour(SHADOW);
+        graphics.rect(h1x - 24, h1y + 19, 21, 13);
+        graphics.colour(GREEN);
+        graphics.rect(h1x - 23, h1y + 20, 19, 11);
+        graphics.colour(HIGHLIGHT);
+        graphics.rect(h1x - 22, h1y + 20, 16, 2);
+
+        // Left nostril
+        graphics.colour(INK);
+        graphics.rect(h1x - 24, h1y + 21, 3, 2);
+
+        // Left mouth & teeth
+        graphics.colour(INK);
+        graphics.rect(h1x - 24, h1y + 29, 24, 2);
+        graphics.colour(CREAM);
+        graphics.rect(h1x - 23, h1y + 27, 2, 3);
+        graphics.rect(h1x - 18, h1y + 27, 3, 3);
+        graphics.rect(h1x - 12, h1y + 27, 3, 3);
+        graphics.rect(h1x - 6, h1y + 27, 3, 3);
+        if active {
+            graphics.colour(INK);
+            graphics.rect(h1x - 22, h1y + 30, 20, 3);
+            graphics.colour(PINK);
+            graphics.rect(h1x - 18, h1y + 31, 14, 2);
+        }
+
+        // Left cyber visor (Electric Cyan)
+        graphics.colour(INK);
+        graphics.rect(h1x - 8, h1y + 19, 18, 7);
+        graphics.colour(0xff00b4d8);
+        graphics.rect(h1x - 7, h1y + 20, 16, 5);
+        // Animated glint
+        let glint_l = if active { ((now_ms / 100) % 4) as i32 * 3 } else { 3 };
+        graphics.colour(0xffffffff);
+        graphics.rect(h1x - 6 + glint_l, h1y + 21, 3, 3);
+
+        // Left headphone cup
+        graphics.colour(INK);
+        graphics.rect(h1x + 18, h1y + 12, 6, 16);
+        graphics.colour(0xffff1a35);
+        graphics.rect(h1x + 19, h1y + 13, 4, 14);
+
+        // --- RIGHT HEAD (Facing RIGHT with sharp teeth & cyan cyber visor) ---
+        let h2x = gx + 34;
+        let h2y = gy + bob_right;
+
+        // Right neck connecting to torso
+        graphics.colour(INK);
+        graphics.rect(h2x - 2, h2y + 26, 18, 14);
+        graphics.colour(SHADOW);
+        graphics.rect(h2x, h2y + 27, 15, 12);
+        graphics.colour(GREEN);
+        graphics.rect(h2x + 1, h2y + 28, 13, 10);
+
+        // Right Head Skull
+        graphics.colour(INK);
+        graphics.rect(h2x - 4, h2y + 10, 26, 22);
+        graphics.colour(SHADOW);
+        graphics.rect(h2x - 2, h2y + 12, 22, 18);
+        graphics.colour(GREEN);
+        graphics.rect(h2x - 1, h2y + 13, 20, 16);
+        graphics.colour(HIGHLIGHT);
+        graphics.rect(h2x, h2y + 13, 16, 2);
+
+        // Right Snout pointing right
+        graphics.colour(INK);
+        graphics.rect(h2x + 18, h2y + 18, 24, 15);
+        graphics.colour(SHADOW);
+        graphics.rect(h2x + 19, h2y + 19, 21, 13);
+        graphics.colour(GREEN);
+        graphics.rect(h2x + 20, h2y + 20, 19, 11);
+        graphics.colour(HIGHLIGHT);
+        graphics.rect(h2x + 21, h2y + 20, 16, 2);
+
+        // Right nostril
+        graphics.colour(INK);
+        graphics.rect(h2x + 37, h2y + 21, 3, 2);
+
+        // Right mouth & teeth
+        graphics.colour(INK);
+        graphics.rect(h2x + 16, h2y + 29, 24, 2);
+        graphics.colour(CREAM);
+        graphics.rect(h2x + 19, h2y + 27, 3, 3);
+        graphics.rect(h2x + 25, h2y + 27, 3, 3);
+        graphics.rect(h2x + 31, h2y + 27, 3, 3);
+        graphics.rect(h2x + 37, h2y + 27, 2, 3);
+        if active {
+            graphics.colour(INK);
+            graphics.rect(h2x + 18, h2y + 30, 20, 3);
+            graphics.colour(PINK);
+            graphics.rect(h2x + 20, h2y + 31, 14, 2);
+        }
+
+        // Right cyber visor (Electric Cyan)
+        graphics.colour(INK);
+        graphics.rect(h2x + 6, h2y + 19, 18, 7);
+        graphics.colour(0xff00b4d8);
+        graphics.rect(h2x + 7, h2y + 20, 16, 5);
+        // Animated glint
+        let glint_r = if active { (((now_ms / 100) + 2) % 4) as i32 * 3 } else { 3 };
+        graphics.colour(0xffffffff);
+        graphics.rect(h2x + 8 + glint_r, h2y + 21, 3, 3);
+
+        // Right headphone cup
+        graphics.colour(INK);
+        graphics.rect(h2x - 8, h2y + 12, 6, 16);
+        graphics.colour(0xffff1a35);
+        graphics.rect(h2x - 7, h2y + 13, 4, 14);
+
+        // --- BOTH HANDS DOWN ON THE TURNTABLES ("obie ręce na płytach, w dole") ---
+        // Left turntable is at x: 34, y: 140
+        let left_scratch = if active { ((now_ms / 85) % 4) as i32 - 1 } else { 0 };
+
+        // Left upper arm sloping down to left deck
+        graphics.colour(INK);
+        graphics.rect(gx - 4, gy + 40, 14, 14);
+        graphics.colour(GREEN);
+        graphics.rect(gx - 3, gy + 41, 12, 12);
+
+        // Left forearm extending to platter
+        graphics.colour(INK);
+        graphics.rect(gx - 14, gy + 48, 14, 12);
+        graphics.colour(GREEN);
+        graphics.rect(gx - 13, gy + 49, 12, 10);
+
+        // Left hand and claws scratching the left vinyl platter
+        let hand_lx = 42 + left_scratch;
+        let hand_ly = 138;
+        graphics.colour(INK);
+        graphics.rect(hand_lx, hand_ly, 16, 7);
+        graphics.colour(GREEN);
+        graphics.rect(hand_lx + 1, hand_ly + 1, 14, 5);
+        graphics.colour(CREAM);
+        graphics.rect(hand_lx + 2, hand_ly + 4, 3, 2);
+        graphics.rect(hand_lx + 6, hand_ly + 4, 3, 2);
+        graphics.rect(hand_lx + 10, hand_ly + 4, 3, 2);
+
+        // Right turntable is at x: 118, y: 140
+        let right_scratch = if active { (((now_ms / 80) + 2) % 4) as i32 - 1 } else { 0 };
+
+        // Right upper arm sloping down to right deck
+        graphics.colour(INK);
+        graphics.rect(gx + 44, gy + 40, 14, 14);
+        graphics.colour(GREEN);
+        graphics.rect(gx + 45, gy + 41, 12, 12);
+
+        // Right forearm extending to platter
+        graphics.colour(INK);
+        graphics.rect(gx + 54, gy + 48, 14, 12);
+        graphics.colour(GREEN);
+        graphics.rect(gx + 55, gy + 49, 12, 10);
+
+        // Right hand and claws scratching the right vinyl platter
+        let hand_rx = 124 + right_scratch;
+        let hand_ry = 138;
+        graphics.colour(INK);
+        graphics.rect(hand_rx, hand_ry, 16, 7);
+        graphics.colour(GREEN);
+        graphics.rect(hand_rx + 1, hand_ry + 1, 14, 5);
+        graphics.colour(CREAM);
+        graphics.rect(hand_rx + 2, hand_ry + 4, 3, 2);
+        graphics.rect(hand_rx + 6, hand_ry + 4, 3, 2);
+        graphics.rect(hand_rx + 10, hand_ry + 4, 3, 2);
+    }
+}
+
+/// Acordator mode mascot: Dark-green alligator with normal face as in Melody.
+unsafe fn draw_acordator_gator(graphics: &mut Graphics, active: bool, now_ms: u64) {
+    unsafe {
+        let bob = if active {
+            [0, -2, -3, -1, 0, 2, 3, 1][((now_ms / 110) % 8) as usize]
+        } else {
+            0
+        };
+
+        let gx = 60;
+        let gy = 78 + bob;
+
+        // Dark green palette for ACORDATOR
+        const ACORD_DARK_GREEN: u32 = 0xff0d5a23;
+        const ACORD_DARK_SHADOW: u32 = 0xff063313;
+        const ACORD_DARK_MID: u32 = 0xff1b7834;
+        const ACORD_DARK_HIGHLIGHT: u32 = 0xff2ea84b;
+        const ACORD_BELLY: u32 = 0xff4b8535;
+        const ACORD_BELLY_STRIPE: u32 = 0xff27571b;
+
+        // Torso / DJ body behind booth (y: gy + 38 to 68)
+        graphics.colour(INK);
+        graphics.rect(gx + 6, gy + 38, 44, 28);
+        graphics.colour(ACORD_DARK_SHADOW);
+        graphics.rect(gx + 8, gy + 40, 40, 25);
+        graphics.colour(ACORD_DARK_GREEN);
+        graphics.rect(gx + 10, gy + 41, 36, 23);
+
+        // Gator chest / belly scutes (dark muted sage)
+        graphics.colour(ACORD_BELLY);
+        graphics.rect(gx + 22, gy + 42, 14, 21);
+        graphics.colour(ACORD_BELLY_STRIPE);
+        for row in 0..4 {
+            graphics.rect(gx + 23, gy + 46 + (row * 4), 12, 1);
+        }
+
+        // Gold chain with 'G' pendant
+        graphics.colour(GOLD);
+        graphics.rect(gx + 18, gy + 40, 2, 6);
+        graphics.rect(gx + 38, gy + 40, 2, 6);
+        graphics.rect(gx + 20, gy + 45, 18, 2);
+        graphics.rect(gx + 27, gy + 47, 5, 5);
+        graphics.colour(CREAM);
+        graphics.rect(gx + 28, gy + 48, 3, 3);
+
+        // Head and snout outline
+        graphics.colour(INK);
+        graphics.rect(gx + 10, gy + 12, 36, 28);
+        graphics.rect(gx + 32, gy + 20, 32, 18);
+        graphics.rect(gx + 58, gy + 18, 6, 4);
+
+        // Dark green head body
+        graphics.colour(ACORD_DARK_SHADOW);
+        graphics.rect(gx + 12, gy + 14, 32, 24);
+        graphics.rect(gx + 34, gy + 22, 28, 15);
+        graphics.rect(gx + 59, gy + 19, 4, 3);
+        graphics.colour(ACORD_DARK_GREEN);
+        graphics.rect(gx + 14, gy + 16, 28, 20);
+        graphics.rect(gx + 34, gy + 21, 27, 13);
+        graphics.rect(gx + 59, gy + 19, 4, 3);
+
+        // Highlights on crown and snout
+        graphics.colour(ACORD_DARK_HIGHLIGHT);
+        graphics.rect(gx + 16, gy + 16, 22, 3);
+        graphics.rect(gx + 36, gy + 21, 22, 2);
+        graphics.rect(gx + 59, gy + 19, 3, 2);
+
+        // Nostril
+        graphics.colour(INK);
+        graphics.rect(gx + 59, gy + 21, 3, 2);
+
+        // Mouth & sharp teeth (identical to MELODY)
+        graphics.colour(INK);
+        graphics.rect(gx + 32, gy + 32, 30, 2);
+        graphics.colour(CREAM);
+        graphics.rect(gx + 36, gy + 30, 3, 3);
+        graphics.rect(gx + 42, gy + 30, 3, 4);
+        graphics.rect(gx + 48, gy + 30, 3, 3);
+        graphics.rect(gx + 54, gy + 30, 3, 4);
+        graphics.rect(gx + 60, gy + 30, 2, 3);
+
+        if active {
+            // Mouth slightly open to the beat
+            graphics.colour(INK);
+            graphics.rect(gx + 34, gy + 33, 28, 4);
+            graphics.colour(PINK);
+            graphics.rect(gx + 38, gy + 34, 18, 2);
+            graphics.colour(CREAM);
+            graphics.rect(gx + 38, gy + 35, 2, 2);
+            graphics.rect(gx + 44, gy + 35, 2, 2);
+            graphics.rect(gx + 50, gy + 35, 2, 2);
+            graphics.rect(gx + 56, gy + 35, 2, 2);
+            graphics.colour(ACORD_DARK_MID);
+            graphics.rect(gx + 34, gy + 37, 28, 2);
+        }
+
+        // DJ Cyber Visor / Sunglasses (Normal face like in MELODY!)
+        graphics.colour(INK);
+        graphics.rect(gx + 18, gy + 22, 26, 9);
+        graphics.colour(0xff7b1fa2);
+        graphics.rect(gx + 19, gy + 23, 24, 7);
+        // Glint animation
+        let glint_x = gx + 20 + if active { ((now_ms / 120) % 5) as i32 * 4 } else { 8 };
+        graphics.colour(0xffffffff);
+        graphics.rect(glint_x, gy + 24, 3, 5);
+        graphics.colour(0xff00ffff);
+        graphics.rect(glint_x - 1, gy + 25, 1, 3);
+        graphics.rect(glint_x + 3, gy + 25, 1, 3);
+
+        // Big Over-Ear Red DJ Headphones
+        graphics.colour(INK);
+        graphics.rect(gx + 10, gy + 6, 36, 8);
+        graphics.colour(0xff990000);
+        graphics.rect(gx + 12, gy + 8, 32, 4);
+        graphics.colour(0xffff3355);
+        graphics.rect(gx + 14, gy + 8, 26, 2);
+
+        // Left headphone ear-cup
+        graphics.colour(INK);
+        graphics.rect(gx + 6, gy + 14, 10, 20);
+        graphics.colour(0xff990000);
+        graphics.rect(gx + 7, gy + 15, 8, 18);
+        graphics.colour(0xffff1a35);
+        graphics.rect(gx + 8, gy + 17, 6, 14);
+        graphics.colour(0xffff8090);
+        graphics.rect(gx + 9, gy + 18, 3, 10);
+
+        // Right headphone ear-cup tip
+        graphics.colour(INK);
+        graphics.rect(gx + 44, gy + 14, 6, 12);
+        graphics.colour(0xffff1a35);
+        graphics.rect(gx + 45, gy + 15, 4, 10);
+
+        // Left arm: Pumping the crowd / hyping the club in the air
+        let pump_dy = if active {
+            [-4, -7, -9, -7, -4, -1, 1, 0][((now_ms / 100) % 8) as usize]
+        } else {
+            0
+        };
+        let hand_y = gy + 16 + pump_dy;
+
+        // Left bicep / arm rising (dark green)
+        graphics.colour(INK);
+        graphics.rect(gx - 6, gy + 30, 12, 16);
+        graphics.colour(ACORD_DARK_GREEN);
+        graphics.rect(gx - 5, gy + 31, 10, 14);
+
+        // Fist and claws in the air
+        graphics.colour(INK);
+        graphics.rect(gx - 14, hand_y, 14, 16);
+        graphics.colour(ACORD_DARK_GREEN);
+        graphics.rect(gx - 13, hand_y + 1, 12, 14);
+        graphics.colour(ACORD_DARK_HIGHLIGHT);
+        graphics.rect(gx - 12, hand_y + 2, 4, 10);
+        graphics.colour(CREAM);
+        graphics.rect(gx - 13, hand_y - 2, 3, 3);
+        graphics.rect(gx - 9, hand_y - 3, 3, 4);
+        graphics.rect(gx - 5, hand_y - 2, 3, 3);
+
+        // Right arm: Mixing and scratching the vinyl / fader
+        let scratch_dx = if active { ((now_ms / 80) % 4) as i32 - 1 } else { 0 };
+        graphics.colour(INK);
+        graphics.rect(gx + 44, gy + 42, 14, 12);
+        graphics.colour(ACORD_DARK_GREEN);
+        graphics.rect(gx + 45, gy + 43, 12, 10);
+
+        // Hand & claws on turntable platter / mixer
+        graphics.colour(INK);
+        graphics.rect(gx + 50 + scratch_dx, gy + 53, 16, 7);
+        graphics.colour(ACORD_DARK_GREEN);
+        graphics.rect(gx + 51 + scratch_dx, gy + 54, 14, 5);
+        graphics.colour(CREAM);
+        graphics.rect(gx + 51 + scratch_dx, gy + 57, 3, 2);
+        graphics.rect(gx + 55 + scratch_dx, gy + 57, 3, 2);
+        graphics.rect(gx + 59 + scratch_dx, gy + 57, 3, 2);
+    }
+}
+
+/// Orbitator mode mascot: White NASA space suit with astronaut helmet and gold visor.
+unsafe fn draw_orbitator_gator(graphics: &mut Graphics, active: bool, now_ms: u64) {
+    unsafe {
+        let bob = if active {
+            [0, -2, -3, -1, 0, 2, 3, 1][((now_ms / 110) % 8) as usize]
+        } else {
+            0
+        };
+
+        let gx = 60;
+        let gy = 78 + bob;
+
+        // --- NASA ASTRONAUT SUIT TORSO (Pure White EMU Space Suit) ---
+        // Suit outline
+        graphics.colour(0xff161a26);
+        graphics.rect(gx + 6, gy + 36, 44, 30);
+        graphics.colour(0xffb8c0d2); // Pressurized shadow
+        graphics.rect(gx + 8, gy + 38, 40, 27);
+        graphics.colour(0xfff6f8fc); // White space suit
+        graphics.rect(gx + 10, gy + 39, 36, 25);
+
+        // NASA Chest Pack (DCM - Display and Control Module)
+        graphics.colour(0xff161a26);
+        graphics.rect(gx + 20, gy + 43, 18, 18);
+        graphics.colour(0xff747e94);
+        graphics.rect(gx + 21, gy + 44, 16, 16);
+        // Telemetry LED indicators
+        graphics.colour(0xff00f0ff); // Oxygen
+        graphics.rect(gx + 23, gy + 46, 3, 2);
+        graphics.colour(if active { 0xff39ff14 } else { 0xffffcc00 }); // Status
+        graphics.rect(gx + 28, gy + 46, 3, 2);
+        graphics.colour(0xffff3355); // Warning
+        graphics.rect(gx + 32, gy + 46, 3, 2);
+        // Switches & pressure dial
+        graphics.colour(0xff222736);
+        graphics.rect(gx + 24, gy + 51, 10, 2);
+        graphics.rect(gx + 24, gy + 55, 4, 3);
+        graphics.rect(gx + 30, gy + 55, 4, 3);
+
+        // NASA Meatball Patch (Blue circle + red chevron)
+        graphics.colour(0xff0b3d91); // NASA blue
+        graphics.rect(gx + 11, gy + 43, 7, 7);
+        graphics.colour(0xffe0342b); // Red chevron
+        graphics.rect(gx + 13, gy + 45, 4, 2);
+        graphics.colour(0xffffffff); // Tiny white star
+        graphics.rect(gx + 12, gy + 44, 1, 1);
+
+        // USA Mission Stripe on chest/arm
+        graphics.colour(0xffffffff);
+        graphics.rect(gx + 40, gy + 43, 8, 5);
+        graphics.colour(0xffe0342b);
+        graphics.rect(gx + 40, gy + 43, 8, 1);
+        graphics.rect(gx + 40, gy + 45, 8, 1);
+        graphics.rect(gx + 40, gy + 47, 8, 1);
+        graphics.colour(0xff0b3d91);
+        graphics.rect(gx + 40, gy + 43, 4, 3);
+
+        // --- NASA ASTRONAUT HELMET (Hełm Kosmiczny) ---
+        // Neck ring / collar seal (Anodized NASA red locking ring)
+        graphics.colour(0xff161a26);
+        graphics.rect(gx + 12, gy + 32, 42, 6);
+        graphics.colour(0xffe0342b); // Red anodized collar ring
+        graphics.rect(gx + 14, gy + 33, 38, 4);
+        graphics.colour(0xffffffff);
+        graphics.rect(gx + 16, gy + 34, 34, 1);
+
+        // Outer White Space Helmet Shell
+        graphics.colour(0xff161a26);
+        graphics.rect(gx + 8, gy + 6, 38, 28);
+        graphics.rect(gx + 34, gy + 12, 34, 22);
+        graphics.rect(gx + 64, gy + 14, 6, 12);
+
+        graphics.colour(0xffb8c0d2);
+        graphics.rect(gx + 10, gy + 8, 34, 25);
+        graphics.rect(gx + 36, gy + 14, 30, 19);
+        graphics.rect(gx + 64, gy + 15, 5, 10);
+
+        graphics.colour(0xfff6f8fc); // White helmet dome
+        graphics.rect(gx + 12, gy + 9, 31, 23);
+        graphics.rect(gx + 36, gy + 15, 29, 17);
+        graphics.rect(gx + 63, gy + 16, 5, 8);
+
+        // Helmet top reflection highlight
+        graphics.colour(0xffffffff);
+        graphics.rect(gx + 16, gy + 9, 22, 2);
+        graphics.rect(gx + 38, gy + 15, 18, 2);
+
+        // Apollo Gold Visor (Słynna złota osłona przeciwsłoneczna)
+        graphics.colour(0xff161a26); // Visor frame
+        graphics.rect(gx + 20, gy + 15, 46, 17);
+        graphics.colour(0xffc48200); // Gold visor shadow
+        graphics.rect(gx + 22, gy + 16, 43, 15);
+        graphics.colour(0xffffb703); // Rich gold visor
+        graphics.rect(gx + 23, gy + 17, 41, 13);
+
+        // Visor solar glint streak across the visor curvature
+        graphics.colour(0xffffffff);
+        graphics.rect(gx + 25, gy + 18, 8, 3);
+        graphics.rect(gx + 36, gy + 19, 14, 2);
+        graphics.rect(gx + 54, gy + 20, 6, 2);
+
+        // Side EVA spotlight on helmet
+        graphics.colour(0xff161a26);
+        graphics.rect(gx + 5, gy + 14, 6, 10);
+        graphics.colour(0xffffffff);
+        graphics.rect(gx + 6, gy + 15, 4, 8);
+        graphics.colour(0xff00f0ff);
+        graphics.rect(gx + 6, gy + 17, 3, 4);
+
+        // --- WHITE ASTRONAUT ARMS & SPACE GLOVES ---
+        // Left arm: Victory pose / grooving in space with big astronaut glove
+        let pump_dy = if active {
+            [-4, -7, -9, -7, -4, -1, 1, 0][((now_ms / 100) % 8) as usize]
+        } else {
+            0
+        };
+        let hand_y = gy + 16 + pump_dy;
+
+        // Left white pressurized sleeve
+        graphics.colour(0xff161a26);
+        graphics.rect(gx - 6, gy + 28, 14, 18);
+        graphics.colour(0xfff6f8fc);
+        graphics.rect(gx - 5, gy + 29, 12, 16);
+        // Ribbed elbow joint
+        graphics.colour(0xffb8c0d2);
+        graphics.rect(gx - 5, gy + 35, 12, 2);
+        graphics.rect(gx - 5, gy + 39, 12, 2);
+
+        // Space Glove in the air
+        graphics.colour(0xff161a26);
+        graphics.rect(gx - 14, hand_y, 16, 18);
+        graphics.colour(0xfff6f8fc);
+        graphics.rect(gx - 13, hand_y + 1, 14, 16);
+        graphics.colour(0xffb8c0d2);
+        graphics.rect(gx - 12, hand_y + 3, 4, 12);
+        // Blue anodized wrist disconnect ring (NASA standard: blue for left)
+        graphics.colour(0xff0b3d91);
+        graphics.rect(gx - 13, hand_y + 14, 14, 2);
+        // Dark grip pads on glove fingers
+        graphics.colour(0xff484e5e);
+        graphics.rect(gx - 13, hand_y - 2, 3, 3);
+        graphics.rect(gx - 9, hand_y - 3, 3, 4);
+        graphics.rect(gx - 5, hand_y - 2, 3, 3);
+
+        // Right arm: White space sleeve & space glove on turntable
+        let scratch_dx = if active { ((now_ms / 80) % 4) as i32 - 1 } else { 0 };
+        graphics.colour(0xff161a26);
+        graphics.rect(gx + 44, gy + 40, 15, 14);
+        graphics.colour(0xfff6f8fc);
+        graphics.rect(gx + 45, gy + 41, 13, 12);
+        // Ribbed elbow joint
+        graphics.colour(0xffb8c0d2);
+        graphics.rect(gx + 47, gy + 45, 2, 7);
+
+        // Right Space Glove on console/turntable
+        graphics.colour(0xff161a26);
+        graphics.rect(gx + 50 + scratch_dx, gy + 52, 17, 8);
+        graphics.colour(0xfff6f8fc);
+        graphics.rect(gx + 51 + scratch_dx, gy + 53, 15, 6);
+        // Red anodized wrist disconnect ring (NASA standard: red for right)
+        graphics.colour(0xffe0342b);
+        graphics.rect(gx + 50 + scratch_dx, gy + 53, 2, 6);
+        // Grip pads
+        graphics.colour(0xff484e5e);
+        graphics.rect(gx + 53 + scratch_dx, gy + 56, 3, 2);
+        graphics.rect(gx + 57 + scratch_dx, gy + 56, 3, 2);
+        graphics.rect(gx + 61 + scratch_dx, gy + 56, 3, 2);
     }
 }
 
