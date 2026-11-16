@@ -44,7 +44,7 @@ static SERIAL: AtomicU32 = AtomicU32::new(0);
 static PATTERN: AtomicUsize = AtomicUsize::new(0);
 static RATE: AtomicUsize = AtomicUsize::new(StepRate::Sixteenth as usize);
 static ADDITIONAL_OCTAVES: AtomicUsize = AtomicUsize::new(0);
-static PANIC: AtomicBool = AtomicBool::new(false);
+static PANIC_COUNT: AtomicU32 = AtomicU32::new(0);
 pub static ACTIVE_SAMPLE_PAD: AtomicU8 = AtomicU8::new(0xff);
 pub static ACTIVE_SAMPLE_NOTE: AtomicU8 = AtomicU8::new(36);
 
@@ -201,7 +201,7 @@ pub fn set_additional_octaves(octaves: u8) {
 }
 
 pub fn panic() {
-    PANIC.store(true, Release);
+    PANIC_COUNT.fetch_add(1, Release);
     ACTIVE_SAMPLE_PAD.store(0xff, Release);
     ACTIVE_SAMPLE_NOTE.store(36, Release);
 }
@@ -350,8 +350,8 @@ impl State {
             }
         }
 
-        let panic_requested = PANIC.swap(false, Acquire);
-        if panic_requested {
+        let panic_count = PANIC_COUNT.swap(0, Acquire);
+        if panic_count > 0 {
             ACTIVE_SAMPLE_PAD.store(0xff, Release);
             ACTIVE_SAMPLE_NOTE.store(36, Release);
             unsafe {
@@ -414,7 +414,7 @@ impl State {
                 g_arp_transport_mode.store(u32::from(synced), Release);
             }
 
-            let active_mode = if enabled && bpm.is_some() && !panic_requested {
+            let active_mode = if enabled && bpm.is_some() && panic_count == 0 {
                 mode
             } else {
                 EngineMode::Off

@@ -362,10 +362,16 @@ impl Mod for ArpeggiGator {
         if event.code == 81 && event.pressed {
             let now = clock::now_ms();
             let prev = LAST_STOP_MS.swap(now, Ordering::AcqRel);
-            let is_double_stop = (now - prev) >= 0 && (now - prev) <= 650;
+            let is_double_stop = (now - prev) >= 0 && (now - prev) <= 800;
             if is_double_stop {
                 LAST_STOP_MS.store(0, Ordering::Release);
                 self.reset_engine_state();
+                return ButtonFlow::Consume;
+            }
+            // Pojedynczy STOP w trybie HOLD nie wycisza frazy — latch gra dalej.
+            // Zwracamy Consume, aby firmware MPC nie samowolnie zatrzymywał audio.
+            if PREVIEW_STATE.load(Ordering::Acquire) & HOLD_ENABLED != 0 {
+                return ButtonFlow::Consume;
             }
         }
         if event.code == button::SHIFT {
@@ -1479,14 +1485,14 @@ mod animation_input_tests {
         assert_eq!(native_audio::active_sample_note(), 45); // 36 + 9
 
         // 8. Press STOP once: stops sequence only, background arpeggiator STILL PLAYS!
-        assert_eq!(module.on_button(button_ev(81, true, false)), ButtonFlow::Forward);
+        assert_eq!(module.on_button(button_ev(81, true, false)), ButtonFlow::Consume);
         assert!(BACKGROUND_PLAYBACK_ACTIVE.load(Ordering::Acquire));
         assert!(module.enabled);
         assert_eq!(module.mode, EngineMode::Mutator);
         assert_ne!(PREVIEW_STATE.load(Ordering::Acquire) & HOLD_ENABLED, 0);
 
         // 9. Press STOP second time (double STOP): completely halts voices and resets engine!
-        assert_eq!(module.on_button(button_ev(81, true, false)), ButtonFlow::Forward);
+        assert_eq!(module.on_button(button_ev(81, true, false)), ButtonFlow::Consume);
         assert!(!BACKGROUND_PLAYBACK_ACTIVE.load(Ordering::Acquire));
         assert!(!module.enabled);
         assert_eq!(module.mode, EngineMode::Off);
