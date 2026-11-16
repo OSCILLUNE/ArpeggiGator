@@ -90,6 +90,7 @@ impl Drop for UiEventGuard {
 
 static CLEAR_FRAMES: AtomicU32 = AtomicU32::new(0);
 
+#[allow(dead_code)]
 fn repaint_component() -> usize {
     let screen = page::screen();
     if !page::is_sample_page(screen) {
@@ -336,9 +337,6 @@ impl Mod for ArpeggiGator {
         tempo::start_monitor();
         #[cfg(feature = "emulator-audio")]
         native_audio::install();
-        // SAFETY: repaint_component returns only the live component last
-        // recorded by the SDK paint hook, or zero when none is available.
-        unsafe { draw::start_repaint_pump(repaint_component) };
     }
 
     fn on_button(&mut self, event: ButtonEvent) -> ButtonFlow {
@@ -373,6 +371,7 @@ impl Mod for ArpeggiGator {
         if event.code == button::SHIFT {
             SHIFT_ACTIVE.store(event.pressed, Ordering::Release);
             DASHBOARD_REFRESH_UNTIL_MS.store(clock::now_ms() + 500, Ordering::Release);
+            draw::repaint_painted();
         }
 
         let flow = if event.code == button::DATA && !event.pressed && self.consumed_data {
@@ -559,6 +558,7 @@ impl Mod for ArpeggiGator {
 
         if action != 0 {
             DASHBOARD_REFRESH_UNTIL_MS.store(clock::now_ms() + 500, Ordering::Release);
+            draw::repaint_painted();
         }
         probe::button_event(
             event.code,
@@ -580,6 +580,7 @@ impl Mod for ArpeggiGator {
             #[cfg(feature = "emulator-audio")]
             native_audio::set_rate(rate);
             DASHBOARD_REFRESH_UNTIL_MS.store(clock::now_ms() + 500, Ordering::Release);
+            draw::repaint_painted();
         }
         EncoderFlow::Consume
     }
@@ -651,6 +652,7 @@ impl Mod for ArpeggiGator {
         self.in_16_levels = true;
         IN_16_LEVELS_ACTIVE.store(self.is_16_levels_active(), Ordering::Release);
         DASHBOARD_REFRESH_UNTIL_MS.store(clock::now_ms() + 500, Ordering::Release);
+        draw::repaint_painted();
         applied
     }
 

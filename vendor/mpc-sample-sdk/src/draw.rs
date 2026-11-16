@@ -210,16 +210,6 @@ pub unsafe fn toast_line(line: *const u8, repaint: Option<Repaint>, component: u
     toast.until = now + 1000;
     drop(toast);
     redraw(repaint, component);
-    std::thread::spawn(move || {
-        std::thread::sleep(core::time::Duration::from_millis(1120));
-        // Re-read the component the SDK most recently saw painted rather than
-        // holding the one captured above: a later page may own the screen now.
-        let current = if painted() != 0 { painted() } else { screen() };
-        // SAFETY: the app's repaint is safe to call from this thread, which is
-        // what the glue's own expiry thread did; `current` is the component the
-        // paint hook last observed.
-        redraw(repaint, current);
-    });
 }
 
 /// Ask the app to repaint the screen.
@@ -288,24 +278,9 @@ pub fn repaint_painted() {
 ///
 /// `component` must return only components that are live at the moment of the
 /// call, or zero.  Prefer [`painted`], which the paint hook maintains.
-pub unsafe fn start_repaint_pump(component: fn() -> usize) {
+pub unsafe fn start_repaint_pump(_component: fn() -> usize) {
     static STARTED: AtomicBool = AtomicBool::new(false);
-    if STARTED.swap(true, Ordering::AcqRel) {
-        return;
-    }
-    let _ = std::thread::Builder::new()
-        .name("mod-repaint".to_string())
-        .spawn(move || {
-            loop {
-                std::thread::sleep(core::time::Duration::from_millis(60));
-                let component = component();
-                if component != 0 {
-                    // SAFETY: the caller's function returns live components, or
-                    // zero which is skipped.
-                    unsafe { crate::sites::repaint_component(component) };
-                }
-            }
-        });
+    let _ = STARTED.swap(true, Ordering::AcqRel);
 }
 
 #[cfg(test)]
