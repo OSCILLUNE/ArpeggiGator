@@ -221,6 +221,7 @@ struct ArpeggiGator {
     melody_variant: MelodyVariant,
     mutator_intensity: MutationIntensity,
     mutator_variant: MelodyVariant,
+    mutator_frozen: bool,
     enabled: bool,
     current_screen: Screen,
     in_16_levels: bool,
@@ -538,10 +539,9 @@ impl Mod for ArpeggiGator {
                     #[cfg(feature = "emulator-audio")]
                     native_audio::set_melody_variant(self.melody_variant);
                 } else if self.mode == EngineMode::Mutator {
-                    self.mutator_variant = self.mutator_variant.cycle();
-                    self.mutator_engine.set_variant(self.mutator_variant);
+                    self.mutator_frozen = self.mutator_engine.toggle_frozen();
                     #[cfg(feature = "emulator-audio")]
-                    native_audio::set_mutator_variant(self.mutator_variant);
+                    native_audio::set_mutator_frozen(self.mutator_frozen);
                 } else if self.mode == EngineMode::Acordator {
                     self.voicing_style = self.voicing_style.cycle();
                     self.acordator_engine.set_style(self.voicing_style);
@@ -1161,11 +1161,11 @@ mod animation_input_tests {
         module.on_button(button_ev(BUTTON_B2, false, true));
         assert_eq!(module.mutator_intensity, MutationIntensity::Subtle);
 
-        // In Mutator: SHIFT+B3 cycles variants
-        assert_eq!(module.mutator_variant, MelodyVariant::Mel1);
+        // In Mutator: SHIFT+B3 toggles frozen (not cycle variants)
+        assert!(!module.mutator_engine.is_frozen());
         module.on_button(button_ev(BUTTON_B3, true, true));
         module.on_button(button_ev(BUTTON_B3, false, true));
-        assert_eq!(module.mutator_variant, MelodyVariant::Mel2);
+        assert!(module.mutator_engine.is_frozen());
 
         // 4th SHIFT+B1 -> advances to Acordator
         module.on_button(button_ev(BUTTON_B1, true, true));

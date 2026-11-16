@@ -146,6 +146,7 @@ static MELODY_BARS: AtomicUsize = AtomicUsize::new(0);
 static MELODY_VARIANT: AtomicUsize = AtomicUsize::new(0);
 static MUTATOR_INTENSITY: AtomicUsize = AtomicUsize::new(0);
 static MUTATOR_VARIANT: AtomicUsize = AtomicUsize::new(0);
+static MUTATOR_FROZEN: AtomicBool = AtomicBool::new(false);
 static CHORD_MOOD: AtomicUsize = AtomicUsize::new(0);
 static VOICING_STYLE: AtomicUsize = AtomicUsize::new(0);
 static ORBIT_ATMOSPHERE: AtomicUsize = AtomicUsize::new(0);
@@ -170,6 +171,10 @@ pub fn set_mutator_intensity(intensity: MutationIntensity) {
 
 pub fn set_mutator_variant(variant: MelodyVariant) {
     MUTATOR_VARIANT.store(variant as usize, Release);
+}
+
+pub fn set_mutator_frozen(frozen: bool) {
+    MUTATOR_FROZEN.store(frozen, Release);
 }
 
 pub fn set_chord_mood(mood: ChordMood) {
