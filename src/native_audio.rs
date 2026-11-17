@@ -4,7 +4,7 @@
 
 use core::sync::atomic::{AtomicBool, AtomicU8, AtomicU32, AtomicU64, AtomicUsize, Ordering::*};
 
-use mpc_sample_sdk::{NoteEvent, NoteFlow, hook, image, platform::clock};
+use mpc_sample_sdk::{NoteEvent, NoteFlow, hook, image, platform::clock, draw};
 
 use crate::{
     BarLength, ChordMood, EngineMode, MelodyVariant, MutationIntensity, OrbitAtmosphere,
@@ -47,6 +47,7 @@ static ADDITIONAL_OCTAVES: AtomicUsize = AtomicUsize::new(0);
 static PANIC_COUNT: AtomicU32 = AtomicU32::new(0);
 pub static ACTIVE_SAMPLE_PAD: AtomicU8 = AtomicU8::new(0xff);
 pub static ACTIVE_SAMPLE_NOTE: AtomicU8 = AtomicU8::new(36);
+static LAST_REPAINT_MS: AtomicU64 = AtomicU64::new(0);
 
 pub fn set_active_sample_pad(pad: u8, note: u8) {
     ACTIVE_SAMPLE_PAD.store(pad, Release);
@@ -405,6 +406,19 @@ impl State {
         };
         let transport_snapshot = transport_clock::snapshot(engine, image::base());
         let synced = enabled && bpm.is_some() && transport_snapshot.is_some_and(|s| s.playing);
+        let pads_active = preview & PAD_MASK != 0;
+        let playing = synced || (enabled && pads_active);
+
+        // Trigger UI repaint at ~60fps while actively playing to cover firmware playhead cursor.
+        if playing {
+            let now_ms = clock::now_ms().max(0) as u64;
+            let last = LAST_REPAINT_MS.load(Relaxed);
+            if now_ms.saturating_sub(last) >= 16 {
+                LAST_REPAINT_MS.store(now_ms, Relaxed);
+                // draw::repaint_painted() posts async to JUCE message thread; safe from audio thread.
+                draw::repaint_painted();
+            }
+        }
 
         // SAFETY: the only native argument is the live engine from this render.
         unsafe {
