@@ -9,7 +9,7 @@ use mpc_sample_sdk::{NoteEvent, NoteFlow, hook, image, platform::clock, draw};
 use crate::{
     BarLength, ChordMood, EngineMode, MelodyVariant, MutationIntensity, OrbitAtmosphere,
     OrbitDynamics, PAD_MASK, PREVIEW_ENABLED, PREVIEW_STATE, Pattern, Playback, SHORTCUT_PADS,
-    ScheduledEvent, StepRate, VoicingStyle, tempo, transport_clock,
+    REPAINT_REQUESTED, ScheduledEvent, StepRate, VoicingStyle, tempo, transport_clock,
     transport_playback::TransportPlayback,
 };
 
@@ -410,13 +410,14 @@ impl State {
         let playing = synced || (enabled && pads_active);
 
         // Trigger UI repaint at ~60fps while actively playing to cover firmware playhead cursor.
+        // Set a flag for the UI thread to schedule a repaint on the next paint callback.
+        // This avoids calling draw::repaint_painted() from the audio thread, which caused heap corruption.
         if playing {
             let now_ms = clock::now_ms().max(0) as u64;
             let last = LAST_REPAINT_MS.load(Relaxed);
             if now_ms.saturating_sub(last) >= 16 {
                 LAST_REPAINT_MS.store(now_ms, Relaxed);
-                // draw::repaint_painted() posts async to JUCE message thread; safe from audio thread.
-                draw::repaint_painted();
+                crate::REPAINT_REQUESTED.store(true, Release);
             }
         }
 
@@ -424,8 +425,7 @@ impl State {
         if crate::SPLASH_ACTIVE.load(Acquire) {
             let now = clock::now_ms().max(0);
             if now >= crate::SPLASH_UNTIL_MS.load(Acquire) {
-                // Force a single repaint to wake up the UI and fade out splash
-                draw::repaint_painted();
+                crate::REPAINT_REQUESTED.store(true, Release);
                 // Reset splash active flag to prevent spam after first wake-up
                 crate::SPLASH_ACTIVE.store(false, Release);
             }
