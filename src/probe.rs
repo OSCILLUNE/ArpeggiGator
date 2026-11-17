@@ -6,7 +6,7 @@
 
 #![allow(dead_code)]
 
-use core::sync::atomic::{AtomicBool, AtomicI32, AtomicU32, AtomicU64, Ordering};
+use core::sync::atomic::{AtomicBool, AtomicI32, AtomicU32, AtomicU64, Ordering, Ordering::Release};
 use std::{
     thread,
     time::{Duration, Instant},
@@ -15,6 +15,7 @@ use std::{
 #[cfg(not(all(target_os = "linux", target_arch = "aarch64")))]
 use std::hash::{Hash, Hasher};
 
+use crate::REPAINT_REQUESTED;
 use mpc_sample_sdk::{PadAction, PadEvent, draw};
 
 /// Exported diagnostics read by scripts/emulator_repaint_observer.py.
@@ -213,8 +214,9 @@ pub fn capture_and_schedule(event: PadEvent) {
                     }
                     g_probe.repaint_requests.fetch_add(1, Ordering::AcqRel);
 
-                    // Repaint requests only. This probe never invokes note hooks.
-                    draw::repaint_painted();
+                    // Request a repaint on the UI thread instead of calling draw::repaint_painted()
+                    // directly from this background thread, which caused heap corruption.
+                    crate::REPAINT_REQUESTED.store(true, Release);
                     thread::sleep(REPAINT_INTERVAL);
                 }
 
