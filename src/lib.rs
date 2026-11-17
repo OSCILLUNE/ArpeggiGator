@@ -58,7 +58,8 @@ static SHIFT_ACTIVE: AtomicBool = AtomicBool::new(false);
 pub(crate) static IN_16_LEVELS_ACTIVE: AtomicBool = AtomicBool::new(false);
 pub(crate) static BACKGROUND_PLAYBACK_ACTIVE: AtomicBool = AtomicBool::new(false);
 static LAST_STOP_MS: AtomicI64 = AtomicI64::new(0);
-static SPLASH_ACTIVE: AtomicBool = AtomicBool::new(true);
+pub static SPLASH_UNTIL_MS: AtomicI64 = AtomicI64::new(0);
+pub static SPLASH_ACTIVE: AtomicBool = AtomicBool::new(false);
 static IS_PAINTING: AtomicBool = AtomicBool::new(false);
 static IS_DISPATCHING_EVENT: AtomicBool = AtomicBool::new(false);
 
@@ -259,7 +260,6 @@ struct ArpeggiGator {
     consumed_data: bool,
     led_mask: u32,
     loop_audition_active: bool,
-    splash_until_ms: i64,
 }
 
 impl ArpeggiGator {
@@ -699,24 +699,23 @@ impl Mod for ArpeggiGator {
         }
         probe::on_paint();
         let now = clock::now_ms();
-        if self.splash_until_ms == 0 {
-            self.splash_until_ms = now + 2_000;
+        if SPLASH_UNTIL_MS.load(Ordering::Acquire) == 0 {
+            SPLASH_UNTIL_MS.store(now + 2_000, Ordering::Release);
             SPLASH_ACTIVE.store(true, Ordering::Release);
         }
-        if now < self.splash_until_ms {
+        if now < SPLASH_UNTIL_MS.load(Ordering::Acquire) {
             // SAFETY: the SDK invokes this callback with the live UI graphics.
             unsafe { splash::draw_boot_splash(graphics) };
             return;
-        } else if SPLASH_ACTIVE.swap(false, Ordering::AcqRel) {
-            // Splash just expired: clear the full screen NOW (splash covers 0,0,320,240)
-            // so the normal Sample page UI can draw on top in this same paint call.
+        }
+        // Splash expired: clear full screen NOW (splash covers 0,0,320,240)
+        // so the normal Sample page UI draws on top in this same paint call.
+        // This is the proven working approach - instant dismiss, no threads.
+        if SPLASH_ACTIVE.swap(false, Ordering::AcqRel) {
             unsafe {
                 graphics.colour(0xff000000);
                 graphics.rect(0, 0, 320, 240);
             }
-            // Also schedule a repaint for the next frame to ensure the base page
-            // gets a chance to draw its native waveform/editor.
-            draw::repaint_painted();
         }
         let preview = PREVIEW_STATE.load(Ordering::Acquire);
         let active = preview & PAD_MASK;
