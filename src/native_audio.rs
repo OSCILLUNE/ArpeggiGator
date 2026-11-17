@@ -420,6 +420,17 @@ impl State {
             }
         }
 
+        // Wake up UI to fade out splash after 2 seconds
+        if crate::SPLASH_ACTIVE.load(Acquire) {
+            let now = clock::now_ms().max(0);
+            if now >= crate::SPLASH_UNTIL_MS.load(Acquire) {
+                // Force a single repaint to wake up the UI and fade out splash
+                draw::repaint_painted();
+                // Reset splash active flag to prevent spam after first wake-up
+                crate::SPLASH_ACTIVE.store(false, Release);
+            }
+        }
+
         // SAFETY: the only native argument is the live engine from this render.
         unsafe {
             if self.synced != synced {
