@@ -90,7 +90,8 @@ The three **B** buttons are the soft keys immediately above the MPC display. Arp
 
 ## Download and compatibility status
 
-- **Current source version:** `0.0.5-2` (from `Cargo.toml`). The most recent verification report in `docs/` covers [v0.0.5-1](docs/RELEASE-REPORT-v0.0.5-1.md); it does not verify `0.0.5-2`.
+- **Latest stable / verified version:** **`v0.0.5-1`** (0.0.5.1) — see the [release verification report](docs/RELEASE-REPORT-v0.0.5-1.md).
+- **Development version:** `0.0.5-2` — work in progress to fix another bug; **not recommended for download or installation**.
 - **Downloadable GitHub Release:** not published yet. The main download button points to the future latest release.
 - **Verified environment:** firmware-targeted aarch64 MPC Sample emulator. **Physical hardware testing is still required.**
 - **Independent project:** not affiliated with, endorsed by or supported by AKAI Professional.
