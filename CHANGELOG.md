@@ -1,18 +1,15 @@
 # Changelog
 
-## 0.0.6.0 (stage e)
+## 0.0.6.0
 
-- MUTATOR SHIFT+B3 now toggles freeze and the softkey caption reports `FRZ ON` / `FRZ OFF` instead of the never-changing melody variant.
-
-## 0.0.6.0 (stage c)
-
-- Add a staging-only `stage-arp-only` build gate: SHIFT+B1 never advances past ARP, so the base engine can be soak-tested in isolation. Removed in later stages.
-
-## 0.0.6.0 (stage a)
-
-- Base on v0.0.4.9 (last release without repaint calls from the audio thread).
-- Remove the boot splash entirely: no 2 s state machine, no full-screen clear, no splash wake-up from audio.
-- Add low-volume rotating diagnostics: step/note counters bumped on the audio path, one summary line per second emitted to journal and to /tmp/arpeggigator-6-events.log (4-file rotation at 128 KiB).
+- Based on v0.0.4.9. No boot splash on the paint path (the old `draw_boot_splash` definition remains unused); no full-screen clear and no splash wake-up from audio.
+- Removed the background `mod-repaint` pump after a proven SIGSEGV in that non-UI thread.
+- Re-enabled generated notes in the emulator build by using `MPC_MOD_FEATURES=emulator-audio` (without it the audio hook is compiled out).
+- MUTATOR: SHIFT+B3 toggles freeze; the caption reports `FRZ ON` / `FRZ OFF`, and the freeze state reaches both audio playback paths. The state is also visible as `FRZ:ON/OFF` in the overlay and `frz=` in the heartbeat.
+- Added rotating diagnostics: atomics on the audio path, one line per second on journal plus `/tmp/arpeggigator-6-events.log` (4 files x 128 KiB). Heartbeat includes `mode/en/hold/l16/frz` and a startup-anchored `idle_ms`.
+- The single-STOP-in-HOLD change was tested and reverted as a regression; STOP keeps v0.0.4.9 semantics.
+- Staging-only feature gates `stage-arp-only` / `stage-melody-only` remain declared but are NOT enabled in the final build.
+- Deferred: `map_surface_pad`, `PANIC_COUNT`, and the unload-time voice cleanup (see the live handoff).
 
 ## 0.0.4.9
 
