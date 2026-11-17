@@ -8,8 +8,9 @@ repository = "https://github.com/OSCILLUNE/ArpeggiGator"
 
 [features]
 emulator-audio = []
-# Staging gate for 0.0.6: expose only the ARP engine until later stages.
+# Staging gates for 0.0.6: expose engines one at a time until later stages.
 stage-arp-only = []
+stage-melody-only = []
 
 [lib]
 crate-type = ["cdylib", "rlib"]
