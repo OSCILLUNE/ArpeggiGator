@@ -1,6 +1,6 @@
 <div align="center">
 
-![ArpeggiGator — purple and gold gator banner](assets/readme-hero.svg)
+![ArpeggiGator — original gator artwork in purple and gold](assets/readme-user-banner.webp)
 
 **Five musical engines for the AKAI MPC Sample — all hidden inside 16 Levels.**
 
