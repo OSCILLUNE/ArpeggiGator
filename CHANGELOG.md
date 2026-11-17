@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.0.6.0 (stage e)
+
+- MUTATOR SHIFT+B3 now toggles freeze and the softkey caption reports `FRZ ON` / `FRZ OFF` instead of the never-changing melody variant.
+
 ## 0.0.6.0 (stage c)
 
 - Add a staging-only `stage-arp-only` build gate: SHIFT+B1 never advances past ARP, so the base engine can be soak-tested in isolation. Removed in later stages.

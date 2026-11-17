@@ -213,7 +213,7 @@ struct ArpeggiGator {
     melody_bars: BarLength,
     melody_variant: MelodyVariant,
     mutator_intensity: MutationIntensity,
-    mutator_variant: MelodyVariant,
+    mutator_frozen: bool,
     enabled: bool,
     current_screen: Screen,
     in_16_levels: bool,
@@ -234,6 +234,11 @@ impl ArpeggiGator {
         } else {
             self.in_16_levels
         }
+    }
+
+    /// SHIFT+B3 toggles freeze in MUTATOR; the softkey must show that state.
+    fn mutator_b3_caption(&self) -> &'static str {
+        if self.mutator_frozen { "FRZ ON" } else { "FRZ OFF" }
     }
 
     fn should_continue_in_background(&self) -> bool {
@@ -518,10 +523,10 @@ impl Mod for ArpeggiGator {
                     #[cfg(feature = "emulator-audio")]
                     native_audio::set_melody_variant(self.melody_variant);
                 } else if self.mode == EngineMode::Mutator {
-                    self.mutator_variant = self.mutator_variant.cycle();
-                    self.mutator_engine.set_variant(self.mutator_variant);
+                    // Stage 6.0-e: B3 toggles freeze; the caption below follows it.
+                    self.mutator_frozen = self.mutator_engine.toggle_frozen();
                     #[cfg(feature = "emulator-audio")]
-                    native_audio::set_mutator_variant(self.mutator_variant);
+                    native_audio::set_mutator_frozen(self.mutator_frozen);
                 } else if self.mode == EngineMode::Acordator {
                     self.voicing_style = self.voicing_style.cycle();
                     self.acordator_engine.set_style(self.voicing_style);
@@ -695,7 +700,7 @@ impl Mod for ArpeggiGator {
         let b3_formatted;
         let b3_label = match self.mode {
             EngineMode::Melody => self.melody_variant.label(),
-            EngineMode::Mutator => self.mutator_variant.label(),
+            EngineMode::Mutator => self.mutator_b3_caption(),
             EngineMode::Acordator => self.voicing_style.label(),
             EngineMode::Orbitator => self.orbit_dynamics.label(),
             _ => {
@@ -1134,11 +1139,17 @@ mod animation_input_tests {
         module.on_button(button_ev(BUTTON_B2, false, true));
         assert_eq!(module.mutator_intensity, MutationIntensity::Subtle);
 
-        // In Mutator: SHIFT+B3 cycles variants
-        assert_eq!(module.mutator_variant, MelodyVariant::Mel1);
+        // In Mutator: SHIFT+B3 toggles freeze and the caption follows it
+        assert!(!module.mutator_engine.is_frozen());
+        assert_eq!(module.mutator_b3_caption(), "FRZ OFF");
         module.on_button(button_ev(BUTTON_B3, true, true));
         module.on_button(button_ev(BUTTON_B3, false, true));
-        assert_eq!(module.mutator_variant, MelodyVariant::Mel2);
+        assert!(module.mutator_engine.is_frozen());
+        assert_eq!(module.mutator_b3_caption(), "FRZ ON");
+        module.on_button(button_ev(BUTTON_B3, true, true));
+        module.on_button(button_ev(BUTTON_B3, false, true));
+        assert!(!module.mutator_engine.is_frozen());
+        assert_eq!(module.mutator_b3_caption(), "FRZ OFF");
 
         // 4th SHIFT+B1 -> advances to Acordator
         module.on_button(button_ev(BUTTON_B1, true, true));
