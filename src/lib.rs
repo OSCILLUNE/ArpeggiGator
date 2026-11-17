@@ -120,17 +120,46 @@ fn repaint_component() -> usize {
 
 // Runs on the input thread before the SDK's non-blocking module lock.
 // Only scalar event fields and atomics cross the callback boundary.
+/// Mapuje kody powierzchni (SurfaceEvent.code) na indeksy fizycznych padów 0..15.
+///
+/// - Kody 0..=15 to fizyczne pady UART MPC — mapowane 1:1.
+/// - Kody panelu emulatora WWW (np. 37, 36, 42, 82, ...) mapowane na 0..15
+///   zgodnie z `panel/controls.json`.
+/// - Fallback: dowolny kod w zakresie 36..=51 -> `code - 36`.
+fn map_surface_pad(code: i32) -> Option<u32> {
+    if (0..=15).contains(&code) {
+        return Some(code as u32);
+    }
+    match code {
+        37 => Some(0),  // PAD 1
+        36 => Some(1),  // PAD 2
+        42 => Some(2),  // PAD 3
+        82 => Some(3),  // PAD 4
+        40 => Some(4),  // PAD 5
+        38 => Some(5),  // PAD 6
+        46 => Some(6),  // PAD 7
+        44 => Some(7),  // PAD 8
+        48 => Some(8),  // PAD 9
+        47 => Some(9),  // PAD 10
+        45 => Some(10), // PAD 11
+        43 => Some(11), // PAD 12
+        49 => Some(12), // PAD 13
+        55 => Some(13), // PAD 14
+        51 => Some(14), // PAD 15
+        53 => Some(15), // PAD 16
+        36..=51 => Some((code - 36) as u32),
+        _ => None,
+    }
+}
+
 fn observe_surface(event: SurfaceEvent) {
     // The physical pads use MIDI channel 10; ordinary buttons use channel 1.
     if event.status & 0x0f != 9 {
         return;
     }
-    let Ok(pad) = u32::try_from(event.code) else {
+    let Some(pad) = map_surface_pad(event.code) else {
         return;
     };
-    if pad >= 16 {
-        return;
-    }
     let bit = 1_u32 << pad;
     match (event.kind, event.velocity) {
         (0x90, 1..) => {
