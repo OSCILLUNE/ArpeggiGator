@@ -2,7 +2,7 @@
 
 ![ArpeggiGator — purple and gold gator banner](assets/readme-hero.svg)
 
-**Five musical engines for the AKAI MPC Sample, right inside 16 Levels.**
+**Five musical engines for the AKAI MPC Sample — all hidden inside 16 Levels.**
 
 `ARP` · `MELODY` · `MUTATOR` · `ACORDATOR` · `ORBITATOR`
 
@@ -18,11 +18,13 @@
 
 ## Make your pads come alive
 
-ArpeggiGator is an unofficial, performance-focused mod for **AKAI MPC Sample**. Turn on **16 Levels**, select a musical engine and play evolving arpeggios, melodies, chords or orbital patterns from your samples. Change patterns, rate and HOLD while playing — without leaving your MPC workflow.
+ArpeggiGator is an unofficial, performance-focused mod for **AKAI MPC Sample**. It adds five optional musical engines **inside the existing 16 Levels mode**. Play evolving arpeggios, melodies, chords or orbital patterns using your own samples, with hands-on controls for rate, patterns and HOLD.
+
+**Your MPC stays your MPC.** ArpeggiGator does **not flash, replace or rewrite the original MPC Sample firmware**. It loads from the SD card at startup and adds functionality in **16 Levels**, while keeping the original screens and familiar workflow available. Outside the mod's controls, you can continue using the MPC Sample as usual.
 
 - **Five engines:** classic patterns, melodic phrases, evolving mutations, expressive chords and generative ambient movement.
 - **Hands-on controls:** three soft keys, the DATA encoder and your pads.
-- **One-card install:** loads from an SD card `autorun/` folder; no firmware flashing.
+- **No firmware replacement:** SD-card `autorun/` loading, with the original MPC Sample software and everyday workflow preserved.
 - **Original visuals:** a pixel gator and mode-specific scenes.
 
 ## Installation
@@ -90,8 +92,8 @@ The three **B** buttons are the soft keys immediately above the MPC display. Arp
 
 ## Download and compatibility status
 
-- **Latest stable / verified version:** **`v0.0.5-1`** (0.0.5.1) — see the [release verification report](docs/RELEASE-REPORT-v0.0.5-1.md).
-- **Development version:** `0.0.5-2` — work in progress to fix another bug; **not recommended for download or installation**.
+- **Latest stable / verified version:** **`v0.0.5.1`** — see the [release verification report](docs/RELEASE-REPORT-v0.0.5-1.md).
+- **Development version:** `0.0.5.2` — a bug fix is in progress; **not recommended for download or installation**.
 - **Downloadable GitHub Release:** not published yet. The main download button points to the future latest release.
 - **Verified environment:** firmware-targeted aarch64 MPC Sample emulator. **Physical hardware testing is still required.**
 - **Independent project:** not affiliated with, endorsed by or supported by AKAI Professional.
