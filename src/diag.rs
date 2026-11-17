@@ -5,6 +5,7 @@
 //! size-capped rotating file under /tmp. No allocation or file I/O on RT paths.
 
 use core::sync::atomic::{AtomicI64, AtomicU32, AtomicU64, Ordering};
+use std::time::{SystemTime, UNIX_EPOCH};
 
 const LOG_PATH: &str = "/tmp/arpeggigator-6-events.log";
 const MAX_LOG_BYTES: u64 = 128 * 1024;
@@ -16,8 +17,15 @@ static LAST_PITCH: AtomicI64 = AtomicI64::new(0);
 static LAST_ACTIVITY_MS: AtomicI64 = AtomicI64::new(0);
 static LAST_LOG_MS: AtomicI64 = AtomicI64::new(0);
 
+fn now_ms() -> i64 {
+    SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map_or(0, |duration| duration.as_millis() as i64)
+}
+
 /// Called from the audio render path. Cheap atomics only.
-pub fn note_on(pad: u8, note: u8, pitch: i8, now_ms: i64) {
+pub fn note_on(pad: u8, note: u8, pitch: i8) {
+    let now_ms = now_ms();
     STEPS.fetch_add(1, Ordering::Relaxed);
     LAST_PAD.store(u32::from(pad), Ordering::Relaxed);
     LAST_NOTE.store(u32::from(note), Ordering::Relaxed);
@@ -26,7 +34,8 @@ pub fn note_on(pad: u8, note: u8, pitch: i8, now_ms: i64) {
 }
 
 /// Called from `on_paint`. Emits at most one line per second.
-pub fn tick(now_ms: i64) {
+pub fn tick() {
+    let now_ms = now_ms();
     let last = LAST_LOG_MS.load(Ordering::Relaxed);
     if now_ms.saturating_sub(last) < 1_000 {
         return;

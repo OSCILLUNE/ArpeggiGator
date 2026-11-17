@@ -57,6 +57,11 @@ pub fn start_monitor() {
                     }
                 }
 
+                // Continuous 1 Hz heartbeat for the staged diagnostics. This
+                // monitor is read-only and already runs on its own thread; no
+                // UI or audio work is added here.
+                crate::diag::tick();
+
                 thread::sleep(Duration::from_millis(500));
             }
         });
