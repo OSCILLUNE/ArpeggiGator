@@ -615,6 +615,7 @@ impl State {
                     key.pitch = total_pitch.clamp(-24, 24) as i8;
 
                     send(engine, key, true);
+                    crate::diag::note_on(key.pad, key.note, key.pitch, clock::now_ms());
                     self.voice = Some(key);
                 }
                 Some(ScheduledEvent::NoteOff { pad }) => {

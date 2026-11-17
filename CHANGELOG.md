@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.0.6.0 (stage a)
+
+- Base on v0.0.4.9 (last release without repaint calls from the audio thread).
+- Remove the boot splash entirely: no 2 s state machine, no full-screen clear, no splash wake-up from audio.
+- Add low-volume rotating diagnostics: step/note counters bumped on the audio path, one summary line per second emitted to journal and to /tmp/arpeggigator-6-events.log (4-file rotation at 128 KiB).
+
 ## 0.0.4.9
 
 - Turn off all pads when resetting the engine, on double STOP and when the module drops.

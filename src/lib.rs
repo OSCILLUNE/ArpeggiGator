@@ -6,6 +6,7 @@
 
 mod acordator;
 mod arp;
+mod diag;
 mod melody;
 mod mutator;
 mod native_audio;
@@ -58,7 +59,6 @@ static SHIFT_ACTIVE: AtomicBool = AtomicBool::new(false);
 pub(crate) static IN_16_LEVELS_ACTIVE: AtomicBool = AtomicBool::new(false);
 pub(crate) static BACKGROUND_PLAYBACK_ACTIVE: AtomicBool = AtomicBool::new(false);
 static LAST_STOP_MS: AtomicI64 = AtomicI64::new(0);
-static SPLASH_ACTIVE: AtomicBool = AtomicBool::new(true);
 static IS_PAINTING: AtomicBool = AtomicBool::new(false);
 static IS_DISPATCHING_EVENT: AtomicBool = AtomicBool::new(false);
 
@@ -94,9 +94,6 @@ fn repaint_component() -> usize {
     let screen = page::screen();
     if !page::is_sample_page(screen) {
         return 0;
-    }
-    if SPLASH_ACTIVE.load(Ordering::Acquire) {
-        return screen;
     }
     if CLEAR_FRAMES.load(Ordering::Acquire) > 0 {
         return screen;
@@ -228,7 +225,6 @@ struct ArpeggiGator {
     consumed_data: bool,
     led_mask: u32,
     loop_audition_active: bool,
-    splash_until_ms: i64,
 }
 
 impl ArpeggiGator {
@@ -327,7 +323,6 @@ impl Mod for ArpeggiGator {
         self.loop_audition_active = false;
         IN_16_LEVELS_ACTIVE.store(false, Ordering::Release);
         CLEAR_FRAMES.store(0, Ordering::Release);
-        SPLASH_ACTIVE.store(true, Ordering::Release);
         DASHBOARD_REFRESH_UNTIL_MS.store(0, Ordering::Release);
         PREVIEW_STATE.store(0, Ordering::Release);
         PHYSICAL_PADS.store(0, Ordering::Release);
@@ -662,17 +657,7 @@ impl Mod for ArpeggiGator {
         }
         probe::on_paint();
         let now = clock::now_ms();
-        if self.splash_until_ms == 0 {
-            self.splash_until_ms = now + 2_000;
-            SPLASH_ACTIVE.store(true, Ordering::Release);
-        }
-        if now < self.splash_until_ms {
-            // SAFETY: the SDK invokes this callback with the live UI graphics.
-            unsafe { splash::draw_boot_splash(graphics) };
-            return;
-        } else if SPLASH_ACTIVE.load(Ordering::Acquire) {
-            SPLASH_ACTIVE.store(false, Ordering::Release);
-        }
+        diag::tick(now);
         let preview = PREVIEW_STATE.load(Ordering::Acquire);
         let active = preview & PAD_MASK;
         let target_leds = if self.is_16_levels_active() { active } else { 0 };
@@ -1328,8 +1313,7 @@ mod animation_input_tests {
         // Screen is 0 initially (not a valid SamplePage) -> returns 0
         assert_eq!(repaint_component(), 0);
 
-        // When not in 16 levels and splash inactive, returns 0 even if DASHBOARD_REFRESH is set
-        SPLASH_ACTIVE.store(false, Ordering::Release);
+        // When not in 16 levels, returns 0 even if DASHBOARD_REFRESH is set
         IN_16_LEVELS_ACTIVE.store(false, Ordering::Release);
         DASHBOARD_REFRESH_UNTIL_MS.store(clock::now_ms() + 10_000, Ordering::Release);
         assert_eq!(repaint_component(), 0);
@@ -1345,7 +1329,6 @@ mod animation_input_tests {
 
         // When painting or dispatching events, repaint_component yields to prevent JUCE races
         IN_16_LEVELS_ACTIVE.store(true, Ordering::Release);
-        SPLASH_ACTIVE.store(false, Ordering::Release);
         DASHBOARD_REFRESH_UNTIL_MS.store(clock::now_ms() + 10_000, Ordering::Release);
         IS_PAINTING.store(true, Ordering::Release);
         assert_eq!(repaint_component(), 0);
