@@ -707,8 +707,11 @@ impl Mod for ArpeggiGator {
             // SAFETY: the SDK invokes this callback with the live UI graphics.
             unsafe { splash::draw_boot_splash(graphics) };
             return;
-        } else if SPLASH_ACTIVE.load(Ordering::Acquire) {
-            SPLASH_ACTIVE.store(false, Ordering::Release);
+        } else if SPLASH_ACTIVE.swap(false, Ordering::AcqRel) {
+            // Splash just expired: force a full repaint so the base Sample page
+            // redraws its native waveform/editor over the splash pixels.
+            CLEAR_FRAMES.store(3, Ordering::Release);
+            draw::repaint_painted();
         }
         let preview = PREVIEW_STATE.load(Ordering::Acquire);
         let active = preview & PAD_MASK;
