@@ -60,6 +60,7 @@ pub(crate) static BACKGROUND_PLAYBACK_ACTIVE: AtomicBool = AtomicBool::new(false
 static LAST_STOP_MS: AtomicI64 = AtomicI64::new(0);
 pub static SPLASH_UNTIL_MS: AtomicI64 = AtomicI64::new(0);
 pub static SPLASH_ACTIVE: AtomicBool = AtomicBool::new(false);
+static REPAINT_REQUESTED: AtomicBool = AtomicBool::new(false);
 static IS_PAINTING: AtomicBool = AtomicBool::new(false);
 static IS_DISPATCHING_EVENT: AtomicBool = AtomicBool::new(false);
 
@@ -716,6 +717,12 @@ impl Mod for ArpeggiGator {
                 graphics.colour(0xff000000);
                 graphics.rect(0, 0, 320, 240);
             }
+        }
+
+        // If a non-UI thread (audio callback, probe) requested a repaint, schedule it now.
+        // This is safe because we're on the UI thread and JUCE's repaint() is async.
+        if REPAINT_REQUESTED.swap(false, Ordering::AcqRel) {
+            draw::repaint_painted();
         }
         let preview = PREVIEW_STATE.load(Ordering::Acquire);
         let active = preview & PAD_MASK;
