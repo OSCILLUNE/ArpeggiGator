@@ -25,9 +25,9 @@
 | Testy | 82/82 |
 | Wdrożone na DEV | **final**, SHA `c1a330eecb64b3429542914c821ef0e928db8753934f15afa75495c0c8647f6d` |
 | Artefakt w `build/arpeggigator.so` | ten sam `c1a330ee…` |
-| DEV | final wdrożony, tryby przetestowane, B3 `frz=0→1`, pady zatrzasnięte, `NRestarts=0`, soak finalny w toku |
+| DEV | final wdrożony, tryby przetestowane, B3 `frz=0→1`, pady zatrzasnięte, `NRestarts=0`, **soak finalny OK 30 min (180 próbek, 0 alarmów)** |
 | QA | czysty, bez moda i karty, `NRestarts=0` (potwierdzone przez Jurka) |
-| Następny ruch | poczekać na soak `final_0.0.6.0`; tag **`v0.0.6.0` założony lokalnie** (`3c7414c`). **Push tagu/kodu NIE autoryzowano — bez zgody nie wykonam.** |
+| Następny ruch | **brak — produkt gotowy do testu przez właściciela rano.** Tag `v0.0.6.0` lokalnie. **Push tagu/kodu NIE autoryzowano — bez zgody nie wykonam.** |
 | Artefakty w warsztacie | `build/arpeggigator-stage-d.so` `0a8a60c0…` (przed poprawkami), `build/arpeggigator-final.so` `c1a330ee…` (wdrożony) |
 
 ## Komendy weryfikacyjne
@@ -90,8 +90,8 @@ Build z `MPC_MOD_FEATURES=emulator-audio`, bez bramek. Wdrożony `322fc0d7…`, 
 ### Krok 11 — problem z podpisem B3 i jego rozwiązanie
 Firmware nadpisuje softkey B3 (`Filter` zostaje na ekranie mimo naszego `FRZ OFF`), więc użytkownik nie widział stanu freeze — to faktyczny powód jego skargi. Dodano `FRZ:ON/OFF` do prawego panelu nakładki Mutatora (`src/splash.rs`) i pole `frz` do heartbeat. Test: przed B3 `frz=0`, po SHIFT+B3 `frz=1`; zrzut `docs/logs/ag6/20261117_234254_f2_mut_frz_screen/frz_panel.png` pokazuje `FRZ:ON`.
 
-### Krok 12 — soak finalny
-Uruchomiony `final_0.0.6.0` (30 min). Oczekiwane: zero restartów i ABRT, `steps` rośnie, `frz=1` bez zmiany.
+### Krok 12 — soak finalny: OK
+`docs/logs/ag6/soak_final_0.0.6.0_20261117_234334.jsonl` — 180 próbek, `restarts=0`, `abrt=0` w każdej, `steps` rosło monotonicznie (107 → ponad 11 000), brak przerw >30 s, `frz=1` przez cały czas. Skrypt zakończył się komunikatem `OK 30 min`. Weryfikacje: Flint (167 próbek w trakcie), Jurek (QA czysty), Stary Gem (spójność stanu).
 
 ## Kryteria akceptacji finalnego 0.0.6.0
 
@@ -125,10 +125,20 @@ Uruchomiony `final_0.0.6.0` (30 min). Oczekiwane: zero restartów i ABRT, `steps
 | Flint 40 / Flint 40B Free | higiena logów, brak alokacji RT, rotacja ~512 KiB, `idle_ms` | 15 | wysoka |
 | Jurek Ogórek / Big Pickle | niezależna weryfikacja stanu i czystości QA | 10 | średnia |
 | Kot / LongCat Free | audyt dowodów soaku, wykrywał nieaktualny handoff, raport końcowy | 10 | średnia |
+| Stary Gem / Gemini 3.5 Flash Lite | szybkie kontrole stanu handoffu, tagu i soaku (135/180 w trakcie) | 5 | średnia |
 | Cwaniak / Nemotron Free | 0 (limit FREE), zaplanowany do weryfikacji po 1:50 | 0 | — |
-| Agent główny (ja) | implementacja, buildy, deploye, testy, soaki, integracja fixów | 30 | — |
+| Agent główny (ja) | implementacja, buildy, deploye, testy, soaki, integracja fixów | 25 | — |
 
 **Trzy najważniejsze ustalenia sesji:** (1) crash `mod-repaint` → usunięcie pompy, (2) STOP=81 vs DATA=100 i wycofanie 6.0-b, (3) mod nie gra bez `MPC_MOD_FEATURES=emulator-audio`.
+
+## Poranny przewodnik diagnostyczny (od Czesioka)
+
+1. Heartbeat `[AG6]` w `/tmp/arpeggigator-6-events.log` lub journal: `steps,last_pad,note,pitch,idle_ms,mode,en,hold,l16,frz`.
+2. `mode`: 0=OFF, 1=ARP, 2=MELODY, 3=MUTATOR, 4=ACORDATOR, 5=ORBITATOR; `en/l16/hold/frz` to 0/1.
+3. `systemctl show ac50 -p NRestarts,MainPID,ActiveState` (DEV SSH 2022) → `NRestarts=0`, `active`.
+4. Świeże błędy: `journalctl -u ac50 --since "<czas testu>" --no-pager | grep -Ei 'ABRT|SEGV|double free|dumped|core'` — musi być pusto.
+5. `curl -s http://127.0.0.1:8765/state` + `tail -n 5 /tmp/arpeggigator-6-events.log`.
+6. Dowody do odesłania: `_screen.png` (cała empeceta 1200×950), `_state.json`, `_control.txt`, fragment heartbeat z czasem awarii.
 
 ## Uwaga o narzędziu soak (do poprawki później)
 
