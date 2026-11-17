@@ -50,6 +50,10 @@ pub fn note_on(pad: u8, note: u8, pitch: i8) {
 pub fn tick() {
     let now_ms = now_ms();
     let last = LAST_LOG_MS.load(Ordering::Relaxed);
+    if last == 0 {
+        // First heartbeat: anchor idle time to startup instead of the Unix epoch.
+        LAST_ACTIVITY_MS.store(now_ms, Ordering::Relaxed);
+    }
     if now_ms.saturating_sub(last) < 1_000 {
         return;
     }
