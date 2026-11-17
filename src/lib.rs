@@ -708,9 +708,14 @@ impl Mod for ArpeggiGator {
             unsafe { splash::draw_boot_splash(graphics) };
             return;
         } else if SPLASH_ACTIVE.swap(false, Ordering::AcqRel) {
-            // Splash just expired: force a full repaint so the base Sample page
-            // redraws its native waveform/editor over the splash pixels.
-            CLEAR_FRAMES.store(3, Ordering::Release);
+            // Splash just expired: clear the full screen NOW (splash covers 0,0,320,240)
+            // so the normal Sample page UI can draw on top in this same paint call.
+            unsafe {
+                graphics.colour(0xff000000);
+                graphics.rect(0, 0, 320, 240);
+            }
+            // Also schedule a repaint for the next frame to ensure the base page
+            // gets a chance to draw its native waveform/editor.
             draw::repaint_painted();
         }
         let preview = PREVIEW_STATE.load(Ordering::Acquire);
