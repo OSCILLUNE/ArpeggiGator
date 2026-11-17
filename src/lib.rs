@@ -659,6 +659,7 @@ impl Mod for ArpeggiGator {
             self.enabled,
             preview & HOLD_ENABLED != 0,
             self.is_16_levels_active(),
+            self.mutator_frozen,
         );
         let active = preview & PAD_MASK;
         let target_leds = if self.is_16_levels_active() { active } else { 0 };
@@ -723,6 +724,7 @@ impl Mod for ArpeggiGator {
                     preview & HOLD_ENABLED != 0,
                     self.scheduler.rate().label(),
                 ),
+                self.mutator_frozen,
                 now as u64,
             )
         }

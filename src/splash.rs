@@ -30,6 +30,7 @@ pub unsafe fn draw_arp_overlay(
     b2_label: &str,
     b3_label: &str,
     preview: (u8, bool, &str),
+    freeze: bool,
     now_ms: u64,
 ) {
     let (held_pads, hold, rate) = preview;
@@ -47,7 +48,7 @@ pub unsafe fn draw_arp_overlay(
                     draw_melody_view(graphics, b2_label, b3_label, held_pads, hold, rate, now_ms);
                 }
                 EngineMode::Mutator => {
-                    draw_mutator_view(graphics, b2_label, b3_label, held_pads, hold, rate, now_ms);
+                    draw_mutator_view(graphics, b2_label, b3_label, held_pads, hold, rate, freeze, now_ms);
                 }
                 EngineMode::Acordator => {
                     draw_acordator_view(graphics, b2_label, b3_label, held_pads, hold, rate, now_ms);
@@ -180,6 +181,7 @@ unsafe fn draw_mutator_view(
     held_pads: u8,
     hold: bool,
     rate: &str,
+    freeze: bool,
     now_ms: u64,
 ) {
     unsafe {
@@ -187,8 +189,12 @@ unsafe fn draw_mutator_view(
         graphics.colour(0xff061014);
         graphics.rect(14, 48, 292, 140);
 
-        // Right side info panel
-        let param_str = format!("{intensity_label}  {motif_label}");
+        // Right side info panel. The native firmware repaints the B3 softkey
+        // caption ("Filter"), so surface freeze here where it stays visible.
+        let param_str = format!(
+            "{intensity_label}  {motif_label}  FRZ:{}",
+            if freeze { "ON" } else { "OFF" }
+        );
         draw_engine_right_panel(
             graphics,
             "MODE: MUTATOR",
