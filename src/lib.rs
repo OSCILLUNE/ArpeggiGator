@@ -90,6 +90,7 @@ impl Drop for UiEventGuard {
 
 static CLEAR_FRAMES: AtomicU32 = AtomicU32::new(0);
 
+#[allow(dead_code)]
 fn repaint_component() -> usize {
     let screen = page::screen();
     if !page::is_sample_page(screen) {
@@ -119,17 +120,46 @@ fn repaint_component() -> usize {
 
 // Runs on the input thread before the SDK's non-blocking module lock.
 // Only scalar event fields and atomics cross the callback boundary.
+/// Mapuje kody powierzchni (SurfaceEvent.code) na indeksy fizycznych padów 0..15.
+///
+/// - Kody 0..=15 to fizyczne pady UART MPC — mapowane 1:1.
+/// - Kody panelu emulatora WWW (np. 37, 36, 42, 82, ...) mapowane na 0..15
+///   zgodnie z `panel/controls.json`.
+/// - Fallback: dowolny kod w zakresie 36..=51 -> `code - 36`.
+fn map_surface_pad(code: i32) -> Option<u32> {
+    if (0..=15).contains(&code) {
+        return Some(code as u32);
+    }
+    match code {
+        37 => Some(0),  // PAD 1
+        36 => Some(1),  // PAD 2
+        42 => Some(2),  // PAD 3
+        82 => Some(3),  // PAD 4
+        40 => Some(4),  // PAD 5
+        38 => Some(5),  // PAD 6
+        46 => Some(6),  // PAD 7
+        44 => Some(7),  // PAD 8
+        48 => Some(8),  // PAD 9
+        47 => Some(9),  // PAD 10
+        45 => Some(10), // PAD 11
+        43 => Some(11), // PAD 12
+        49 => Some(12), // PAD 13
+        55 => Some(13), // PAD 14
+        51 => Some(14), // PAD 15
+        53 => Some(15), // PAD 16
+        36..=51 => Some((code - 36) as u32),
+        _ => None,
+    }
+}
+
 fn observe_surface(event: SurfaceEvent) {
     // The physical pads use MIDI channel 10; ordinary buttons use channel 1.
     if event.status & 0x0f != 9 {
         return;
     }
-    let Ok(pad) = u32::try_from(event.code) else {
+    let Some(pad) = map_surface_pad(event.code) else {
         return;
     };
-    if pad >= 16 {
-        return;
-    }
     let bit = 1_u32 << pad;
     match (event.kind, event.velocity) {
         (0x90, 1..) => {
@@ -220,6 +250,7 @@ struct ArpeggiGator {
     melody_variant: MelodyVariant,
     mutator_intensity: MutationIntensity,
     mutator_variant: MelodyVariant,
+    mutator_frozen: bool,
     enabled: bool,
     current_screen: Screen,
     in_16_levels: bool,
@@ -336,9 +367,6 @@ impl Mod for ArpeggiGator {
         tempo::start_monitor();
         #[cfg(feature = "emulator-audio")]
         native_audio::install();
-        // SAFETY: repaint_component returns only the live component last
-        // recorded by the SDK paint hook, or zero when none is available.
-        unsafe { draw::start_repaint_pump(repaint_component) };
     }
 
     fn on_button(&mut self, event: ButtonEvent) -> ButtonFlow {
@@ -364,15 +392,22 @@ impl Mod for ArpeggiGator {
         if event.code == 81 && event.pressed {
             let now = clock::now_ms();
             let prev = LAST_STOP_MS.swap(now, Ordering::AcqRel);
-            let is_double_stop = (now - prev) >= 0 && (now - prev) <= 650;
+            let is_double_stop = (now - prev) >= 0 && (now - prev) <= 800;
             if is_double_stop {
                 LAST_STOP_MS.store(0, Ordering::Release);
                 self.reset_engine_state();
+                return ButtonFlow::Consume;
+            }
+            // Pojedynczy STOP w trybie HOLD nie wycisza frazy — latch gra dalej.
+            // Zwracamy Consume, aby firmware MPC nie samowolnie zatrzymywał audio.
+            if PREVIEW_STATE.load(Ordering::Acquire) & HOLD_ENABLED != 0 {
+                return ButtonFlow::Consume;
             }
         }
         if event.code == button::SHIFT {
             SHIFT_ACTIVE.store(event.pressed, Ordering::Release);
             DASHBOARD_REFRESH_UNTIL_MS.store(clock::now_ms() + 500, Ordering::Release);
+            draw::repaint_painted();
         }
 
         let flow = if event.code == button::DATA && !event.pressed && self.consumed_data {
@@ -533,10 +568,9 @@ impl Mod for ArpeggiGator {
                     #[cfg(feature = "emulator-audio")]
                     native_audio::set_melody_variant(self.melody_variant);
                 } else if self.mode == EngineMode::Mutator {
-                    self.mutator_variant = self.mutator_variant.cycle();
-                    self.mutator_engine.set_variant(self.mutator_variant);
+                    self.mutator_frozen = self.mutator_engine.toggle_frozen();
                     #[cfg(feature = "emulator-audio")]
-                    native_audio::set_mutator_variant(self.mutator_variant);
+                    native_audio::set_mutator_frozen(self.mutator_frozen);
                 } else if self.mode == EngineMode::Acordator {
                     self.voicing_style = self.voicing_style.cycle();
                     self.acordator_engine.set_style(self.voicing_style);
@@ -559,6 +593,7 @@ impl Mod for ArpeggiGator {
 
         if action != 0 {
             DASHBOARD_REFRESH_UNTIL_MS.store(clock::now_ms() + 500, Ordering::Release);
+            draw::repaint_painted();
         }
         probe::button_event(
             event.code,
@@ -580,6 +615,7 @@ impl Mod for ArpeggiGator {
             #[cfg(feature = "emulator-audio")]
             native_audio::set_rate(rate);
             DASHBOARD_REFRESH_UNTIL_MS.store(clock::now_ms() + 500, Ordering::Release);
+            draw::repaint_painted();
         }
         EncoderFlow::Consume
     }
@@ -651,6 +687,7 @@ impl Mod for ArpeggiGator {
         self.in_16_levels = true;
         IN_16_LEVELS_ACTIVE.store(self.is_16_levels_active(), Ordering::Release);
         DASHBOARD_REFRESH_UNTIL_MS.store(clock::now_ms() + 500, Ordering::Release);
+        draw::repaint_painted();
         applied
     }
 
@@ -1153,11 +1190,11 @@ mod animation_input_tests {
         module.on_button(button_ev(BUTTON_B2, false, true));
         assert_eq!(module.mutator_intensity, MutationIntensity::Subtle);
 
-        // In Mutator: SHIFT+B3 cycles variants
-        assert_eq!(module.mutator_variant, MelodyVariant::Mel1);
+        // In Mutator: SHIFT+B3 toggles frozen (not cycle variants)
+        assert!(!module.mutator_engine.is_frozen());
         module.on_button(button_ev(BUTTON_B3, true, true));
         module.on_button(button_ev(BUTTON_B3, false, true));
-        assert_eq!(module.mutator_variant, MelodyVariant::Mel2);
+        assert!(module.mutator_engine.is_frozen());
 
         // 4th SHIFT+B1 -> advances to Acordator
         module.on_button(button_ev(BUTTON_B1, true, true));
@@ -1477,14 +1514,14 @@ mod animation_input_tests {
         assert_eq!(native_audio::active_sample_note(), 45); // 36 + 9
 
         // 8. Press STOP once: stops sequence only, background arpeggiator STILL PLAYS!
-        assert_eq!(module.on_button(button_ev(81, true, false)), ButtonFlow::Forward);
+        assert_eq!(module.on_button(button_ev(81, true, false)), ButtonFlow::Consume);
         assert!(BACKGROUND_PLAYBACK_ACTIVE.load(Ordering::Acquire));
         assert!(module.enabled);
         assert_eq!(module.mode, EngineMode::Mutator);
         assert_ne!(PREVIEW_STATE.load(Ordering::Acquire) & HOLD_ENABLED, 0);
 
         // 9. Press STOP second time (double STOP): completely halts voices and resets engine!
-        assert_eq!(module.on_button(button_ev(81, true, false)), ButtonFlow::Forward);
+        assert_eq!(module.on_button(button_ev(81, true, false)), ButtonFlow::Consume);
         assert!(!BACKGROUND_PLAYBACK_ACTIVE.load(Ordering::Acquire));
         assert!(!module.enabled);
         assert_eq!(module.mode, EngineMode::Off);

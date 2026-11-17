@@ -4,7 +4,7 @@
 
 use core::sync::atomic::{AtomicBool, AtomicU8, AtomicU32, AtomicU64, AtomicUsize, Ordering::*};
 
-use mpc_sample_sdk::{NoteEvent, NoteFlow, hook, image, platform::clock};
+use mpc_sample_sdk::{NoteEvent, NoteFlow, hook, image, platform::clock, draw};
 
 use crate::{
     BarLength, ChordMood, EngineMode, MelodyVariant, MutationIntensity, OrbitAtmosphere,
@@ -44,9 +44,10 @@ static SERIAL: AtomicU32 = AtomicU32::new(0);
 static PATTERN: AtomicUsize = AtomicUsize::new(0);
 static RATE: AtomicUsize = AtomicUsize::new(StepRate::Sixteenth as usize);
 static ADDITIONAL_OCTAVES: AtomicUsize = AtomicUsize::new(0);
-static PANIC: AtomicBool = AtomicBool::new(false);
+static PANIC_COUNT: AtomicU32 = AtomicU32::new(0);
 pub static ACTIVE_SAMPLE_PAD: AtomicU8 = AtomicU8::new(0xff);
 pub static ACTIVE_SAMPLE_NOTE: AtomicU8 = AtomicU8::new(36);
+static LAST_REPAINT_MS: AtomicU64 = AtomicU64::new(0);
 
 pub fn set_active_sample_pad(pad: u8, note: u8) {
     ACTIVE_SAMPLE_PAD.store(pad, Release);
@@ -146,6 +147,7 @@ static MELODY_BARS: AtomicUsize = AtomicUsize::new(0);
 static MELODY_VARIANT: AtomicUsize = AtomicUsize::new(0);
 static MUTATOR_INTENSITY: AtomicUsize = AtomicUsize::new(0);
 static MUTATOR_VARIANT: AtomicUsize = AtomicUsize::new(0);
+static MUTATOR_FROZEN: AtomicBool = AtomicBool::new(false);
 static CHORD_MOOD: AtomicUsize = AtomicUsize::new(0);
 static VOICING_STYLE: AtomicUsize = AtomicUsize::new(0);
 static ORBIT_ATMOSPHERE: AtomicUsize = AtomicUsize::new(0);
@@ -170,6 +172,10 @@ pub fn set_mutator_intensity(intensity: MutationIntensity) {
 
 pub fn set_mutator_variant(variant: MelodyVariant) {
     MUTATOR_VARIANT.store(variant as usize, Release);
+}
+
+pub fn set_mutator_frozen(frozen: bool) {
+    MUTATOR_FROZEN.store(frozen, Release);
 }
 
 pub fn set_chord_mood(mood: ChordMood) {
@@ -201,7 +207,7 @@ pub fn set_additional_octaves(octaves: u8) {
 }
 
 pub fn panic() {
-    PANIC.store(true, Release);
+    PANIC_COUNT.fetch_add(1, Release);
     ACTIVE_SAMPLE_PAD.store(0xff, Release);
     ACTIVE_SAMPLE_NOTE.store(36, Release);
 }
@@ -350,8 +356,8 @@ impl State {
             }
         }
 
-        let panic_requested = PANIC.swap(false, Acquire);
-        if panic_requested {
+        let panic_count = PANIC_COUNT.swap(0, Acquire);
+        if panic_count > 0 {
             ACTIVE_SAMPLE_PAD.store(0xff, Release);
             ACTIVE_SAMPLE_NOTE.store(36, Release);
             unsafe {
@@ -400,6 +406,19 @@ impl State {
         };
         let transport_snapshot = transport_clock::snapshot(engine, image::base());
         let synced = enabled && bpm.is_some() && transport_snapshot.is_some_and(|s| s.playing);
+        let pads_active = preview & PAD_MASK != 0;
+        let playing = synced || (enabled && pads_active);
+
+        // Trigger UI repaint at ~60fps while actively playing to cover firmware playhead cursor.
+        if playing {
+            let now_ms = clock::now_ms().max(0) as u64;
+            let last = LAST_REPAINT_MS.load(Relaxed);
+            if now_ms.saturating_sub(last) >= 16 {
+                LAST_REPAINT_MS.store(now_ms, Relaxed);
+                // draw::repaint_painted() posts async to JUCE message thread; safe from audio thread.
+                draw::repaint_painted();
+            }
+        }
 
         // SAFETY: the only native argument is the live engine from this render.
         unsafe {
@@ -414,7 +433,7 @@ impl State {
                 g_arp_transport_mode.store(u32::from(synced), Release);
             }
 
-            let active_mode = if enabled && bpm.is_some() && !panic_requested {
+            let active_mode = if enabled && bpm.is_some() && panic_count == 0 {
                 mode
             } else {
                 EngineMode::Off
