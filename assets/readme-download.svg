@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1050" height="122" viewBox="0 0 1050 122" role="img" aria-label="Download here – latest version">
+<defs><linearGradient id="ctaGrad" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#6516a0"/><stop offset=".53" stop-color="#a31bb7"/><stop offset="1" stop-color="#d51ca7"/></linearGradient></defs>
+<rect x="5" y="5" width="1040" height="112" rx="16" fill="#170b2d" stroke="#d63bfa" stroke-width="5"/>
+<rect x="14" y="14" width="1022" height="94" rx="12" fill="url(#ctaGrad)"/>
+<path d="M78 32v35m-18-17 18 18 18-18M54 76h48" fill="none" stroke="#fff5c5" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="137" y="61" font-family="Verdana, sans-serif" font-size="37" font-weight="800" fill="#fff4d6">DOWNLOAD HERE — LATEST VERSION</text>
+<text x="139" y="89" font-family="monospace" font-size="19" fill="#fce1ff">GITHUB RELEASES   /   INSTALLABLE ZIP PACKAGE</text>
+</svg>

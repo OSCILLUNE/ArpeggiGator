@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="351" viewBox="0 0 1200 351" role="img" aria-label="Illustrations of ARP, MUTATOR, ACORDATOR and ORBITATOR modes, not actual screenshots">
+<rect width="1200" height="351" rx="14" fill="#080619"/>
+<g>
+ <rect x="12" y="18" width="280" height="295" rx="13" fill="#110923" stroke="#7ce838" stroke-opacity=".76" stroke-width="3"/>
+ <rect x="21" y="28" width="262" height="44" rx="6" fill="#26133e"/>
+ <circle cx="36" cy="49" r="5" fill="#7ce838"/>
+ <text x="49" y="55" fill="#7ce838" font-size="24" font-weight="800" font-family="Verdana, sans-serif">ARP</text>
+ <rect x="25" y="81" width="254" height="120" rx="4" fill="#070715" stroke="#49216b" stroke-width="2"/>
+ <path d="M35 103h236M35 127h236M35 151h236M35 176h236" stroke="#3d2254" stroke-width="1"/>
+ <rect x="36" y="162" width="20" height="18" rx="2" fill="#7ce838" opacity="0.35"/><rect x="67" y="146" width="20" height="34" rx="2" fill="#7ce838" opacity="0.415"/><rect x="98" y="128" width="20" height="52" rx="2" fill="#7ce838" opacity="0.48"/><rect x="129" y="107" width="20" height="73" rx="2" fill="#7ce838" opacity="0.5449999999999999"/><rect x="160" y="95" width="20" height="85" rx="2" fill="#7ce838" opacity="0.61"/><rect x="191" y="119" width="20" height="61" rx="2" fill="#7ce838" opacity="0.675"/><rect x="222" y="138" width="20" height="42" rx="2" fill="#7ce838" opacity="0.74"/><rect x="253" y="156" width="20" height="24" rx="2" fill="#7ce838" opacity="0.8049999999999999"/>
+ <text x="31" y="231" fill="#f6e9ff" font-size="18" font-family="Verdana, sans-serif">Pattern arpeggiator</text>
+ <text x="31" y="259" fill="#7ce838" font-size="12" font-family="monospace">UP  /  DOWN  /  RANDOM</text>
+ <text x="31" y="291" fill="#a687be" font-size="12" font-family="monospace">RATE 1/16  •  HOLD: OFF</text></g>
+<g>
+ <rect x="310" y="18" width="280" height="295" rx="13" fill="#110923" stroke="#42d9fa" stroke-opacity=".76" stroke-width="3"/>
+ <rect x="319" y="28" width="262" height="44" rx="6" fill="#26133e"/>
+ <circle cx="334" cy="49" r="5" fill="#42d9fa"/>
+ <text x="347" y="55" fill="#42d9fa" font-size="24" font-weight="800" font-family="Verdana, sans-serif">MUTATOR</text>
+ <rect x="323" y="81" width="254" height="120" rx="4" fill="#070715" stroke="#49216b" stroke-width="2"/>
+ <path d="M333 103h236M333 127h236M333 151h236M333 176h236" stroke="#3d2254" stroke-width="1"/>
+ <rect x="334" y="146" width="20" height="34" rx="2" fill="#42d9fa" opacity="0.35"/><rect x="365" y="122" width="20" height="58" rx="2" fill="#42d9fa" opacity="0.415"/><rect x="396" y="162" width="20" height="18" rx="2" fill="#42d9fa" opacity="0.48"/><rect x="427" y="109" width="20" height="71" rx="2" fill="#42d9fa" opacity="0.5449999999999999"/><rect x="458" y="135" width="20" height="45" rx="2" fill="#42d9fa" opacity="0.61"/><rect x="489" y="100" width="20" height="80" rx="2" fill="#42d9fa" opacity="0.675"/><rect x="520" y="154" width="20" height="26" rx="2" fill="#42d9fa" opacity="0.74"/><rect x="551" y="118" width="20" height="62" rx="2" fill="#42d9fa" opacity="0.8049999999999999"/>
+ <text x="329" y="231" fill="#f6e9ff" font-size="18" font-family="Verdana, sans-serif">Evolving melodies</text>
+ <text x="329" y="259" fill="#42d9fa" font-size="12" font-family="monospace">SUBTLE  /  WILD  /  CHAOS</text>
+ <text x="329" y="291" fill="#a687be" font-size="12" font-family="monospace">RATE 1/16  •  HOLD: OFF</text></g>
+<g>
+ <rect x="608" y="18" width="280" height="295" rx="13" fill="#110923" stroke="#ffd15a" stroke-opacity=".76" stroke-width="3"/>
+ <rect x="617" y="28" width="262" height="44" rx="6" fill="#26133e"/>
+ <circle cx="632" cy="49" r="5" fill="#ffd15a"/>
+ <text x="645" y="55" fill="#ffd15a" font-size="24" font-weight="800" font-family="Verdana, sans-serif">ACORDATOR</text>
+ <rect x="621" y="81" width="254" height="120" rx="4" fill="#070715" stroke="#49216b" stroke-width="2"/>
+ <path d="M631 103h236M631 127h236M631 151h236M631 176h236" stroke="#3d2254" stroke-width="1"/>
+ <rect x="632" y="162" width="20" height="18" rx="2" fill="#ffd15a" opacity="0.35"/><rect x="663" y="150" width="20" height="30" rx="2" fill="#ffd15a" opacity="0.415"/><rect x="694" y="128" width="20" height="52" rx="2" fill="#ffd15a" opacity="0.48"/><rect x="725" y="104" width="20" height="76" rx="2" fill="#ffd15a" opacity="0.5449999999999999"/><rect x="756" y="128" width="20" height="52" rx="2" fill="#ffd15a" opacity="0.61"/><rect x="787" y="150" width="20" height="30" rx="2" fill="#ffd15a" opacity="0.675"/><rect x="818" y="162" width="20" height="18" rx="2" fill="#ffd15a" opacity="0.74"/><rect x="849" y="138" width="20" height="42" rx="2" fill="#ffd15a" opacity="0.8049999999999999"/><path d="M653 132l42 -33 41 44 42 -51 42 38" fill="none" stroke="#ffd15a" stroke-width="4" stroke-linejoin="round"/>
+ <text x="627" y="231" fill="#f6e9ff" font-size="18" font-family="Verdana, sans-serif">Expressive chord waves</text>
+ <text x="627" y="259" fill="#ffd15a" font-size="12" font-family="monospace">WARM  /  SAD  /  SPACE</text>
+ <text x="627" y="291" fill="#a687be" font-size="12" font-family="monospace">RATE 1/16  •  HOLD: OFF</text></g>
+<g>
+ <rect x="906" y="18" width="280" height="295" rx="13" fill="#110923" stroke="#c489ff" stroke-opacity=".76" stroke-width="3"/>
+ <rect x="915" y="28" width="262" height="44" rx="6" fill="#26133e"/>
+ <circle cx="930" cy="49" r="5" fill="#c489ff"/>
+ <text x="943" y="55" fill="#c489ff" font-size="24" font-weight="800" font-family="Verdana, sans-serif">ORBITATOR</text>
+ <rect x="919" y="81" width="254" height="120" rx="4" fill="#070715" stroke="#49216b" stroke-width="2"/>
+ <path d="M929 103h236M929 127h236M929 151h236M929 176h236" stroke="#3d2254" stroke-width="1"/>
+ <rect x="930" y="137" width="20" height="43" rx="2" fill="#c489ff" opacity="0.35"/><rect x="961" y="120" width="20" height="60" rx="2" fill="#c489ff" opacity="0.415"/><rect x="992" y="98" width="20" height="82" rx="2" fill="#c489ff" opacity="0.48"/><rect x="1023" y="136" width="20" height="44" rx="2" fill="#c489ff" opacity="0.5449999999999999"/><rect x="1054" y="162" width="20" height="18" rx="2" fill="#c489ff" opacity="0.61"/><rect x="1085" y="122" width="20" height="58" rx="2" fill="#c489ff" opacity="0.675"/><rect x="1116" y="103" width="20" height="77" rx="2" fill="#c489ff" opacity="0.74"/><rect x="1147" y="144" width="20" height="36" rx="2" fill="#c489ff" opacity="0.8049999999999999"/><ellipse cx="1053" cy="136" rx="89" ry="36" transform="rotate(-24 1053 136)" fill="none" stroke="#c489ff" stroke-width="3"/><circle cx="1053" cy="136" r="16" fill="#ffd060"/><circle cx="1123" cy="110" r="8" fill="#c489ff"/>
+ <text x="925" y="231" fill="#f6e9ff" font-size="18" font-family="Verdana, sans-serif">Generative space drift</text>
+ <text x="925" y="259" fill="#c489ff" font-size="12" font-family="monospace">AMBIENT  /  SPACE  /  DARK</text>
+ <text x="925" y="291" fill="#a687be" font-size="12" font-family="monospace">RATE 1/16  •  HOLD: OFF</text></g>
+<text x="600" y="338" fill="#a998c3" text-anchor="middle" font-family="monospace" font-size="12">MODE ILLUSTRATIONS — NOT ACTUAL DEVICE SCREENSHOTS</text>
+</svg>
