@@ -1,0 +1,29 @@
+PID=1003
+comm=Audio Processin
+signal=11
+timestamp=1794934899
+
+# hardware
+PRODUCT_CODE=AC50
+BOARD=AZ07rA
+SERIAL_SANITIZED=MPCLAB00xxxxx
+SERIAL=MPCLAB0000001
+
+# software
+LINUX="6.12.60-mpclab"
+BOOTLOADER="2024.01-mpclab"
+DISTRO="5.0.14 (scarthgap)"
+AZ0X=948f066b
+
+# /etc/az0x-release
+AZ0X_VERSION=948f066b
+BUILD_TAG=jenkins-ACVS-MPC-Sample-SME6-Release-Yocto-92
+
+# /etc/os-release
+ID=az07
+NAME="az0x (inMusic Brands AZ0x base distribution)"
+VERSION="5.0.14 (scarthgap)"
+VERSION_ID=5.0.14
+VERSION_CODENAME="scarthgap"
+PRETTY_NAME="az0x (inMusic Brands AZ0x base distribution) 5.0.14 (scarthgap)"
+CPE_NAME="cpe:/o:openembedded:az07:5.0.14"

@@ -1,0 +1,1975 @@
+Nov 17 16:35:20 mpc-sample systemd[1]: Started MPC Sample Application.
+Nov 17 16:35:20 mpc-sample launch-ac50[325]: MCU version: 0.0.0.000
+Nov 17 16:35:20 mpc-sample launch-ac50[325]: BIN version: 1.0.0.051 (0x01000033)
+Nov 17 16:35:20 mpc-sample launch-ac50[325]: Firmware update ...
+Nov 17 16:35:20 mpc-sample launch-ac50[336]: Opened firmware file: '/usr/share/Akai/AC50/Firmware/AC50/UpdateImage.rbin'
+Nov 17 16:35:20 mpc-sample launch-ac50[336]: MIDI port mode
+Nov 17 16:35:21 mpc-sample launch-ac50[336]: Using MIDI Port 'Control Surface:Control Surface 20:0'
+Nov 17 16:35:21 mpc-sample launch-ac50[336]: Device not found on port 'Control Surface:Control Surface 20:0'?
+Nov 17 16:35:22 mpc-sample launch-ac50[323]: LibXtract compiled with ooura FFT
+Nov 17 16:35:22 mpc-sample launch-ac50[323]: Raster graphics accelerator is not available.
+Nov 17 16:35:22 mpc-sample launch-ac50[323]: EDisks GetManagedObjects() not found - assuming daemon is starting now
+Nov 17 16:35:22 mpc-sample launch-ac50[323]: About to run script: autorun.sh
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Found jack PCM Slave Active: unplugged
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Found jack PCM Slave Active: unplugged
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Found jack PCM Slave Active: unplugged
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Found jack PCM Slave Active: unplugged
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Found jack PCM Slave Active: unplugged
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Found jack PCM Slave Active: unplugged
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Found jack PCM Slave Active: unplugged
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Found jack PCM Slave Active: unplugged
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Found jack PCM Slave Active: unplugged
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Found jack PCM Slave Active: unplugged
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Found jack PCM Slave Active: unplugged
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Found jack PCM Slave Active: unplugged
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Found jack PCM Slave Active: unplugged
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Found jack PCM Slave Active: unplugged
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Found jack PCM Slave Active: unplugged
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Found jack PCM Slave Active: unplugged
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: ALSA lib /usr/src/debug/alsa-lib/1.2.11/src/confmisc.c:165:(snd_config_get_card) Cannot get card index for UAC2Gadget
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: gadget: setup: Failed to open control device hw:UAC2Gadget: -19
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: **** Audio 44100Hz; 6-in; 6-out; 128sample buffer
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: **** Warning: inefficient input path: hardware=6 filter=4
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: **** Warning: inefficient output path: hardware=6 filter=4
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: <MPC Sample> 1.3.0
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: WARNING: Int32ToFloat unsupported channel count: 4
+Nov 17 16:35:23 mpc-sample launch-ac50[323]: WARNING: FloatToInt32 unoptimized channel count: 4
+Nov 17 16:35:23 mpc-sample systemd[1]: Stopping MPC Sample Application...
+Nov 17 16:35:23 mpc-sample systemd[1]: ac50.service: Deactivated successfully.
+Nov 17 16:35:23 mpc-sample systemd[1]: Stopped MPC Sample Application.
+Nov 17 16:35:23 mpc-sample systemd[1]: Started MPC Sample Application.
+Nov 17 16:35:23 mpc-sample launch-ac50[424]: MCU version: 0.0.0.000
+Nov 17 16:35:23 mpc-sample launch-ac50[424]: BIN version: 1.0.0.051 (0x01000033)
+Nov 17 16:35:23 mpc-sample launch-ac50[424]: Firmware update ...
+Nov 17 16:35:23 mpc-sample launch-ac50[429]: Opened firmware file: '/usr/share/Akai/AC50/Firmware/AC50/UpdateImage.rbin'
+Nov 17 16:35:23 mpc-sample launch-ac50[429]: MIDI port mode
+Nov 17 16:35:24 mpc-sample launch-ac50[429]: Using MIDI Port 'Control Surface:Control Surface 20:0'
+Nov 17 16:35:24 mpc-sample launch-ac50[429]: Device not found on port 'Control Surface:Control Surface 20:0'?
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: LibXtract compiled with ooura FFT
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Raster graphics accelerator is not available.
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Found jack PCM Slave Active: plugged
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Found jack PCM Slave Active: unplugged
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Found jack PCM Slave Active: unplugged
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Found jack PCM Slave Active: unplugged
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Found jack PCM Slave Active: unplugged
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Found jack PCM Slave Active: unplugged
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Found jack PCM Slave Active: unplugged
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Found jack PCM Slave Active: unplugged
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Found jack PCM Slave Active: unplugged
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Found jack PCM Slave Active: unplugged
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Found jack PCM Slave Active: unplugged
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Found jack PCM Slave Active: unplugged
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Found jack PCM Slave Active: unplugged
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Found jack PCM Slave Active: unplugged
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Found jack PCM Slave Active: unplugged
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Found jack PCM Slave Active: unplugged
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: ALSA lib /usr/src/debug/alsa-lib/1.2.11/src/confmisc.c:165:(snd_config_get_card) Cannot get card index for UAC2Gadget
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: gadget: setup: Failed to open control device hw:UAC2Gadget: -19
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: **** Audio 44100Hz; 6-in; 6-out; 128sample buffer
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: **** Warning: inefficient input path: hardware=6 filter=4
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: **** Warning: inefficient output path: hardware=6 filter=4
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: <MPC Sample> 1.3.0
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: WARNING: Int32ToFloat unsupported channel count: 4
+Nov 17 16:35:25 mpc-sample launch-ac50[423]: WARNING: FloatToInt32 unoptimized channel count: 4
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: **** Unexpected audio capture error: -5
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Found jack PCM Slave Active: plugged
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Found jack PCM Slave Active: unplugged
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Found jack PCM Slave Active: unplugged
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Found jack PCM Slave Active: unplugged
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Found jack PCM Slave Active: unplugged
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Found jack PCM Slave Active: unplugged
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Found jack PCM Slave Active: unplugged
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Found jack PCM Slave Active: unplugged
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Found jack PCM Slave Active: unplugged
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Found jack PCM Slave Active: unplugged
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Found jack PCM Slave Active: unplugged
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Found jack PCM Slave Active: unplugged
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Found jack PCM Slave Active: unplugged
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Found jack PCM Slave Active: unplugged
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Found jack PCM Slave Active: unplugged
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Found jack PCM Slave Active: unplugged
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: ALSA lib /usr/src/debug/alsa-lib/1.2.11/src/confmisc.c:165:(snd_config_get_card) Cannot get card index for UAC2Gadget
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: gadget: setup: Failed to open control device hw:UAC2Gadget: -19
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: **** Audio 44100Hz; 6-in; 6-out; 128sample buffer
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: **** Warning: inefficient input path: hardware=6 filter=4
+Nov 17 16:35:30 mpc-sample launch-ac50[423]: **** Warning: inefficient output path: hardware=6 filter=4
+Nov 17 16:37:54 mpc-sample systemd[1]: Stopping MPC Sample Application...
+Nov 17 16:37:54 mpc-sample systemd[1]: ac50.service: Deactivated successfully.
+Nov 17 16:37:54 mpc-sample systemd[1]: Stopped MPC Sample Application.
+Nov 17 16:37:54 mpc-sample systemd[1]: ac50.service: Consumed 19.528s CPU time, 613.3M memory peak, 0B memory swap peak.
+Nov 17 16:37:54 mpc-sample systemd[1]: Started MPC Sample Application.
+Nov 17 16:37:54 mpc-sample launch-ac50[511]: MCU version: 0.0.0.000
+Nov 17 16:37:54 mpc-sample launch-ac50[511]: BIN version: 1.0.0.051 (0x01000033)
+Nov 17 16:37:54 mpc-sample launch-ac50[511]: Firmware update ...
+Nov 17 16:37:54 mpc-sample launch-ac50[516]: Opened firmware file: '/usr/share/Akai/AC50/Firmware/AC50/UpdateImage.rbin'
+Nov 17 16:37:54 mpc-sample launch-ac50[516]: MIDI port mode
+Nov 17 16:37:55 mpc-sample launch-ac50[516]: Using MIDI Port 'Control Surface:Control Surface 20:0'
+Nov 17 16:37:55 mpc-sample launch-ac50[516]: Device not found on port 'Control Surface:Control Surface 20:0'?
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: LibXtract compiled with ooura FFT
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Raster graphics accelerator is not available.
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Found jack PCM Slave Active: plugged
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Found jack PCM Slave Active: unplugged
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Found jack PCM Slave Active: unplugged
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Found jack PCM Slave Active: unplugged
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Found jack PCM Slave Active: unplugged
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Found jack PCM Slave Active: unplugged
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Found jack PCM Slave Active: unplugged
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Found jack PCM Slave Active: unplugged
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Found jack PCM Slave Active: unplugged
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Found jack PCM Slave Active: unplugged
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Found jack PCM Slave Active: unplugged
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Found jack PCM Slave Active: unplugged
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Found jack PCM Slave Active: unplugged
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Found jack PCM Slave Active: unplugged
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Found jack PCM Slave Active: unplugged
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Found jack PCM Slave Active: unplugged
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: ALSA lib /usr/src/debug/alsa-lib/1.2.11/src/confmisc.c:165:(snd_config_get_card) Cannot get card index for UAC2Gadget
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: gadget: setup: Failed to open control device hw:UAC2Gadget: -19
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: **** Audio 44100Hz; 6-in; 6-out; 128sample buffer
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: **** Warning: inefficient input path: hardware=6 filter=4
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: **** Warning: inefficient output path: hardware=6 filter=4
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: <MPC Sample> 1.3.0
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: WARNING: Int32ToFloat unsupported channel count: 4
+Nov 17 16:37:55 mpc-sample launch-ac50[510]: WARNING: FloatToInt32 unoptimized channel count: 4
+Nov 17 16:39:10 mpc-sample systemd[1]: ac50.service: Main process exited, code=dumped, status=11/SEGV
+Nov 17 16:39:10 mpc-sample systemd[1]: ac50.service: Failed with result 'core-dump'.
+Nov 17 16:39:10 mpc-sample systemd[1]: ac50.service: Consumed 10.958s CPU time.
+Nov 17 16:39:11 mpc-sample systemd[1]: ac50.service: Scheduled restart job, restart counter is at 1.
+Nov 17 16:39:11 mpc-sample systemd[1]: Started MPC Sample Application.
+Nov 17 16:39:11 mpc-sample launch-ac50[575]: MCU version: 0.0.0.000
+Nov 17 16:39:11 mpc-sample launch-ac50[575]: BIN version: 1.0.0.051 (0x01000033)
+Nov 17 16:39:11 mpc-sample launch-ac50[575]: Firmware update ...
+Nov 17 16:39:11 mpc-sample launch-ac50[580]: Opened firmware file: '/usr/share/Akai/AC50/Firmware/AC50/UpdateImage.rbin'
+Nov 17 16:39:11 mpc-sample launch-ac50[580]: MIDI port mode
+Nov 17 16:39:12 mpc-sample launch-ac50[580]: Using MIDI Port 'Control Surface:Control Surface 20:0'
+Nov 17 16:39:12 mpc-sample launch-ac50[580]: Device not found on port 'Control Surface:Control Surface 20:0'?
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: LibXtract compiled with ooura FFT
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Raster graphics accelerator is not available.
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Found jack PCM Slave Active: plugged
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Found jack PCM Slave Active: unplugged
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Found jack PCM Slave Active: unplugged
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Found jack PCM Slave Active: unplugged
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Found jack PCM Slave Active: unplugged
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Found jack PCM Slave Active: unplugged
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Found jack PCM Slave Active: unplugged
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Found jack PCM Slave Active: unplugged
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Found jack PCM Slave Active: unplugged
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Found jack PCM Slave Active: unplugged
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Found jack PCM Slave Active: unplugged
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Found jack PCM Slave Active: unplugged
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Found jack PCM Slave Active: unplugged
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Found jack PCM Slave Active: unplugged
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Found jack PCM Slave Active: unplugged
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Found jack PCM Slave Active: unplugged
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: ALSA lib /usr/src/debug/alsa-lib/1.2.11/src/confmisc.c:165:(snd_config_get_card) Cannot get card index for UAC2Gadget
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: gadget: setup: Failed to open control device hw:UAC2Gadget: -19
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: **** Audio 44100Hz; 6-in; 6-out; 128sample buffer
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: **** Warning: inefficient input path: hardware=6 filter=4
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: **** Warning: inefficient output path: hardware=6 filter=4
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: <MPC Sample> 1.3.0
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: WARNING: Int32ToFloat unsupported channel count: 4
+Nov 17 16:39:13 mpc-sample launch-ac50[574]: WARNING: FloatToInt32 unoptimized channel count: 4
+Nov 17 16:39:14 mpc-sample systemd[1]: Stopping MPC Sample Application...
+Nov 17 16:39:14 mpc-sample systemd[1]: ac50.service: Deactivated successfully.
+Nov 17 16:39:14 mpc-sample systemd[1]: Stopped MPC Sample Application.
+Nov 17 16:39:14 mpc-sample systemd[1]: Started MPC Sample Application.
+Nov 17 16:39:15 mpc-sample launch-ac50[630]: MCU version: 0.0.0.000
+Nov 17 16:39:15 mpc-sample launch-ac50[630]: BIN version: 1.0.0.051 (0x01000033)
+Nov 17 16:39:15 mpc-sample launch-ac50[630]: Firmware update ...
+Nov 17 16:39:15 mpc-sample launch-ac50[635]: Opened firmware file: '/usr/share/Akai/AC50/Firmware/AC50/UpdateImage.rbin'
+Nov 17 16:39:15 mpc-sample launch-ac50[635]: MIDI port mode
+Nov 17 16:39:16 mpc-sample launch-ac50[635]: Using MIDI Port 'Control Surface:Control Surface 20:0'
+Nov 17 16:39:16 mpc-sample launch-ac50[635]: Device not found on port 'Control Surface:Control Surface 20:0'?
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: LibXtract compiled with ooura FFT
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Raster graphics accelerator is not available.
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Found jack PCM Slave Active: plugged
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Found jack PCM Slave Active: unplugged
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Found jack PCM Slave Active: unplugged
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Found jack PCM Slave Active: unplugged
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Found jack PCM Slave Active: unplugged
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Found jack PCM Slave Active: unplugged
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Found jack PCM Slave Active: unplugged
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Found jack PCM Slave Active: unplugged
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Found jack PCM Slave Active: unplugged
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Found jack PCM Slave Active: unplugged
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Found jack PCM Slave Active: unplugged
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Found jack PCM Slave Active: unplugged
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Found jack PCM Slave Active: unplugged
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Found jack PCM Slave Active: unplugged
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Found jack PCM Slave Active: unplugged
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Found jack PCM Slave Active: unplugged
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: ALSA lib /usr/src/debug/alsa-lib/1.2.11/src/confmisc.c:165:(snd_config_get_card) Cannot get card index for UAC2Gadget
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: gadget: setup: Failed to open control device hw:UAC2Gadget: -19
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: **** Audio 44100Hz; 6-in; 6-out; 128sample buffer
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: **** Warning: inefficient input path: hardware=6 filter=4
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: **** Warning: inefficient output path: hardware=6 filter=4
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: <MPC Sample> 1.3.0
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: WARNING: Int32ToFloat unsupported channel count: 4
+Nov 17 16:39:17 mpc-sample launch-ac50[629]: WARNING: FloatToInt32 unoptimized channel count: 4
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: **** Unexpected audio capture error: -5
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Found jack PCM Slave Active: plugged
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Found jack PCM Slave Active: unplugged
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Found jack PCM Slave Active: unplugged
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Found jack PCM Slave Active: unplugged
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Found jack PCM Slave Active: unplugged
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Found jack PCM Slave Active: unplugged
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Found jack PCM Slave Active: unplugged
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Found jack PCM Slave Active: unplugged
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Found jack PCM Slave Active: unplugged
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Found jack PCM Slave Active: unplugged
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Found jack PCM Slave Active: unplugged
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Found jack PCM Slave Active: unplugged
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Found jack PCM Slave Active: unplugged
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Found jack PCM Slave Active: unplugged
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Found jack PCM Slave Active: unplugged
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Found jack PCM Slave Active: unplugged
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: ALSA lib /usr/src/debug/alsa-lib/1.2.11/src/confmisc.c:165:(snd_config_get_card) Cannot get card index for UAC2Gadget
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: gadget: setup: Failed to open control device hw:UAC2Gadget: -19
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: **** Audio 44100Hz; 6-in; 6-out; 128sample buffer
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: **** Warning: inefficient input path: hardware=6 filter=4
+Nov 17 16:40:33 mpc-sample launch-ac50[629]: **** Warning: inefficient output path: hardware=6 filter=4
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: **** Unexpected audio capture error: -5
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Found jack PCM Slave Active: plugged
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Found jack PCM Slave Active: unplugged
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Found jack PCM Slave Active: unplugged
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Found jack PCM Slave Active: unplugged
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Found jack PCM Slave Active: unplugged
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Found jack PCM Slave Active: unplugged
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Found jack PCM Slave Active: unplugged
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Found jack PCM Slave Active: unplugged
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Found jack PCM Slave Active: unplugged
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Found jack PCM Slave Active: unplugged
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Found jack PCM Slave Active: unplugged
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Found jack PCM Slave Active: unplugged
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Found jack PCM Slave Active: unplugged
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Found jack PCM Slave Active: unplugged
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Found jack PCM Slave Active: unplugged
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Found jack PCM Slave Active: unplugged
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: ALSA lib /usr/src/debug/alsa-lib/1.2.11/src/confmisc.c:165:(snd_config_get_card) Cannot get card index for UAC2Gadget
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: gadget: setup: Failed to open control device hw:UAC2Gadget: -19
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: **** Audio 44100Hz; 6-in; 6-out; 128sample buffer
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: **** Warning: inefficient input path: hardware=6 filter=4
+Nov 17 16:40:40 mpc-sample launch-ac50[629]: **** Warning: inefficient output path: hardware=6 filter=4
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: **** Unexpected audio capture error: -5
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Found jack PCM Slave Active: unplugged
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Found jack PCM Slave Active: unplugged
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Found jack PCM Slave Active: unplugged
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Found jack PCM Slave Active: unplugged
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Found jack PCM Slave Active: unplugged
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Found jack PCM Slave Active: unplugged
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Found jack PCM Slave Active: unplugged
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Found jack PCM Slave Active: unplugged
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Found jack PCM Slave Active: unplugged
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Found jack PCM Slave Active: unplugged
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Found jack PCM Slave Active: unplugged
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Found jack PCM Slave Active: unplugged
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Found jack PCM Slave Active: unplugged
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Found jack PCM Slave Active: unplugged
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Found jack PCM Slave Active: unplugged
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Found jack PCM Slave Active: unplugged
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: ALSA lib /usr/src/debug/alsa-lib/1.2.11/src/confmisc.c:165:(snd_config_get_card) Cannot get card index for UAC2Gadget
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: gadget: setup: Failed to open control device hw:UAC2Gadget: -19
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: **** Audio 44100Hz; 6-in; 6-out; 128sample buffer
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: **** Warning: inefficient input path: hardware=6 filter=4
+Nov 17 16:43:06 mpc-sample launch-ac50[629]: **** Warning: inefficient output path: hardware=6 filter=4
+Nov 17 16:49:06 mpc-sample systemd[1]: ac50.service: Main process exited, code=dumped, status=11/SEGV
+Nov 17 16:49:06 mpc-sample systemd[1]: ac50.service: Failed with result 'core-dump'.
+Nov 17 16:49:06 mpc-sample systemd[1]: ac50.service: Consumed 1min 13.751s CPU time, 611.9M memory peak, 0B memory swap peak.
+Nov 17 16:49:07 mpc-sample systemd[1]: ac50.service: Scheduled restart job, restart counter is at 1.
+Nov 17 16:49:07 mpc-sample systemd[1]: Started MPC Sample Application.
+Nov 17 16:49:07 mpc-sample launch-ac50[731]: MCU version: 0.0.0.000
+Nov 17 16:49:07 mpc-sample launch-ac50[731]: BIN version: 1.0.0.051 (0x01000033)
+Nov 17 16:49:07 mpc-sample launch-ac50[731]: Firmware update ...
+Nov 17 16:49:07 mpc-sample launch-ac50[736]: Opened firmware file: '/usr/share/Akai/AC50/Firmware/AC50/UpdateImage.rbin'
+Nov 17 16:49:07 mpc-sample launch-ac50[736]: MIDI port mode
+Nov 17 16:49:08 mpc-sample launch-ac50[736]: Using MIDI Port 'Control Surface:Control Surface 20:0'
+Nov 17 16:49:08 mpc-sample launch-ac50[736]: Device not found on port 'Control Surface:Control Surface 20:0'?
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: LibXtract compiled with ooura FFT
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Raster graphics accelerator is not available.
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Found jack PCM Slave Active: plugged
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Found jack PCM Slave Active: unplugged
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Found jack PCM Slave Active: unplugged
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Found jack PCM Slave Active: unplugged
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Found jack PCM Slave Active: unplugged
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Found jack PCM Slave Active: unplugged
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Found jack PCM Slave Active: unplugged
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Found jack PCM Slave Active: unplugged
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Found jack PCM Slave Active: unplugged
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Found jack PCM Slave Active: unplugged
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Found jack PCM Slave Active: unplugged
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Found jack PCM Slave Active: unplugged
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Found jack PCM Slave Active: unplugged
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Found jack PCM Slave Active: unplugged
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Found jack PCM Slave Active: unplugged
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Found jack PCM Slave Active: unplugged
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: ALSA lib /usr/src/debug/alsa-lib/1.2.11/src/confmisc.c:165:(snd_config_get_card) Cannot get card index for UAC2Gadget
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: gadget: setup: Failed to open control device hw:UAC2Gadget: -19
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: **** Audio 44100Hz; 6-in; 6-out; 128sample buffer
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: **** Warning: inefficient input path: hardware=6 filter=4
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: **** Warning: inefficient output path: hardware=6 filter=4
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: <MPC Sample> 1.3.0
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: WARNING: Int32ToFloat unsupported channel count: 4
+Nov 17 16:49:09 mpc-sample launch-ac50[730]: WARNING: FloatToInt32 unoptimized channel count: 4
+Nov 17 16:49:10 mpc-sample launch-ac50[730]: **** Unexpected audio capture error: -5
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Found jack PCM Slave Active: plugged
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Found jack PCM Slave Active: unplugged
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Found jack PCM Slave Active: unplugged
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Found jack PCM Slave Active: unplugged
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Found jack PCM Slave Active: unplugged
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Found jack PCM Slave Active: unplugged
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Found jack PCM Slave Active: unplugged
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Found jack PCM Slave Active: unplugged
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Found jack PCM Slave Active: unplugged
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Found jack PCM Slave Active: unplugged
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Found jack PCM Slave Active: unplugged
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Found jack PCM Slave Active: unplugged
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Found jack PCM Slave Active: unplugged
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Found jack PCM Slave Active: unplugged
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Found jack PCM Slave Active: unplugged
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Found jack PCM Slave Active: unplugged
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: ALSA lib /usr/src/debug/alsa-lib/1.2.11/src/confmisc.c:165:(snd_config_get_card) Cannot get card index for UAC2Gadget
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: gadget: setup: Failed to open control device hw:UAC2Gadget: -19
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: **** Audio 44100Hz; 6-in; 6-out; 128sample buffer
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: **** Warning: inefficient input path: hardware=6 filter=4
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: **** Warning: inefficient output path: hardware=6 filter=4
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: **** Unexpected audio capture error: -5
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Found jack PCM Slave Active: plugged
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Found jack PCM Slave Active: unplugged
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Found jack PCM Slave Active: unplugged
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Found jack PCM Slave Active: unplugged
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Found jack PCM Slave Active: unplugged
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Found jack PCM Slave Active: unplugged
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Found jack PCM Slave Active: unplugged
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Found jack PCM Slave Active: unplugged
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Found jack PCM Slave Active: unplugged
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Found jack PCM Slave Active: unplugged
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Found jack PCM Slave Active: unplugged
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Found jack PCM Slave Active: unplugged
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Found jack PCM Slave Active: unplugged
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Found jack PCM Slave Active: unplugged
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Found jack PCM Slave Active: unplugged
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Found jack PCM Slave Active: unplugged
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: ALSA lib /usr/src/debug/alsa-lib/1.2.11/src/confmisc.c:165:(snd_config_get_card) Cannot get card index for UAC2Gadget
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: gadget: setup: Failed to open control device hw:UAC2Gadget: -19
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: **** Audio 44100Hz; 6-in; 6-out; 128sample buffer
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: **** Warning: inefficient input path: hardware=6 filter=4
+Nov 17 16:49:11 mpc-sample launch-ac50[730]: **** Warning: inefficient output path: hardware=6 filter=4
+Nov 17 16:49:11 mpc-sample systemd[1]: Stopping MPC Sample Application...
+Nov 17 16:49:11 mpc-sample systemd[1]: ac50.service: Deactivated successfully.
+Nov 17 16:49:11 mpc-sample systemd[1]: Stopped MPC Sample Application.
+Nov 17 16:49:11 mpc-sample systemd[1]: ac50.service: Consumed 1.717s CPU time.
+Nov 17 16:49:11 mpc-sample systemd[1]: Started MPC Sample Application.
+Nov 17 16:49:11 mpc-sample launch-ac50[793]: MCU version: 0.0.0.000
+Nov 17 16:49:11 mpc-sample launch-ac50[793]: BIN version: 1.0.0.051 (0x01000033)
+Nov 17 16:49:11 mpc-sample launch-ac50[793]: Firmware update ...
+Nov 17 16:49:11 mpc-sample launch-ac50[799]: Opened firmware file: '/usr/share/Akai/AC50/Firmware/AC50/UpdateImage.rbin'
+Nov 17 16:49:11 mpc-sample launch-ac50[799]: MIDI port mode
+Nov 17 16:49:12 mpc-sample launch-ac50[799]: Using MIDI Port 'Control Surface:Control Surface 20:0'
+Nov 17 16:49:12 mpc-sample launch-ac50[799]: Device not found on port 'Control Surface:Control Surface 20:0'?
+Nov 17 16:49:13 mpc-sample launch-ac50[792]: LibXtract compiled with ooura FFT
+Nov 17 16:49:13 mpc-sample launch-ac50[792]: Raster graphics accelerator is not available.
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Found jack PCM Slave Active: plugged
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Found jack PCM Slave Active: unplugged
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Found jack PCM Slave Active: unplugged
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Found jack PCM Slave Active: unplugged
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Found jack PCM Slave Active: unplugged
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Found jack PCM Slave Active: unplugged
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Found jack PCM Slave Active: unplugged
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Found jack PCM Slave Active: unplugged
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Found jack PCM Slave Active: unplugged
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Found jack PCM Slave Active: unplugged
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Found jack PCM Slave Active: unplugged
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Found jack PCM Slave Active: unplugged
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Found jack PCM Slave Active: unplugged
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Found jack PCM Slave Active: unplugged
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Found jack PCM Slave Active: unplugged
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Found jack PCM Slave Active: unplugged
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: ALSA lib /usr/src/debug/alsa-lib/1.2.11/src/confmisc.c:165:(snd_config_get_card) Cannot get card index for UAC2Gadget
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: gadget: setup: Failed to open control device hw:UAC2Gadget: -19
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: **** Audio 44100Hz; 6-in; 6-out; 128sample buffer
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: **** Warning: inefficient input path: hardware=6 filter=4
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: **** Warning: inefficient output path: hardware=6 filter=4
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: <MPC Sample> 1.3.0
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: WARNING: Int32ToFloat unsupported channel count: 4
+Nov 17 16:49:14 mpc-sample launch-ac50[792]: WARNING: FloatToInt32 unoptimized channel count: 4
+Nov 17 16:51:11 mpc-sample systemd[1]: ac50.service: Main process exited, code=dumped, status=11/SEGV
+Nov 17 16:51:12 mpc-sample systemd[1]: ac50.service: Failed with result 'core-dump'.
+Nov 17 16:51:12 mpc-sample systemd[1]: ac50.service: Consumed 14.542s CPU time, 612.4M memory peak, 0B memory swap peak.
+Nov 17 16:51:12 mpc-sample systemd[1]: ac50.service: Scheduled restart job, restart counter is at 1.
+Nov 17 16:51:12 mpc-sample systemd[1]: Started MPC Sample Application.
+Nov 17 16:51:12 mpc-sample launch-ac50[865]: MCU version: 0.0.0.000
+Nov 17 16:51:12 mpc-sample launch-ac50[865]: BIN version: 1.0.0.051 (0x01000033)
+Nov 17 16:51:12 mpc-sample launch-ac50[865]: Firmware update ...
+Nov 17 16:51:12 mpc-sample launch-ac50[870]: Opened firmware file: '/usr/share/Akai/AC50/Firmware/AC50/UpdateImage.rbin'
+Nov 17 16:51:12 mpc-sample launch-ac50[870]: MIDI port mode
+Nov 17 16:51:13 mpc-sample launch-ac50[870]: Using MIDI Port 'Control Surface:Control Surface 20:0'
+Nov 17 16:51:13 mpc-sample launch-ac50[870]: Device not found on port 'Control Surface:Control Surface 20:0'?
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: LibXtract compiled with ooura FFT
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Raster graphics accelerator is not available.
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Found jack PCM Slave Active: plugged
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Found jack PCM Slave Active: unplugged
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Found jack PCM Slave Active: unplugged
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Found jack PCM Slave Active: unplugged
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Found jack PCM Slave Active: unplugged
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Found jack PCM Slave Active: unplugged
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Found jack PCM Slave Active: unplugged
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Found jack PCM Slave Active: unplugged
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Found jack PCM Slave Active: unplugged
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Found jack PCM Slave Active: unplugged
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Found jack PCM Slave Active: unplugged
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Found jack PCM Slave Active: unplugged
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Found jack PCM Slave Active: unplugged
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Found jack PCM Slave Active: unplugged
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Found jack PCM Slave Active: unplugged
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Found jack PCM Slave Active: unplugged
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: ALSA lib /usr/src/debug/alsa-lib/1.2.11/src/confmisc.c:165:(snd_config_get_card) Cannot get card index for UAC2Gadget
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: gadget: setup: Failed to open control device hw:UAC2Gadget: -19
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: **** Audio 44100Hz; 6-in; 6-out; 128sample buffer
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: **** Warning: inefficient input path: hardware=6 filter=4
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: **** Warning: inefficient output path: hardware=6 filter=4
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: <MPC Sample> 1.3.0
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: WARNING: Int32ToFloat unsupported channel count: 4
+Nov 17 16:51:14 mpc-sample launch-ac50[864]: WARNING: FloatToInt32 unoptimized channel count: 4
+Nov 17 16:51:15 mpc-sample systemd[1]: Stopping MPC Sample Application...
+Nov 17 16:51:15 mpc-sample systemd[1]: ac50.service: Deactivated successfully.
+Nov 17 16:51:15 mpc-sample systemd[1]: Stopped MPC Sample Application.
+Nov 17 16:51:15 mpc-sample systemd[1]: Started MPC Sample Application.
+Nov 17 16:51:15 mpc-sample launch-ac50[919]: MCU version: 0.0.0.000
+Nov 17 16:51:15 mpc-sample launch-ac50[919]: BIN version: 1.0.0.051 (0x01000033)
+Nov 17 16:51:15 mpc-sample launch-ac50[919]: Firmware update ...
+Nov 17 16:51:15 mpc-sample launch-ac50[925]: Opened firmware file: '/usr/share/Akai/AC50/Firmware/AC50/UpdateImage.rbin'
+Nov 17 16:51:15 mpc-sample launch-ac50[925]: MIDI port mode
+Nov 17 16:51:16 mpc-sample launch-ac50[925]: Using MIDI Port 'Control Surface:Control Surface 20:0'
+Nov 17 16:51:16 mpc-sample launch-ac50[925]: Device not found on port 'Control Surface:Control Surface 20:0'?
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: LibXtract compiled with ooura FFT
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Raster graphics accelerator is not available.
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Found jack PCM Slave Active: plugged
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Found jack PCM Slave Active: unplugged
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Found jack PCM Slave Active: unplugged
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Found jack PCM Slave Active: unplugged
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Found jack PCM Slave Active: unplugged
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Found jack PCM Slave Active: unplugged
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Found jack PCM Slave Active: unplugged
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Found jack PCM Slave Active: unplugged
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Found jack PCM Slave Active: unplugged
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Found jack PCM Slave Active: unplugged
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Found jack PCM Slave Active: unplugged
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Found jack PCM Slave Active: unplugged
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Found jack PCM Slave Active: unplugged
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Found jack PCM Slave Active: unplugged
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Found jack PCM Slave Active: unplugged
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Found jack PCM Slave Active: unplugged
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: ALSA lib /usr/src/debug/alsa-lib/1.2.11/src/confmisc.c:165:(snd_config_get_card) Cannot get card index for UAC2Gadget
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: gadget: setup: Failed to open control device hw:UAC2Gadget: -19
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: **** Audio 44100Hz; 6-in; 6-out; 128sample buffer
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: **** Warning: inefficient input path: hardware=6 filter=4
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: **** Warning: inefficient output path: hardware=6 filter=4
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: <MPC Sample> 1.3.0
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: WARNING: Int32ToFloat unsupported channel count: 4
+Nov 17 16:51:17 mpc-sample launch-ac50[918]: WARNING: FloatToInt32 unoptimized channel count: 4
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: **** Unexpected audio capture error: -5
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Found jack PCM Slave Active: plugged
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Found jack PCM Slave Active: unplugged
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Found jack PCM Slave Active: unplugged
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Found jack PCM Slave Active: unplugged
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Found jack PCM Slave Active: unplugged
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Found jack PCM Slave Active: unplugged
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Found jack PCM Slave Active: unplugged
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Found jack PCM Slave Active: unplugged
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Found jack PCM Slave Active: unplugged
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Found jack PCM Slave Active: unplugged
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Found jack PCM Slave Active: unplugged
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Found jack PCM Slave Active: unplugged
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Found jack PCM Slave Active: unplugged
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Found jack PCM Slave Active: unplugged
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Found jack PCM Slave Active: unplugged
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Found jack PCM Slave Active: unplugged
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: ALSA lib /usr/src/debug/alsa-lib/1.2.11/src/confmisc.c:165:(snd_config_get_card) Cannot get card index for UAC2Gadget
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: gadget: setup: Failed to open control device hw:UAC2Gadget: -19
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: **** Audio 44100Hz; 6-in; 6-out; 128sample buffer
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: **** Warning: inefficient input path: hardware=6 filter=4
+Nov 17 16:56:41 mpc-sample launch-ac50[918]: **** Warning: inefficient output path: hardware=6 filter=4
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: **** Unexpected audio capture error: -5
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Found jack PCM Slave Active: plugged
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Found jack PCM Slave Active: unplugged
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Found jack PCM Slave Active: unplugged
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Found jack PCM Slave Active: unplugged
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Found jack PCM Slave Active: unplugged
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Found jack PCM Slave Active: unplugged
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Found jack PCM Slave Active: unplugged
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Found jack PCM Slave Active: unplugged
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Found jack PCM Slave Active: unplugged
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Found jack PCM Slave Active: unplugged
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Found jack PCM Slave Active: unplugged
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Found jack PCM Slave Active: unplugged
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Found jack PCM Slave Active: unplugged
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Found jack PCM Slave Active: unplugged
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Found jack PCM Slave Active: unplugged
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Found jack PCM Slave Active: unplugged
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: ALSA lib /usr/src/debug/alsa-lib/1.2.11/src/confmisc.c:165:(snd_config_get_card) Cannot get card index for UAC2Gadget
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: gadget: setup: Failed to open control device hw:UAC2Gadget: -19
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: **** Audio 44100Hz; 6-in; 6-out; 128sample buffer
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: **** Warning: inefficient input path: hardware=6 filter=4
+Nov 17 16:56:46 mpc-sample launch-ac50[918]: **** Warning: inefficient output path: hardware=6 filter=4
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: **** Unexpected audio capture error: -5
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Found jack PCM Slave Active: plugged
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Found jack PCM Slave Active: unplugged
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Found jack PCM Slave Active: unplugged
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Found jack PCM Slave Active: unplugged
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Found jack PCM Slave Active: unplugged
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Found jack PCM Slave Active: unplugged
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Found jack PCM Slave Active: unplugged
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Found jack PCM Slave Active: unplugged
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Found jack PCM Slave Active: unplugged
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Found jack PCM Slave Active: unplugged
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Found jack PCM Slave Active: unplugged
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Found jack PCM Slave Active: unplugged
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Found jack PCM Slave Active: unplugged
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Found jack PCM Slave Active: unplugged
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Found jack PCM Slave Active: unplugged
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Rate Shift 100000
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Found jack PCM Slave Active: unplugged
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Format
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Rate
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Channels
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: Ignoring non-boolean control PCM Slave Access Mode
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: ALSA lib /usr/src/debug/alsa-lib/1.2.11/src/confmisc.c:165:(snd_config_get_card) Cannot get card index for UAC2Gadget
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: gadget: setup: Failed to open control device hw:UAC2Gadget: -19
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: **** Audio 44100Hz; 6-in; 6-out; 128sample buffer
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: **** Warning: inefficient input path: hardware=6 filter=4
+Nov 17 16:56:47 mpc-sample launch-ac50[918]: **** Warning: inefficient output path: hardware=6 filter=4
