@@ -4,7 +4,7 @@
 //! `on_paint` (UI thread) to stderr (captured in the guest journal) and to a
 //! size-capped rotating file under /tmp. No allocation or file I/O on RT paths.
 
-use core::sync::atomic::{AtomicI64, AtomicU32, AtomicU64, Ordering};
+use core::sync::atomic::{AtomicI64, AtomicU32, AtomicU64, AtomicU8, Ordering};
 use std::time::{SystemTime, UNIX_EPOCH};
 
 const LOG_PATH: &str = "/tmp/arpeggigator-6-events.log";
@@ -16,6 +16,19 @@ static LAST_NOTE: AtomicU32 = AtomicU32::new(0);
 static LAST_PITCH: AtomicI64 = AtomicI64::new(0);
 static LAST_ACTIVITY_MS: AtomicI64 = AtomicI64::new(0);
 static LAST_LOG_MS: AtomicI64 = AtomicI64::new(0);
+static CTX_MODE: AtomicU8 = AtomicU8::new(0);
+static CTX_ENABLED: AtomicU8 = AtomicU8::new(0);
+static CTX_HOLD: AtomicU8 = AtomicU8::new(0);
+static CTX_L16: AtomicU8 = AtomicU8::new(0);
+
+/// Published from `on_paint` (UI thread) so the heartbeat can show whether
+/// mode switching and HOLD were actually registered by the mod.
+pub fn set_context(mode: u8, enabled: bool, hold: bool, l16: bool) {
+    CTX_MODE.store(mode, Ordering::Relaxed);
+    CTX_ENABLED.store(u8::from(enabled), Ordering::Relaxed);
+    CTX_HOLD.store(u8::from(hold), Ordering::Relaxed);
+    CTX_L16.store(u8::from(l16), Ordering::Relaxed);
+}
 
 fn now_ms() -> i64 {
     SystemTime::now()
@@ -48,11 +61,15 @@ pub fn tick() {
     }
     let idle = now_ms.saturating_sub(LAST_ACTIVITY_MS.load(Ordering::Relaxed));
     let line = format!(
-        "[AG6] t={now_ms} steps={} last_pad={} note={} pitch={} idle_ms={idle}\n",
+        "[AG6] t={now_ms} steps={} last_pad={} note={} pitch={} idle_ms={idle} mode={} en={} hold={} l16={}\n",
         STEPS.load(Ordering::Relaxed),
         LAST_PAD.load(Ordering::Relaxed),
         LAST_NOTE.load(Ordering::Relaxed),
         LAST_PITCH.load(Ordering::Relaxed),
+        CTX_MODE.load(Ordering::Relaxed),
+        CTX_ENABLED.load(Ordering::Relaxed),
+        CTX_HOLD.load(Ordering::Relaxed),
+        CTX_L16.load(Ordering::Relaxed),
     );
     eprintln!("{}", line.trim_end());
     append_rotated(&line);

@@ -659,6 +659,12 @@ impl Mod for ArpeggiGator {
         let now = clock::now_ms();
         diag::tick();
         let preview = PREVIEW_STATE.load(Ordering::Acquire);
+        diag::set_context(
+            self.mode as u8,
+            self.enabled,
+            preview & HOLD_ENABLED != 0,
+            self.is_16_levels_active(),
+        );
         let active = preview & PAD_MASK;
         let target_leds = if self.is_16_levels_active() { active } else { 0 };
         let changed = self.led_mask ^ target_leds;
