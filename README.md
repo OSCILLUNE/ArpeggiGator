@@ -43,14 +43,15 @@ ArpeggiGator is an unofficial, performance-focused mod for **AKAI MPC Sample**. 
 
 > **Compatibility:** designed for AKAI MPC Sample firmware **1.3.0.12**. This is an early-stage mod tested primarily in the emulator. Physical-device compatibility has not yet been fully verified. Do not install until an official downloadable ZIP is published.
 
-1. **Back up your SD card.** If it already contains an `autorun/` folder, copy that entire folder to your computer before changing anything.
-2. **Download the latest release ZIP** using the purple button above, once a release is available.
-3. **Extract the ZIP.** You should see an `autorun/` folder inside.
-4. **Copy `autorun/` to the root of the SD card**, preserving all the files and subfolders. The card should contain `autorun/autorun.sh` — not a ZIP file placed on the card.
-5. **Safely eject the SD card**, power off the MPC Sample, insert the card and power it on.
-6. **Open Sample → 16 Levels** and use the controls below.
+1. **Back up your entire SD card** to your computer before making any changes.
+2. **MOVE / COPY / BACK UP your existing `autorun/` folder.** If the SD card already has an `autorun/` folder, move it to your computer — or copy it there, verify the backup, and then **remove the original `autorun/` folder from the SD card**. The SD card must have **no existing `autorun/` folder** before you install ArpeggiGator. **NEVER merge the new files into an existing `autorun/` folder.**
+3. **Download the latest release ZIP** using the purple button above, once a release is available.
+4. **Extract the ZIP.** You should see a new `autorun/` folder inside.
+5. **Copy the NEW `autorun/` folder to the root of the SD card**, preserving all files and subfolders. The card should contain `autorun/autorun.sh` — not a ZIP file placed on the card.
+6. **Safely eject the SD card**, power off the MPC Sample, insert the card and power it on.
+7. **Open Sample → 16 Levels** and use the controls below.
 
-**Already using another mod?** Back up its `autorun/` folder first. Do not merge or overwrite another mod’s autorun files blindly; compatibility is not guaranteed.
+**Already using another mod?** ArpeggiGator's `autorun/` folder **replaces** the previous one on that card; it does **not** get added to or merged with it. Keep the old `autorun/` backup safe so you can restore it later. Running multiple autorun mods together is not supported or verified.
 
 **Uninstall / restore:** power off the MPC, remove the ArpeggiGator card or restore your original backed-up `autorun/` folder, then restart.
 
