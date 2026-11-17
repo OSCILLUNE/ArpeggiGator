@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.0.6.0 (stage c)
+
+- Add a staging-only `stage-arp-only` build gate: SHIFT+B1 never advances past ARP, so the base engine can be soak-tested in isolation. Removed in later stages.
+
 ## 0.0.6.0 (stage a)
 
 - Base on v0.0.4.9 (last release without repaint calls from the audio thread).

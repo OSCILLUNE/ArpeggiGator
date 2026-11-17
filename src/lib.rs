@@ -90,30 +90,6 @@ impl Drop for UiEventGuard {
 
 static CLEAR_FRAMES: AtomicU32 = AtomicU32::new(0);
 
-fn repaint_component() -> usize {
-    let screen = page::screen();
-    if !page::is_sample_page(screen) {
-        return 0;
-    }
-    if CLEAR_FRAMES.load(Ordering::Acquire) > 0 {
-        return screen;
-    }
-    if !IN_16_LEVELS_ACTIVE.load(Ordering::Acquire) {
-        return 0;
-    }
-    if IS_PAINTING.load(Ordering::Acquire) || IS_DISPATCHING_EVENT.load(Ordering::Acquire) {
-        return 0;
-    }
-    let now = clock::now_ms();
-    if now < DASHBOARD_REFRESH_UNTIL_MS.load(Ordering::Acquire)
-        || PREVIEW_STATE.load(Ordering::Acquire) & PAD_MASK != 0
-    {
-        screen
-    } else {
-        0
-    }
-}
-
 // Runs on the input thread before the SDK's non-blocking module lock.
 // Only scalar event fields and atomics cross the callback boundary.
 fn observe_surface(event: SurfaceEvent) {
@@ -198,6 +174,27 @@ enum Screen {
     #[default]
     Sample,
     Other,
+}
+
+/// Mode transition used by SHIFT+B1. Staging builds can cap the reachable
+/// engines so each stage is tested in isolation.
+fn next_engine_mode(mode: EngineMode) -> EngineMode {
+    #[cfg(feature = "stage-arp-only")]
+    if mode != EngineMode::Off {
+        return EngineMode::Arp;
+    }
+    #[cfg(all(feature = "stage-melody-only", not(feature = "stage-arp-only")))]
+    if matches!(mode, EngineMode::Melody | EngineMode::Mutator | EngineMode::Acordator | EngineMode::Orbitator) {
+        return EngineMode::Melody;
+    }
+    match mode {
+        EngineMode::Off => EngineMode::Arp,
+        EngineMode::Arp => EngineMode::Melody,
+        EngineMode::Melody => EngineMode::Mutator,
+        EngineMode::Mutator => EngineMode::Acordator,
+        EngineMode::Acordator => EngineMode::Orbitator,
+        EngineMode::Orbitator => EngineMode::Off,
+    }
 }
 
 #[derive(Default)]
@@ -331,9 +328,9 @@ impl Mod for ArpeggiGator {
         tempo::start_monitor();
         #[cfg(feature = "emulator-audio")]
         native_audio::install();
-        // SAFETY: repaint_component returns only the live component last
-        // recorded by the SDK paint hook, or zero when none is available.
-        unsafe { draw::start_repaint_pump(repaint_component) };
+        // Stage 6.0-c1: no background repaint pump. The SDK requires repaint
+        // on the owning UI thread; a core from 21:53 shows mod-repaint
+        // faulting after ~645 notes (docs/backups/dev-core-6c-...).
     }
 
     fn on_button(&mut self, event: ButtonEvent) -> ButtonFlow {
@@ -457,14 +454,7 @@ impl Mod for ArpeggiGator {
             } else if bit == 1 {
                 self.consumed_buttons |= bit;
                 let hold_bit = PREVIEW_STATE.load(Ordering::Acquire) & HOLD_ENABLED;
-                self.mode = match self.mode {
-                    EngineMode::Off => EngineMode::Arp,
-                    EngineMode::Arp => EngineMode::Melody,
-                    EngineMode::Melody => EngineMode::Mutator,
-                    EngineMode::Mutator => EngineMode::Acordator,
-                    EngineMode::Acordator => EngineMode::Orbitator,
-                    EngineMode::Orbitator => EngineMode::Off,
-                };
+                self.mode = next_engine_mode(self.mode);
                 self.enabled = self.mode != EngineMode::Off;
                 self.engine.clear();
                 self.melody_engine.clear();
@@ -1308,41 +1298,6 @@ mod animation_input_tests {
         // 4. Inside 16 Levels: LOOP button (74) is consumed and does not activate audition!
         assert_eq!(module.on_button(button_ev(74, true, false)), ButtonFlow::Consume);
         assert!(!module.loop_audition_active);
-    }
-
-    #[test]
-    fn repaint_component_only_targets_valid_screen_and_stops_outside_16_levels() {
-        let _guard = INPUT_TEST_LOCK.lock().unwrap();
-        let mut module = ArpeggiGator::default();
-        module.on_start();
-
-        // Screen is 0 initially (not a valid SamplePage) -> returns 0
-        assert_eq!(repaint_component(), 0);
-
-        // When not in 16 levels, returns 0 even if DASHBOARD_REFRESH is set
-        IN_16_LEVELS_ACTIVE.store(false, Ordering::Release);
-        DASHBOARD_REFRESH_UNTIL_MS.store(clock::now_ms() + 10_000, Ordering::Release);
-        assert_eq!(repaint_component(), 0);
-
-        // Entering 16 levels updates IN_16_LEVELS_ACTIVE
-        module.on_button(button_ev(button::LEVELS, true, false));
-        assert!(IN_16_LEVELS_ACTIVE.load(Ordering::Acquire));
-
-        // Exiting 16 levels resets IN_16_LEVELS_ACTIVE to false
-        module.on_button(button_ev(BUTTON_SEQ, true, false));
-        assert!(!IN_16_LEVELS_ACTIVE.load(Ordering::Acquire));
-        assert_eq!(repaint_component(), 0);
-
-        // When painting or dispatching events, repaint_component yields to prevent JUCE races
-        IN_16_LEVELS_ACTIVE.store(true, Ordering::Release);
-        DASHBOARD_REFRESH_UNTIL_MS.store(clock::now_ms() + 10_000, Ordering::Release);
-        IS_PAINTING.store(true, Ordering::Release);
-        assert_eq!(repaint_component(), 0);
-        IS_PAINTING.store(false, Ordering::Release);
-
-        IS_DISPATCHING_EVENT.store(true, Ordering::Release);
-        assert_eq!(repaint_component(), 0);
-        IS_DISPATCHING_EVENT.store(false, Ordering::Release);
     }
 
     #[test]
