@@ -33,22 +33,22 @@ Wszystko inne (silnik audio, `/run`, guard, pads-off, 20 kontroli) **bez zmian**
 | Element | Wartość | Uwaga |
 |---|---|---|
 | Repo | `/Users/fafi/Downloads/ArpeggiGator` | branch `release/0.0.7.2` |
-| HEAD lokalny i `origin/main` | `542b33f` (= `542b33fa88f83a74fd4a79478c3f118b106657f4`) | published 7.1 + strona Heńka + banner |
+| HEAD lokalny | `2d81710` (`docs: refresh 20-check verification report for 7.2`) | wcześniej `7f06231` release, `44e4455` docs Heńka |
+| `origin/main` | `542b33fa88f83a74fd4a79478c3f118b106657f4` | bez zmian — push 7.2 jeszcze nie wykonany |
 | Tag | `v0.0.7.1` = `7d652b0` | **nie zmieniać** przed nowym release'em |
-| `origin/gh-pages` (przed moim pushem) | `e3c0168` | |
-| `origin/gh-pages` (po moim pushem) | **`66efcd16625e3b3bddb5704996ca22285b4e2958`** | commit `site: 0.0.7.2 label update — ACCORDATOR, MODE: ACCORD` |
-| Hasz ZIP 7.1 (bez zmian na stronie) | `66846aaaf73b06b218ebc63c9ecea8606e97c14e7f9aecd677bc1aea8f4678e9` | `arpeggigator-v0.0.7.1.zip` |
-| Hasz lab `.so` 7.1 (bez zmian) | `66e4c6cbd5125c15af83da06b29d7f6cc94e157f1cdfaa0fe847f13899ab6df8` | `arpeggigator-v0.0.7.1-lab.so` |
+| `origin/gh-pages` | **`66efcd16625e3b3bddb5704996ca22285b4e2958`** | commit `site: 0.0.7.2 label update — ACCORDATOR, MODE: ACCORD` (push Heńka, sukces) |
+| Hasz ZIP 7.1 (wciąż na stronie) | `66846aaaf73b06b218ebc63c9ecea8606e97c14e7f9aecd677bc1aea8f4678e9` | `arpeggigator-v0.0.7.1.zip` |
+| Hasz lab `.so` 7.1 (wciąż na stronie) | `66e4c6cbd5125c15af83da06b29d7f6cc94e157f1cdfaa0fe847f13899ab6df8` | `arpeggigator-v0.0.7.1-lab.so` |
+| **Nowy ZIP 7.2** | **`a882223bfea2d9e96e4e1d8d2067974c35952ad688526fe24122354fe1936fba`** | `build/arpeggigator-v0.0.7.2.zip` (Jurek-3, `docs/RAPORT-JUREK-3-BUILD-072.md:25`) |
+| **Nowy lab `.so` 7.2** | **`3e2fac83cc4a9c5fe3421b2e58b4ec47f1943be60d1988cec01ef013d785aca8`** | `build/arpeggigator-v0.0.7.2-lab.so` (jw., linia 26; `cmp=0` z `.so` w paczce) |
 | Banner | `assets/readme-user-banner.webp` | przywrócony przez fafi w `542b33f`, zachowany |
 
-### Zmiany Heńka przygotowane, **NIEZATWIERDZONE** w głównym worktree
+### Zmiany Heńka — **ZATWIERDZONE** (commit `44e4455`) i wypchnięte na gh-pages
 
-- `README.md` — `ACORDATOR`→`ACCORDATOR`, dopisek „0.0.7.2 (in progress)", release link i hashe 7.1 bez zmian, banner i BETA/backup nienaruszone.
+- `README.md` — `ACORDATOR`→`ACCORDATOR`, dopisek „0.0.7.2 (in progress)", link/hashe 7.1 bez zmian, banner i BETA/backup nienaruszone.
 - `docs/manual/index.html` — jw. + link do nowego pliku MD.
-- `docs/manual/USERS-MANUAL-0.0.7.1.md` → **`USERS-MANUAL-0.0.7.2.md`** (rename) + treść 7.2.
-- `docs/PODGLAD-STRONY-HENIA.png` — screenshot live strony (z poprzedniego etapu).
-
-**Do zrobienia przez fafi:** `git add README.md docs/manual/` i commit/push na `main`. Heniek tego nie robi.
+- `docs/manual/USERS-MANUAL-0.0.7.2.md` (rename z 0.0.7.1) + treść 7.2.
+- **Do zrobienia po release'ie 7.2:** podmienić w 4 miejscach link `v0.0.7.1` → `v0.0.7.2` i hashe na powyższe nowe, usunąć adnotację „in progress" (main = fafi, gh-pages = Heniek). Heniek nie pushuje `main`.
 
 ---
 
@@ -117,18 +117,31 @@ Wszystko inne (silnik audio, `/run`, guard, pads-off, 20 kontroli) **bez zmian**
 
 ---
 
-## 5. Przegląd raportu FLINT-3 — kryteria (do wypełnienia, gdy plik pojawi się)
+## 5. Przegląd raportu FLINT-3 — WYKONANY (2026-11-18 ~23:15Z)
 
-**Nie zmieniam pliku FLINT-3.** Dopisuję tu uwagi po lekturze.
+**Nie zmieniłem raportu FLINT-3 ani `src/`.** Źródła: `docs/RAPORT-FLINT-3-NAPISY-072.md` (182 linie) oraz `git show 7f06231 -- src/splash.rs` — `git diff HEAD` jest pusty, bo kod jest już commitowany w `7f06231 release: 7.2 spelling fixes and verified build` (HEAD aktualny to `2d81710`).
 
-- [ ] Raport istnieje (szukaj `docs/*FLINT*7.2*` / `docs/VP-*7.2*`). **Stan: JESZCZE BRAK** (22:15Z).
-- [ ] Testy asertują **dokładny napis widoczny na ekranie** (literał przekazywany do renderera tekstu w `src/splash.rs`), a nie tylko nazwę stałej / wariantu enuma.
-- [ ] Test negatywny: stary napis nie występuje.
-- [ ] Pokrycie wszystkich 3 zmian: `ACCORDATOR`, `MODE: ACCORD`, `SUBTLE FRZ:OFF`.
-- [ ] Dowód wizualny: screen 1200×950 z SHIFT, pole 88 px, brak przycięcia i nadpisania.
-- [ ] Test nie opiera się wyłącznie na heartbeat / OCR (kanon z `PROMPT-GEMINI-3.8-FLASH.md`).
+| Kryterium z dawnej listy | Wynik |
+|---|---|
+| Raport istnieje | ✅ `docs/RAPORT-FLINT-3-NAPISY-072.md`, przeczytany cały |
+| Testy asertują **widoczny napis** | ⚠️ **częściowo** — 2 z 3 mocne, 1 słabsza (uwaga 1) |
+| Test negatywny: stary napis nie występuje | ❌ **brak** |
+| Pokrycie 3 zmian | ✅ teksty tak; **font 11.0 nieobjęty żadnym testem** |
+| Dowód wizualny 1200×950 / 88 px | ❌ **brak** — Flint nie miał maszyny; wymagany od Krystyny-3 wg planu Czesieka-3 |
+| Test nie opiera się na heartbeat / OCR | ✅ to czyste testy jednostkowe stringów |
 
-**Werdykt (uzupełnić po lekturze):** _(jeszcze nie oceniono)_
+### 3 konkretne uwagi z reviewu
+
+**Uwaga 1 — testy: 2 mocne, 1 słaba, brak testu negatywnego.**
+`mutator_freeze_off_is_not_duplicated` i `mutator_freeze_on_keeps_the_single_suffix` asertują dokładne stringi (`"SUBTLE FRZ:OFF"`, `"WILD FRZ:ON"`) zwracane przez `mutator_param_line`, który jest **faktycznie użyty w renderze** (`src/splash.rs:209`) — to są testy widocznego napisu, w porządku. Natomiast `accord_captions_have_the_correct_spelling` sprawdza tylko wartości stałych `MODE_ACCORD`/`ACCORDATOR_TITLE`. Stałe są użyte przy renderze (linie 283 i 1384), więc to nie są martwe stałe, ale test **nie wykryje** podmiany wywołania na inny literał (np. powrotu do `"MODE: ACORD"`). Brakuje też testu negatywnego. Rekomendacja (nieblokująca buildu): helper zwracający napis dla trybu, używany zarówno przez render, jak i test, albo przynajmniej statyczny check `! grep -R -E 'MODE: ACORD\b|ACORDATOR' src/splash.rs`.
+
+**Uwaga 2 — font 11.0 NIE jest udowodniony jako bezpieczny dla pola 88 px.**
+Tabela w raporcie Flinta podaje „znaków na px" (88/10 = 8.8 vs 88/9 = 9.8), ale przy prostym modelu liniowym wniosek wychodzi odwrotny: stare `ACORDATOR` = 9 znaków × 12.0 ≈ 108 jednostek, nowe `ACCORDATOR` = 10 znaków × 11.0 ≈ **110** jednostek, czyli ~1,9% **szerszy** napis, nie węższy. Realne szerokości glifów (dodany `C` jest stosunkowo wąski) mogą to zrekompensować, ale to **INFERRED**, nie PROVEN. Korekta 12.0→11.0 jest rozsądnym odruchem, lecz nie daje udowodnionego marginesu bezpieczeństwa. Nie traktuję jej jako dowodu.
+
+**Uwaga 3 — screen 1200×950 jest KONIECZNY, nie opcjonalny.**
+Żaden test nie dotyka rozmiaru czcionki ani `TextBox { width: 88 }` w `vendor/mpc-sample-sdk/src/draw.rs:98-147`, a firmware przycina tekst. W środowisku nie ma OCR/PIL (Czesiek-3: `tesseract`, `magick`, `PIL` → BRAK), więc jedynym dowodem jest obraz + hash. Wymagane: `ACCORDATOR` w B1 przy trzymanym SHIFT, `MODE: ACCORD` w panelu, `SUBTLE FRZ:OFF` w MUTATORze — zrzut 1200×950 **przed release'em** (harness robi `06_screen1200_PRESSED.png` przed `release`), porównanie regionów `B1_TITLE/MODE_TITLE/PARAM_LINE` przez `docs/tools/v072_caption_hash.sh`, hash pliku i `date -u`. Bez tego 7.2 nie jest zamknięte.
+
+**Werdykt: AKCEPTUJĘ kod FLINT-3 do buildu** (i tak jest już w `7f06231`, Jurek-3 ma 20/20 i 87/87), **ale warunkowo**: przed tagiem/release'em musi być screen QA z bramki §3.5 potwierdzający brak ucięcia w polu 88 px. Nie akceptuję oznaczenia „7.2 gotowe" bez tego dowodu. Raportu Flinta ani `src/` nie ruszałem.
 
 ---
 
@@ -142,10 +155,10 @@ Wszystko inne (silnik audio, `/run`, guard, pads-off, 20 kontroli) **bez zmian**
 | 22:15 | `grep \bACORD\b\|\bACORDATOR\b` → 0 trafień; polskie znaki → 0; banner obecny | ✅ |
 | 22:16 | Push gh-pages `e3c0168` → `66efcd1` | ✅ |
 | 22:17 | Przyjęcie roli konsultanta; założenie tej checklisty | ✅ |
-| — | Merge fluxów FLINT-3 / CZESIEK-3 | ⏳ |
-| — | Bump Cargo/CHANGELOG, build, nowe hashe | ⏳ |
-| — | verify 20/20 + testy napisów | ⏳ |
-| — | A/B wizualne QA (88 px!) | ⏳ |
+| 23:06 | Merge fluxów FLINT-3 / CZESIEK-3 + bump + build w `7f06231` (wg `HANDOFF-7.2-LIVE.md`) | ✅ |
+| 23:06 | verify 20/20 + `cargo test` 87/87 (Jurek-3, log `docs/logs/verify-072.log`) | ✅ |
+| 23:15 | **Review raportu FLINT-3 (§5)** — akceptacja warunkowa: brak screena 88 px | ✅ (warunek ⏳) |
+| — | A/B wizualne QA (88 px!) — Krystyna-3 wg planu Czesieka-3 | ⏳ **BLOKER tagu** |
 | — | Tag + push main (fafi), release, aktualizacja linków/hashy na stronie | ⏳ |
 
 ---
