@@ -1,9 +1,9 @@
-# ArpeggiGator — User Manual / GUI v0.0.7.1
+# ArpeggiGator — User Manual / GUI v0.0.7.2 (in progress)
 
-**Version described:** `v0.0.7.1` (release; interface unchanged from `v0.0.6.0`)
+**Version described:** `0.0.7.2` (in progress; label-only change from `v0.0.7.1`)
 **UI baseline:** tag `v0.0.6.0`, commit `b912eed1028c9b9c54a166b36433cd349e782be0`
 **Build used for screenshots:** `34a9ec26949b98c7a3ec83562aea94af9ba7d9f35771687db0d3e929841a5b7b`
-**Sources:** code at tag `v0.0.6.0` plus the `v0.0.7.1` release (native audio engine and first-pad fix).
+**Sources:** code at tag `v0.0.6.0`, the `v0.0.7.1` release (native audio engine and first-pad fix) and the in-progress 0.0.7.2 label change: `ACCORDATOR`, `MODE: ACCORD` and the simplified MUTATOR caption `SUBTLE FRZ:OFF`.
 **Purpose:** a user manual. AI test procedures remain in internal QA documentation only and are not part of this public version.
 
 ---
@@ -32,7 +32,7 @@ All of the following work **only in 16 Levels** (exceptions: STOP and PLAY).
 
 | Button | Without SHIFT | With SHIFT |
 |---|---|---|
-| **B1** (SCREEN 1) | — | **Change mode**: Off → ARP → MELODY → MUTATOR → ACORDATOR → ORBITATOR → Off |
+| **B1** (SCREEN 1) | — | **Change mode**: Off → ARP → MELODY → MUTATOR → ACCORDATOR → ORBITATOR → Off |
 | **B2** (SCREEN 2) | — | **Parameter 1** — depends on the mode (see the table below) |
 | **B3** (SCREEN 3) | — | **Parameter 2** — depends on the mode |
 | **DATA** (knob) | turn = **RATE**, press = **HOLD on/off** | no action |
@@ -55,7 +55,7 @@ All of the following work **only in 16 Levels** (exceptions: STOP and PLAY).
 | **ACCORDATOR** | Chord mood: `WARM → SAD → SPACE → CINEMA` | Style: `STRUM → PULSE → WAVE` |
 | **ORBITATOR** | Atmosphere: `AMBIENT → SPACE → DARK → RHYTHM` | Dynamics: `CALM → FLOW → WILD` (wandering radius of 7/14/24 semitones) |
 
-The right panel shows exactly: `MODE: ARP | MELODY | MUTATOR | ACORD | ORBIT` plus the parameter line and `RATE`. In v0.0.6.0 MUTATOR, `FRZ` appears **twice** (in the B3 caption and in the panel) — a known, test-confirmed fact, not a bug to fix in this version.
+The right panel shows exactly: `MODE: ARP | MELODY | MUTATOR | ACCORD | ORBIT` plus the parameter line and `RATE`. In v0.0.6.0 MUTATOR, `FRZ` appeared **twice** (in the B3 caption and in the panel) — a known, test-confirmed quirk; the 0.0.7.2 label change simplifies it to `SUBTLE FRZ:OFF`.
 
 ---
 
@@ -82,7 +82,7 @@ Screenshots from DEV, build `34a9ec26…`, size `1200x950`. The `_plain` file is
 ![MUTATOR with SHIFT](screens/03_MUTATOR_shift.png)
 
 ### 4.4 ACCORDATOR — warm chord scene, amber
-`MODE: ACORD`, mood and style. Chord intervals depend on the mood; `STRUM/PULSE/WAVE` changes the articulation.
+`MODE: ACCORD`, mood and style. Chord intervals depend on the mood; `STRUM/PULSE/WAVE` changes the articulation.
 
 ![ACCORDATOR without SHIFT](screens/04_ACCORDATOR_plain.png)
 ![ACCORDATOR with SHIFT](screens/04_ACCORDATOR_shift.png)
@@ -128,8 +128,8 @@ The discs are unchanged: a voice already sounding is not retuned; the change app
 
 ## 6. Download
 
-Version **0.0.7.1** — one codebase, two delivery profiles. Both artifacts are under the
-[v0.0.7.1](https://github.com/OSCILLUNE/ArpeggiGator/releases/tag/v0.0.7.1) tag.
+Documentation version **0.0.7.2 (in progress)** — one codebase, two delivery profiles. The published artifacts below are still under the
+[v0.0.7.1](https://github.com/OSCILLUNE/ArpeggiGator/releases/tag/v0.0.7.1) tag; fresh 0.0.7.2 files and hashes will replace them after release.
 
 | Artifact | Purpose | SHA-256 |
 |---|---|---|
