@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.0.6.0 UI fixes (0.0.1)
+
+- Request a repaint when SHIFT+B1/B2/B3 or DATA/HOLD changes engine state, so the new screen and softkey captions appear while SHIFT is still held.
+- Keep the overlay painted over the firmware playhead with a throttled (~30 Hz) repaint issued from the UI paint callback; HOLD state is now visible immediately.
+- Serialize the rotating diagnostics file with a mutex because the heartbeat is emitted from both the UI and the tempo thread.
+
 ## 0.0.6.0
 
 - Based on v0.0.4.9. No boot splash on the paint path (the old `draw_boot_splash` definition remains unused); no full-screen clear and no splash wake-up from audio.
