@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.0.7.2
+
+- Kosmetyczne poprawki napisów: `ACORDATOR` → `ACCORDATOR`, `MODE: ACORD` → `MODE: ACCORD`, oraz usunięcie podwójnego freeze w panelu MUTATOR (`SUBTLE FRZ OFF FRZ: OFF` → `SUBTLE FRZ:OFF`).
+- Napisy wydzielone do testowalnych stałych/funkcji; dodane testy jednostkowe.
+- Aktualizacja wszystkich publicznych powierzchni (README, manual, gh-pages) do nowych nazw. Bez zmian w audio, `Playback`, dropinach i guardzie firmware'u.
+
 ## 0.0.7.1
 
 - Ported the verified 0.0.6.5 fix into the shipping line. `Playback::press()` now rejects presses while `EngineMode::Off` before latching the physical bit, and `clear()` resets `physical` on a mode jump through Off.
