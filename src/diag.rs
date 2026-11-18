@@ -2,7 +2,8 @@
 //!
 //! Audio threads only bump atomics. The once-per-second summary is emitted from
 //! `on_paint` (UI thread) to stderr (captured in the guest journal) and to a
-//! size-capped rotating file under /tmp. No allocation or file I/O on RT paths.
+//! size-capped rotating file under volatile /run. No allocation or file I/O
+//! on RT paths. /run is a tmpfs on the MPC: nothing survives a reboot.
 
 use core::sync::atomic::{AtomicI64, AtomicU32, AtomicU64, AtomicU8, Ordering};
 use std::sync::Mutex;
@@ -11,7 +12,7 @@ use std::time::{SystemTime, UNIX_EPOCH};
 // tick() is called from both on_paint (UI) and the tempo monitor thread.
 static FILE_LOCK: Mutex<()> = Mutex::new(());
 
-const LOG_PATH: &str = "/tmp/arpeggigator-6-events.log";
+const LOG_PATH: &str = "/run/arpeggigator-6-events.log";
 const MAX_LOG_BYTES: u64 = 128 * 1024;
 
 static STEPS: AtomicU64 = AtomicU64::new(0);

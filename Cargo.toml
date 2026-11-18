@@ -1,13 +1,19 @@
 [package]
 name = "arpeggigator"
-version = "0.0.6-0"
+version = "0.0.7-1"
 edition = "2024"
 rust-version = "1.97"
 description = "Standalone arpeggiator mod for the AKAI MPC Sample"
 repository = "https://github.com/OSCILLUNE/ArpeggiGator"
 
 [features]
-emulator-audio = []
+# Native audio path for the MPC Sample 1.3.0.12. This is the real note engine,
+# used by BOTH the physical card package and the emulator lab build — the
+# difference between those two is the artifact, not the feature.
+native-audio = []
+# Backwards-compatible alias for old scripts. It enables the same engine; it
+# must never become a separate code path (one version, two artifacts).
+emulator-audio = ["native-audio"]
 # Staging gates for 0.0.6: expose engines one at a time until later stages.
 stage-arp-only = []
 stage-melody-only = []

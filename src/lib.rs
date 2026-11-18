@@ -125,7 +125,7 @@ fn observe_surface(event: SurfaceEvent) {
                     native_audio::set_active_sample_pad(pad as u8, note);
                     return;
                 }
-                #[cfg(feature = "emulator-audio")]
+                #[cfg(feature = "native-audio")]
                 native_audio::begin_press(pad as usize);
                 let _ = PREVIEW_STATE.try_update(Ordering::AcqRel, Ordering::Acquire, |state| {
                     (state & PREVIEW_ENABLED != 0).then_some(if state & MODE_MELODY != 0 {
@@ -252,7 +252,7 @@ impl ArpeggiGator {
     fn reset_engine_state(&mut self) {
         self.enabled = false;
         self.mode = EngineMode::Off;
-        #[cfg(feature = "emulator-audio")]
+        #[cfg(feature = "native-audio")]
         {
             native_audio::set_mode(EngineMode::Off);
             native_audio::panic();
@@ -332,7 +332,7 @@ impl Mod for ArpeggiGator {
         SHORTCUT_PADS.store(0, Ordering::Release);
         SHIFT_ACTIVE.store(false, Ordering::Release);
         tempo::start_monitor();
-        #[cfg(feature = "emulator-audio")]
+        #[cfg(feature = "native-audio")]
         native_audio::install();
         // Stage 6.0-c1: no background repaint pump. The SDK requires repaint
         // on the owning UI thread; a core from 21:53 shows mod-repaint
@@ -475,7 +475,7 @@ impl Mod for ArpeggiGator {
                     PREVIEW_STATE
                         .store(PREVIEW_ENABLED | MODE_MELODY | hold_bit, Ordering::Release);
                 }
-                #[cfg(feature = "emulator-audio")]
+                #[cfg(feature = "native-audio")]
                 {
                     native_audio::panic();
                     native_audio::set_mode(self.mode);
@@ -493,26 +493,26 @@ impl Mod for ArpeggiGator {
                 self.consumed_buttons |= bit;
                 if self.mode == EngineMode::Melody {
                     self.melody_bars = self.melody_bars.cycle();
-                    #[cfg(feature = "emulator-audio")]
+                    #[cfg(feature = "native-audio")]
                     native_audio::set_melody_bars(self.melody_bars);
                 } else if self.mode == EngineMode::Mutator {
                     self.mutator_intensity = self.mutator_intensity.cycle();
                     self.mutator_engine.set_intensity(self.mutator_intensity);
-                    #[cfg(feature = "emulator-audio")]
+                    #[cfg(feature = "native-audio")]
                     native_audio::set_mutator_intensity(self.mutator_intensity);
                 } else if self.mode == EngineMode::Acordator {
                     self.chord_mood = self.chord_mood.cycle();
                     self.acordator_engine.set_mood(self.chord_mood);
-                    #[cfg(feature = "emulator-audio")]
+                    #[cfg(feature = "native-audio")]
                     native_audio::set_chord_mood(self.chord_mood);
                 } else if self.mode == EngineMode::Orbitator {
                     self.orbit_atmosphere = self.orbit_atmosphere.cycle();
                     self.orbitator_engine.set_atmosphere(self.orbit_atmosphere);
-                    #[cfg(feature = "emulator-audio")]
+                    #[cfg(feature = "native-audio")]
                     native_audio::set_orbit_atmosphere(self.orbit_atmosphere);
                 } else {
                     let _pattern = self.engine.cycle_pattern();
-                    #[cfg(feature = "emulator-audio")]
+                    #[cfg(feature = "native-audio")]
                     native_audio::set_pattern(_pattern);
                 }
                 action = 3;
@@ -521,26 +521,26 @@ impl Mod for ArpeggiGator {
                 self.consumed_buttons |= bit;
                 if self.mode == EngineMode::Melody {
                     self.melody_variant = self.melody_variant.cycle();
-                    #[cfg(feature = "emulator-audio")]
+                    #[cfg(feature = "native-audio")]
                     native_audio::set_melody_variant(self.melody_variant);
                 } else if self.mode == EngineMode::Mutator {
                     // Stage 6.0-e: B3 toggles freeze; the caption below follows it.
                     self.mutator_frozen = self.mutator_engine.toggle_frozen();
-                    #[cfg(feature = "emulator-audio")]
+                    #[cfg(feature = "native-audio")]
                     native_audio::set_mutator_frozen(self.mutator_frozen);
                 } else if self.mode == EngineMode::Acordator {
                     self.voicing_style = self.voicing_style.cycle();
                     self.acordator_engine.set_style(self.voicing_style);
-                    #[cfg(feature = "emulator-audio")]
+                    #[cfg(feature = "native-audio")]
                     native_audio::set_voicing_style(self.voicing_style);
                 } else if self.mode == EngineMode::Orbitator {
                     self.orbit_dynamics = self.orbit_dynamics.cycle();
                     self.orbitator_engine.set_dynamics(self.orbit_dynamics);
-                    #[cfg(feature = "emulator-audio")]
+                    #[cfg(feature = "native-audio")]
                     native_audio::set_orbit_dynamics(self.orbit_dynamics);
                 } else {
                     self.additional_notes = (self.additional_notes + 1) % 4;
-                    #[cfg(feature = "emulator-audio")]
+                    #[cfg(feature = "native-audio")]
                     native_audio::set_additional_octaves(self.additional_notes);
                 }
                 action = 6;
@@ -573,14 +573,14 @@ impl Mod for ArpeggiGator {
         }
         let rate = self.scheduler.rate().shifted(event.delta);
         if self.scheduler.set_rate(rate) {
-            #[cfg(feature = "emulator-audio")]
+            #[cfg(feature = "native-audio")]
             native_audio::set_rate(rate);
             DASHBOARD_REFRESH_UNTIL_MS.store(clock::now_ms() + 500, Ordering::Release);
         }
         EncoderFlow::Consume
     }
 
-    #[cfg(feature = "emulator-audio")]
+    #[cfg(feature = "native-audio")]
     fn note_interceptor(&self) -> Option<mpc_sample_sdk::NoteInterceptor> {
         Some(native_audio::capture)
     }
@@ -747,8 +747,21 @@ impl Mod for ArpeggiGator {
     }
 }
 
+/// Build marker: exported only when the real note engine (`native-audio`) is
+/// compiled in. `scripts/verify-v070.py` checks for it in the deployed .so.
+#[cfg(feature = "native-audio")]
+#[unsafe(no_mangle)]
+pub static GATOR_NATIVE_AUDIO: u8 = 1;
+
 impl Drop for ArpeggiGator {
     fn drop(&mut self) {
+        // Best-effort, non-blocking teardown. No firmware hook is unmapped here:
+        // the SDK deliberately keeps committed branches live until process exit.
+        // Everything installed by the card lives in volatile /run and in RAM and
+        // is gone after the MPC restarts.
+        crate::tempo::stop_monitor();
+        #[cfg(feature = "native-audio")]
+        crate::native_audio::panic();
         extinguish_pads();
     }
 }

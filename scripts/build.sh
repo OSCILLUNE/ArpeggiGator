@@ -60,6 +60,12 @@ print(pathlib.Path(sdk["manifest_path"]).parent)
     exit 1
 }
 
+# v0.0.7.0: the note engine IS the product — it is no longer an emulator-only
+# experiment. The old feature name `emulator-audio` was misleading; the feature
+# is now `native-audio`. The SDK firmware guard still gates every runtime hook.
+# Override MPC_MOD_FEATURES only for an explicit A/B comparison build.
+export MPC_MOD_FEATURES="${MPC_MOD_FEATURES:-native-audio}"
+
 "$SDK_DIR/build-mod.sh" \
     --manifest-path "$ROOT/Cargo.toml" \
     --package arpeggigator \

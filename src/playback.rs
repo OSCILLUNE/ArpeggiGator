@@ -160,13 +160,17 @@ impl Playback {
     /// Handle one physical pad press, ignoring repeats while still down.
     pub fn press(&mut self, pad: u8, velocity: f32) -> Option<ScheduledEvent> {
         let bit = bit(pad)?;
+        // Reject presses while the engine is Off BEFORE latching the physical
+        // bit. Otherwise a press during a SHIFT+B1 mode jump leaves an orphaned
+        // bit that suppresses the next press of the same pad (audio silent,
+        // animation still running). Verified by the 0.0.7.1 regression tests.
+        if self.mode == EngineMode::Off {
+            return None;
+        }
         if self.physical & bit != 0 {
             return None;
         }
         self.physical |= bit;
-        if self.mode == EngineMode::Off {
-            return None;
-        }
         if self.mode == EngineMode::Arp {
             if self.hold && self.selected & bit != 0 {
                 self.selected &= !bit;
@@ -343,6 +347,11 @@ impl Playback {
 
     fn clear(&mut self) -> Option<ScheduledEvent> {
         self.selected = 0;
+        // A mode jump (set_mode -> clear) must also drop physical latch state.
+        // Without this, a pad held through the jump stays "down" in Playback
+        // even after the audio side reset its own inputs, so the first press
+        // after entering Mutator/Acordator is swallowed.
+        self.physical = 0;
         self.arp_engine.clear();
         self.melody_engine.clear();
         self.mutator_engine.clear();
@@ -603,5 +612,49 @@ mod tests {
 
         assert_eq!(p.release(4), Some(ScheduledEvent::NoteOff { pad: 4 }));
         assert_eq!(p.selected(), 0);
+    }
+
+    /// Regression for "first pad after a SHIFT+B1 menu jump: animation moves
+    /// but no sound". A press received while the engine is Off must not latch
+    /// `physical`, because Off -> Mutator/Acordator does not call `clear()`.
+    #[test]
+    fn press_while_off_does_not_swallow_first_press_after_mode_jump() {
+        for mode in [EngineMode::Mutator, EngineMode::Acordator] {
+            let mut p = Playback::default();
+            assert_eq!(p.mode, EngineMode::Off);
+            p.set_hold(true);
+
+            p.press(3, 0.8); // pad event during the menu jump, engine still Off
+            p.set_mode(mode);
+
+            p.press(3, 0.8); // first real press must produce a note
+            assert_ne!(
+                p.selected() & (1 << 3),
+                0,
+                "first press after mode jump was swallowed"
+            );
+            assert!(matches!(
+                p.tick(0, Some(120.0))[0],
+                Some(ScheduledEvent::NoteOn(_))
+            ));
+        }
+    }
+
+    /// Regression for the other half: a latched pad must be unlatched when
+    /// the engine jumps through Off (set_mode -> clear()).
+    #[test]
+    fn mode_jump_through_off_unlatches_physical_pad() {
+        let mut p = Playback::default();
+        p.set_enabled(true);
+        p.press(3, 0.8);
+        p.set_enabled(false); // -> Off -> clear() must drop the latch
+        p.set_mode(EngineMode::Mutator);
+
+        p.press(3, 0.8);
+        assert_ne!(p.selected() & (1 << 3), 0, "stale physical bit survived Off");
+        assert!(matches!(
+            p.tick(0, Some(120.0))[0],
+            Some(ScheduledEvent::NoteOn(_))
+        ));
     }
 }

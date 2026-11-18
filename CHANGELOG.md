@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.0.7.1
+
+- Ported the verified 0.0.6.5 fix into the shipping line. `Playback::press()` now rejects presses while `EngineMode::Off` before latching the physical bit, and `clear()` resets `physical` on a mode jump through Off.
+- Eliminates the intermittent "first PAD 4 press after SHIFT+B1 into Mutator/Acordator with HOLD: animation runs, no notes" bug. QA A/B with identical method: baseline `0/20` trials produced notes, fixed build `19/19` valid trials produced notes (`steps_delta` 9–29).
+- Two regression tests added; the suite is now 84/84 (was 82/82). Both new tests were confirmed to FAIL on the unfixed code and PASS with the fix.
+
+## 0.0.7.0
+
+- Rebuilt from the clean `v0.0.6.0` source tree (`b912eed1028c9b9c54a166b36433cd349e782be0`); no fix is taken from a virtual machine, guest OS or a running `ac50` service. The repository source is the single source of truth.
+- Version set to `0.0.7-0` in `Cargo.toml` and `Cargo.lock`.
+- Renamed the misleading `emulator-audio` feature to `native-audio`. It is the main note engine, not an emulator detector: with it disabled the module is a UI-only overlay. The standard `scripts/build.sh` now sets `MPC_MOD_FEATURES=native-audio`, so the SD package contains the real arpeggiator. Firmware hooks remain gated by the exact 1.3.0.12 signature checks and the autorun firmware guard.
+- Moved rotating diagnostics from `/tmp` to volatile `/run` (`/run/arpeggigator-6-events.log*`) so the mod leaves no file outside tmpfs.
+- Added a stop flag for the read-only BPM monitor and a best-effort teardown in `Drop` (stop worker, panic the note state, extinguish pads). Committed firmware hooks cannot be unmapped by the SDK and are gone after the MPC restarts.
+- Physical-safety contract: autorun copies the module to volatile `/run` and installs only `/run` systemd drop-ins with `ExecStopPost` pad cleanup. No change is made under `/etc`, `/data`, `/content` or `/factory`. The console returns to its pre-insertion state after a restart; pulling the card without a restart leaves the running mod loaded until power cycle.
+- `scripts/verify-v070.py` performs 20 explicit PASS/FAIL integrity and safety checks; its report is `docs/VP-0.0.7.0-VERIFY-OUTPUT.md`.
+- Full provenance table (source file → package entry → SHA-256) and line-by-line hardware-safety analysis are recorded in `docs/VP-0.0.7.0-*.md`.
+
 ## 0.0.6.0 UI fixes (0.0.1)
 
 - Request a repaint when SHIFT+B1/B2/B3 or DATA/HOLD changes engine state, so the new screen and softkey captions appear while SHIFT is still held.

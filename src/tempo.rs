@@ -18,6 +18,7 @@ use serde_json::Value;
 
 const CURRENT_PROJECT: &str = "/data/TempProjects/Temp-Project.xpj";
 static MONITOR_STARTED: AtomicBool = AtomicBool::new(false);
+static MONITOR_STOP: AtomicBool = AtomicBool::new(false);
 static BPM_BITS: AtomicU32 = AtomicU32::new(0);
 static BPM_VALID: AtomicBool = AtomicBool::new(false);
 
@@ -29,6 +30,7 @@ pub fn start_monitor() {
     if MONITOR_STARTED.swap(true, Ordering::AcqRel) {
         return;
     }
+    MONITOR_STOP.store(false, Ordering::Release);
 
     let result = thread::Builder::new()
         .name("arpeggigator-tempo".to_string())
@@ -36,6 +38,9 @@ pub fn start_monitor() {
             let mut previous_modified: Option<SystemTime> = None;
             let mut first_scan = true;
             loop {
+                if MONITOR_STOP.load(Ordering::Acquire) {
+                    break;
+                }
                 let modified = fs::metadata(CURRENT_PROJECT)
                     .and_then(|metadata| metadata.modified())
                     .ok();
@@ -69,6 +74,13 @@ pub fn start_monitor() {
     if result.is_err() {
         MONITOR_STARTED.store(false, Ordering::Release);
     }
+}
+
+/// Ask the read-only BPM worker to finish. Safe to call from `Drop`: the
+/// worker only reads a project file and emits diagnostics, so stopping it
+/// leaves no state behind. It uses no locks held by the module.
+pub fn stop_monitor() {
+    MONITOR_STOP.store(true, Ordering::Release);
 }
 
 /// Current active project BPM, or None when it cannot be read reliably.
