@@ -149,6 +149,10 @@ Dowody: `docs/logs/ag6/20261118_033602_v2_b_b1/lcd.png` — aligator/ARP widoczn
 5. `curl -s http://127.0.0.1:8765/state` + `tail -n 5 /tmp/arpeggigator-6-events.log`.
 6. Dowody do odesłania: `_screen.png` (cała empeceta 1200×950), `_state.json`, `_control.txt`, fragment heartbeat z czasem awarii.
 
+## Caveat: emulator vs fizyczny MPC (Krystyna)
+
+`docs/EMULATOR-REPAINT-OBSERVER.md:59` — narzędzia diagnostyczne repaintu są tylko emulatorowe. `docs/HANDOFF-RELEASE-0.0.4.7.md:25,35` — na fizycznym ekranie playhead „wycierał” nakładkę; pomaga nieprzezroczyste pełne tło (mamy je w `draw_*_view`). `docs/HANDOFF-RELEASE-0.0.4.5.md:16` — wątek mod-repaint kolidował z głównym przy HOLD ON i SHIFT+B1..B3. Nasz fix zostaje na wątku UI i nie wprowadza wątku tła, ale **brak testu na fizycznym MPC pozostaje otwarty**.
+
 ## Uwaga o narzędziu soak (do poprawki później)
 
 `scripts/ag6_soak.sh` ma dwie znane słabości (audyt Flint): `--since "$START_TS"` jest wewnątrz pojedynczych cudzysłowów ssh, więc zmienna się nie rozszerza; `NRestarts` bywa 0 po ręcznym restarcie. **Nie stosować sugestii powrotu do samego `-b`** — to znów zlicza stare crashy z tego samego boota (dwa false-positive na początku sesji). Właściwa poprawka: rozszerzyć `START_TS` poza pojedynczy cudzysłów i dodać kontrolę zmiany `MainPID` obok ABRT.
