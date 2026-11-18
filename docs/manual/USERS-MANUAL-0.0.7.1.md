@@ -1,142 +1,142 @@
-# ArpeggiGator — Users Manual / GUI v0.0.7.1
+# ArpeggiGator — User Manual / GUI v0.0.7.1
 
-**Wersja opisana:** `v0.0.7.1` (release; interfejs bez zmian względem `v0.0.6.0`)
-**Baza UI:** tag `v0.0.6.0`, commit `b912eed1028c9b9c54a166b36433cd349e782be0`
-**Build na screenach:** `34a9ec26949b98c7a3ec83562aea94af9ba7d9f35771687db0d3e929841a5b7b`
-**Źródło faktów:** kod tagu `v0.0.6.0` + release `v0.0.7.1` (natywny silnik audio i fix pierwszego padu).
-**Przeznaczenie:** instrukcja dla użytkownika. Procedury testowe dla AI pozostają wyłącznie w wewnętrznej dokumentacji QA i nie są częścią tej publicznej wersji.
+**Version described:** `v0.0.7.1` (release; interface unchanged from `v0.0.6.0`)
+**UI baseline:** tag `v0.0.6.0`, commit `b912eed1028c9b9c54a166b36433cd349e782be0`
+**Build used for screenshots:** `34a9ec26949b98c7a3ec83562aea94af9ba7d9f35771687db0d3e929841a5b7b`
+**Sources:** code at tag `v0.0.6.0` plus the `v0.0.7.1` release (native audio engine and first-pad fix).
+**Purpose:** a user manual. AI test procedures remain in internal QA documentation only and are not part of this public version.
 
 ---
 
-## 1. Czym jest ArpeggiGator
+## 1. What ArpeggiGator is
 
-Nakładka (mod) na firmware **Akai MPC Sample 1.3.0.12**. Dodaje pięć silników muzycznych widocznych na ekranie urządzenia w trybie **Sample + 16 Levels**. Nie zmienia natywnego ekranu na co dzień — Sample i 16 Levels wyglądają normalnie, dopóki nie przytrzymasz SHIFT lub nie włączysz silnika.
+A mod for **Akai MPC Sample 1.3.0.12** firmware. It adds five music engines visible on the device screen in **Sample + 16 Levels** mode. It does not change the native screen during everyday use — Sample and 16 Levels look normal until you hold SHIFT or enable an engine.
 
-Silnie uproszczony model:
+A heavily simplified model:
 
 ```
 MPC Sample (firmware)
-└── ekran SAMPLE
+└── SAMPLE screen
     └── 16 LEVELS
-        └── [SHIFT trzymany LUB silnik włączony] → NAKŁADKA ArpeggiGator
-            ├── lewo: animacja (inny "aligator" dla każdego trybu)
-            ├── prawa góra: MODE + parametry + RATE + HOLD
-            └── dole: podpisy B1 / B2 / B3 (tylko pod SHIFT-em)
+        └── [SHIFT held OR engine enabled] → ArpeggiGator overlay
+            ├── left: animation (a different "gator" for each mode)
+            ├── top right: MODE + parameters + RATE + HOLD
+            └── bottom: B1 / B2 / B3 captions (only while SHIFT is held)
 ```
 
 ---
 
-## 2. Drzewko opcji — skróty klawiatury
+## 2. Option tree — keyboard shortcuts
 
-Wszystkie poniższe działają **tylko w 16 Levels** (wyjątek: STOP i PLAY).
+All of the following work **only in 16 Levels** (exceptions: STOP and PLAY).
 
-| Przycisk | Bez SHIFT | Z SHIFT |
+| Button | Without SHIFT | With SHIFT |
 |---|---|---|
-| **B1** (SCREEN 1) | — | **Zmiana trybu**: Off → ARP → MELODY → MUTATOR → ACORDATOR → ORBITATOR → Off |
-| **B2** (SCREEN 2) | — | **Parametr 1** — zależny od trybu (patrz tabela niżej) |
-| **B3** (SCREEN 3) | — | **Parametr 2** — zależny od trybu |
-| **DATA** (pokrętło) | obrót = **RATE**, wciśnięcie = **HOLD on/off** | brak działania |
-| **16 LEVELS** | wejście/wyjście z widoku (tylko na ekranie Sample) | nie wychodzi z widoku |
-| **PAD 1…16** | wprowadza nuty do silnika | skrót sistemowy firmware'u, nie nuta |
-| **STOP** | pojedyncze = natywne; **podwójne w ≤650 ms** = pełny reset ArpeggiGatora | — |
-| **PLAY** | mod tylko czyta stan transportu firmware'u; nie ma własnej obsługi PLAY | — |
+| **B1** (SCREEN 1) | — | **Change mode**: Off → ARP → MELODY → MUTATOR → ACORDATOR → ORBITATOR → Off |
+| **B2** (SCREEN 2) | — | **Parameter 1** — depends on the mode (see the table below) |
+| **B3** (SCREEN 3) | — | **Parameter 2** — depends on the mode |
+| **DATA** (knob) | turn = **RATE**, press = **HOLD on/off** | no action |
+| **16 LEVELS** | enter/exit the view (only on the Sample screen) | does not exit the view |
+| **PAD 1…16** | feeds notes into the engine | firmware shortcut, not a note |
+| **STOP** | single press = native behaviour; **double press within ≤650 ms** = full ArpeggiGator reset | — |
+| **PLAY** | the mod only reads the firmware transport state; it has no PLAY handler of its own | — |
 
-**Kluczowa zasada dla testów:** SHIFT i B\* wysyłaj jako **osobne** zdarzenia (press/release), nigdy w jednej paczce — inaczej firmware może zgubić stan SHIFT-a i krok będzie nieważny. Zrzut ekranu rób **w trakcie trzymania**, nie po puszczeniu.
+**Key rule for input:** send SHIFT and B\* as **separate** events (press/release), never in a single packet — otherwise the firmware may lose the SHIFT state and the step becomes invalid. Take the screenshot **while holding**, not after release.
 
 ---
 
-## 3. Tabela parametrów B2 / B3 dla każdego trybu
+## 3. B2 / B3 parameter table for each mode
 
-| Tryb | B2 — parametr 1 | B3 — parametr 2 |
+| Mode | B2 — parameter 1 | B3 — parameter 2 |
 |---|---|---|
-| **ARP** | Wzorzec: `UP → DOWN → UP/DOWN → DOWN/UP → CONVERGE → DIVERGE → RANDOM → PLAYED` | Dodatkowe oktawy: `+0 → +1 → +2 → +3` (kopie najniższego padu) |
-| **MELODY** | Długość frazy: `2BAR → 4BAR → 8BAR → 16BAR` (32/64/128/256 kroków) | Gotowa fraza: `MEL1 … MEL9` |
-| **MUTATOR** | Intensywność mutacji: `SUBTLE → WILD → CHAOS` | **Freeze**: `FRZ OFF ⇄ FRZ ON` |
-| **ACCORDATOR** | Nastrój akordu: `WARM → SAD → SPACE → CINEMA` | Styl: `STRUM → PULSE → WAVE` |
-| **ORBITATOR** | Atmosfera: `AMBIENT → SPACE → DARK → RHYTHM` | Dynamika: `CALM → FLOW → WILD` (promień 7/14/24 półtonów) |
+| **ARP** | Pattern: `UP → DOWN → UP/DOWN → DOWN/UP → CONVERGE → DIVERGE → RANDOM → PLAYED` | Additional octaves: `+0 → +1 → +2 → +3` (copies of the lowest pad) |
+| **MELODY** | Phrase length: `2BAR → 4BAR → 8BAR → 16BAR` (32/64/128/256 steps) | Preset phrase: `MEL1 … MEL9` |
+| **MUTATOR** | Mutation intensity: `SUBTLE → WILD → CHAOS` | **Freeze**: `FRZ OFF ⇄ FRZ ON` |
+| **ACCORDATOR** | Chord mood: `WARM → SAD → SPACE → CINEMA` | Style: `STRUM → PULSE → WAVE` |
+| **ORBITATOR** | Atmosphere: `AMBIENT → SPACE → DARK → RHYTHM` | Dynamics: `CALM → FLOW → WILD` (wandering radius of 7/14/24 semitones) |
 
-Prawy panel pokazuje dokładnie: `MODE: ARP | MELODY | MUTATOR | ACORD | ORBIT` oraz linię parametrów i `RATE`. W MUTATORZE v0.0.6.0 `FRZ` pojawia się **dwukrotnie** (w podpisie B3 i w panelu) — to znany, potwierdzony testami fakt, nie błąd do naprawiania w tej wersji.
-
----
-
-## 4. Tryby — opis i screeny
-
-Screeny z DEV, build `34a9ec26…`, wymiar `1200x950`. Plik `_plain` = widok bez SHIFT, `_shift` = w momencie trzymania SHIFT (widać podpisy B1–B3).
-
-### 4.1 ARP — zielony "krokodyl" na tle.wzorce
-`MODE: ARP`, wzorzec i `+N`. Akumuluje wciśnięte pady i odtwarza je w wybranym porządku. HOLD przełącza pojedyncze bity padów (XOR).
-
-![ARP bez SHIFT](screens/01_ARP_plain.png)
-![ARP z SHIFT](screens/01_ARP_shift.png)
-
-### 4.2 MELODY — klub, różowa scena
-`MODE: MELODY`, `2BAR…16BAR`, `MEL1…MEL9`. Gotowe frazy melodyczne; nowy pad „kradnie" głos (monofonicznie).
-
-![MELODY bez SHIFT](screens/02_MELODY_plain.png)
-![MELODY z SHIFT](screens/02_MELODY_shift.png)
-
-### 4.3 MUTATOR — laboratorium, cyjan
-`MODE: MUTATOR`, intensywność i `FRZ ON/OFF`. Mutuje bufor co pełny przebieg frazy. **Freeze** zatrzymuje dalszą mutację — kolejne pętle grają identycznie. Stan freeze jest widoczny w podpisie B3 i w panelu moda.
-
-![MUTATOR bez SHIFT](screens/03_MUTATOR_plain.png)
-![MUTATOR z SHIFT](screens/03_MUTATOR_shift.png)
-
-### 4.4 ACCORDATOR — ciepła scena akordów, bursztyn
-`MODE: ACORD`, nastrój i styl. Interwały akordu zależą od nastroju; `STRUM/PULSE/WAVE` zmienia sposób artykulacji.
-
-![ACCORDATOR bez SHIFT](screens/04_ACCORDATOR_plain.png)
-![ACCORDATOR z SHIFT](screens/04_ACCORDATOR_shift.png)
-
-### 4.5 ORBITATOR — kosmos, fiolet
-`MODE: ORBIT`, atmosfera i dynamika. Melodia wędruje po skali; `CALM/FLOW/WILD` to promień wędrówki.
-
-![ORBITATOR bez SHIFT](screens/05_ORBITATOR_plain.png)
-![ORBITATOR z SHIFT](screens/05_ORBITATOR_shift.png)
+The right panel shows exactly: `MODE: ARP | MELODY | MUTATOR | ACORD | ORBIT` plus the parameter line and `RATE`. In v0.0.6.0 MUTATOR, `FRZ` appears **twice** (in the B3 caption and in the panel) — a known, test-confirmed fact, not a bug to fix in this version.
 
 ---
 
-## 5. Obsługa — procedury krok po kroku
+## 4. Modes — description and screenshots
 
-### 5.1 Włączenie moda
-1. Wejdź na ekran **Sample**.
-2. Naciśnij **16 LEVELS**.
-3. Przytrzymaj **SHIFT** — pojawiają się podpisy softkeyów i nakładka.
-4. **SHIFT + B1** → wybierz tryb. **SHIFT + B2/B3** → parametry.
+Screenshots from DEV, build `34a9ec26…`, size `1200x950`. The `_plain` file is the view without SHIFT; `_shift` is the moment of holding SHIFT (the B1–B3 captions are visible).
 
-### 5.2 HOLD i nuty
-- Wciśnij **DATA** (HOLD: ON).
-- W trybach melodycznych/generatywnych kliknij pad — staje się zatrzaskiem (zielony). Nowy pad przejmuje głos.
-- W ARP HOLD XOR-uje bity: kliknięcie tego samego pada wyłącza go.
-- Kolejne wciśnięcie DATA czyści zatrzaski i wyłącza HOLD.
+### 4.1 ARP — green "gator" over the pattern background
+`MODE: ARP`, pattern and `+N`. Accumulates the pressed pads and plays them back in the selected order. HOLD toggles individual pad bits (XOR).
 
-### 5.3 Freeze (tylko MUTATOR)
-Ustaw tryb MUTATOR, przytrzymaj SHIFT i naciśnij B3 (`FRZ ON`). Sekwencja przestaje się mutować. Ponowny SHIFT+B3 → `FRZ OFF`.
+![ARP without SHIFT](screens/01_ARP_plain.png)
+![ARP with SHIFT](screens/01_ARP_shift.png)
 
-### 5.4 Podmiana sampli w trakcie gry (potwierdzone testami)
-1. Ustaw MELODY, włącz HOLD i sekwencję.
-2. Wyjdź z 16 Levels na ekran **Sample**. Muzyka **nie staje** (`BACKGROUND_PLAYBACK_ACTIVE`).
-3. Klikaj pady na ekranie sampla — zmieniasz **jeden sampel dla całej sekwencji** (dla wszystkich nut).
-4. Wróć do 16 Levels — sekwencja gra dalej z nowym samplem.
+### 4.2 MELODY — club, pink stage
+`MODE: MELODY`, `2BAR…16BAR`, `MEL1…MEL9`. Ready-made melodic phrases; a new pad "steals" the voice (monophonic).
 
-Dyski niezmienione: już brzmiący głos nie jest przestrajany; zmiana dotyczy kolejnych nut.
+![MELODY without SHIFT](screens/02_MELODY_plain.png)
+![MELODY with SHIFT](screens/02_MELODY_shift.png)
+
+### 4.3 MUTATOR — lab, cyan
+`MODE: MUTATOR`, intensity and `FRZ ON/OFF`. Mutates the buffer once per full pass of the phrase. **Freeze** stops further mutation — subsequent loops play identically. The freeze state is shown in the B3 caption and in the mod panel.
+
+![MUTATOR without SHIFT](screens/03_MUTATOR_plain.png)
+![MUTATOR with SHIFT](screens/03_MUTATOR_shift.png)
+
+### 4.4 ACCORDATOR — warm chord scene, amber
+`MODE: ACORD`, mood and style. Chord intervals depend on the mood; `STRUM/PULSE/WAVE` changes the articulation.
+
+![ACCORDATOR without SHIFT](screens/04_ACCORDATOR_plain.png)
+![ACCORDATOR with SHIFT](screens/04_ACCORDATOR_shift.png)
+
+### 4.5 ORBITATOR — cosmos, violet
+`MODE: ORBIT`, atmosphere and dynamics. The melody wanders across the scale; `CALM/FLOW/WILD` is the wandering radius.
+
+![ORBITATOR without SHIFT](screens/05_ORBITATOR_plain.png)
+![ORBITATOR with SHIFT](screens/05_ORBITATOR_shift.png)
+
+---
+
+## 5. Operation — step-by-step procedures
+
+### 5.1 Enabling the mod
+1. Go to the **Sample** screen.
+2. Press **16 LEVELS**.
+3. Hold **SHIFT** — the softkey captions and the overlay appear.
+4. **SHIFT + B1** → choose a mode. **SHIFT + B2/B3** → parameters.
+
+### 5.2 HOLD and notes
+- Press **DATA** (HOLD: ON).
+- In melodic/generative modes, tap a pad — it becomes a latch (green). A new pad takes over the voice.
+- In ARP, HOLD XORs the bits: tapping the same pad turns it off.
+- Pressing DATA again clears the latches and turns HOLD off.
+
+### 5.3 Freeze (MUTATOR only)
+Set MUTATOR mode, hold SHIFT and press B3 (`FRZ ON`). The sequence stops mutating. Press SHIFT+B3 again → `FRZ OFF`.
+
+### 5.4 Swapping samples during playback (test-confirmed)
+1. Set MELODY, enable HOLD and the sequence.
+2. Leave 16 Levels for the **Sample** screen. Music **does not stop** (`BACKGROUND_PLAYBACK_ACTIVE`).
+3. Tap pads on the sample screen — you change **one sample for the whole sequence** (for all notes).
+4. Return to 16 Levels — the sequence keeps playing with the new sample.
+
+The discs are unchanged: a voice already sounding is not retuned; the change applies to subsequent notes.
 
 ### 5.5 STOP
-- Pojedynczy STOP = zachowanie natywne.
-- **Podwójny STOP w ciągu 650 ms** = pełny reset: Off, wyczyszczenie silników, HOLD, aktywnego sampla i podświetleń LED.
+- Single STOP = native behaviour.
+- **Double STOP within 650 ms** = full reset: Off, clear the engines, HOLD, the active sample and the LED indicators.
 
 ---
 
-## 6. Pobierz
+## 6. Download
 
-Wersja **0.0.7.1** — jeden kod, dwa profile dostarczenia. Oba artefakty są pod tagiem
-[v0.0.7.1](https://github.com/OSCILLUNE/ArpeggiGator/releases/tag/v0.0.7.1).
+Version **0.0.7.1** — one codebase, two delivery profiles. Both artifacts are under the
+[v0.0.7.1](https://github.com/OSCILLUNE/ArpeggiGator/releases/tag/v0.0.7.1) tag.
 
-| Artefakt | Przeznaczenie | SHA-256 |
+| Artifact | Purpose | SHA-256 |
 |---|---|---|
-| `arpeggigator-v0.0.7.1.zip` | Karta SD → fizyczna MPC Sample 1.3.0.12. Po rozpakowaniu skopiuj katalog `autorun/` na kartę. [Pobierz z release'u](https://github.com/OSCILLUNE/ArpeggiGator/releases/tag/v0.0.7.1). | `66846aaaf73b06b218ebc63c9ecea8606e97c14e7f9aecd677bc1aea8f4678e9` |
-| `arpeggigator-v0.0.7.1-lab.so` | Emulator / QA-DEV: `python3 lab.py preload …`. **To nie jest paczka na kartę SD.** [Pobierz z release'u](https://github.com/OSCILLUNE/ArpeggiGator/releases/tag/v0.0.7.1). | `66e4c6cbd5125c15af83da06b29d7f6cc94e157f1cdfaa0fe847f13899ab6df8` |
+| `arpeggigator-v0.0.7.1.zip` | SD card → physical MPC Sample 1.3.0.12. After unpacking, copy the `autorun/` folder to the card. [Download from the release](https://github.com/OSCILLUNE/ArpeggiGator/releases/tag/v0.0.7.1). | `66846aaaf73b06b218ebc63c9ecea8606e97c14e7f9aecd677bc1aea8f4678e9` |
+| `arpeggigator-v0.0.7.1-lab.so` | Emulator / QA-DEV: `python3 lab.py preload …`. **This is not an SD-card package.** [Download from the release](https://github.com/OSCILLUNE/ArpeggiGator/releases/tag/v0.0.7.1). | `66e4c6cbd5125c15af83da06b29d7f6cc94e157f1cdfaa0fe847f13899ab6df8` |
 
-Sidecar `arpeggigator-v0.0.7.1.zip.sha256` jest w tym samym release. Przed włożeniem karty zweryfikuj paczkę:
+The `arpeggigator-v0.0.7.1.zip.sha256` sidecar is in the same release. Verify the package before inserting the card:
 
 ```
 shasum -a 256 -c arpeggigator-v0.0.7.1.zip.sha256
@@ -144,4 +144,4 @@ shasum -a 256 -c arpeggigator-v0.0.7.1.zip.sha256
 
 ---
 
-Opis UI i screeny pochodzą z v0.0.6.0 (interfejs bez zmian w 7.1). Screeny: DEV, build `34a9ec26…`, 18.11.2026. Manual przygotowany przez Heńka.
+UI description and screenshots come from v0.0.6.0 (the interface is unchanged in 7.1). Screenshots: DEV, build `34a9ec26…`, 18 Nov 2026. Manual by Heniek.
