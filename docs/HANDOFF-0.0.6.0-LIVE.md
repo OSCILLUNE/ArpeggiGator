@@ -27,7 +27,8 @@
 | Artefakt w `build/arpeggigator.so` | ten sam `c1a330ee…` |
 | DEV | final wdrożony, tryby przetestowane, B3 `frz=0→1`, pady zatrzasnięte, `NRestarts=0`, **soak finalny OK 30 min (180 próbek, 0 alarmów)** |
 | QA | czysty, bez moda i karty, `NRestarts=0` (potwierdzone przez Jurka) |
-| Następny ruch | **brak — produkt gotowy do testu przez właściciela rano.** Tag `v0.0.6.0` lokalnie. **Push tagu/kodu NIE autoryzowano — bez zgody nie wykonam.** |
+| Następny ruch | weryfikacja poprawek UI 0.0.1 (soak `fix_0.0.1_ui` w toku) i raport o 8:00. **Push tagu/kodu NIE autoryzowano.** |
+| Poprawki po teście właściciela | `82d4e48` (repaint przy SHIFT+B*, throttled repaint z on_paint, mutex w diagu), `55b9aec` (usunięcie odroczonego CLEAR_FRAMES) |
 | Artefakty w warsztacie | `build/arpeggigator-stage-d.so` `0a8a60c0…` (przed poprawkami), `build/arpeggigator-final.so` `c1a330ee…` (wdrożony) |
 
 ## Komendy weryfikacyjne
@@ -92,6 +93,14 @@ Firmware nadpisuje softkey B3 (`Filter` zostaje na ekranie mimo naszego `FRZ OFF
 
 ### Krok 12 — soak finalny: OK
 `docs/logs/ag6/soak_final_0.0.6.0_20261117_234334.jsonl` — 180 próbek, `restarts=0`, `abrt=0` w każdej, `steps` rosło monotonicznie (107 → ponad 11 000), brak przerw >30 s, `frz=1` przez cały czas. Skrypt zakończył się komunikatem `OK 30 min`. Weryfikacje: Flint (167 próbek w trakcie), Jurek (QA czysty), Stary Gem (spójność stanu).
+
+### Krok 13 — poprawki UI po teście właściciela (0.0.1)
+
+Właściciel zgłosił: (a) pod SHIFT-em ekran moda nie przełącza się aż do puszczenia SHIFT-a, (b) animację smuży przesuwający się playhead i HOLD nie widać do ruchu linii, (c) pod B3 nie widać naszego podpisu. Cwaniak znalazł poprzednika (a) w `docs/HANDOFF-RESPONSE-REC-0.0.4.2.md:61`.
+
+Poprawki: `draw::repaint_painted()` przy `action!=0` w `on_button` (UI thread), throttlowany (33 ms, `LAST_UI_REPAINT_MS`) repaint z `on_paint` gdy nakładka/menu widoczne, `FILE_LOCK` w `diag.rs` dla rotacji logu. Wycofano odroczony `CLEAR_FRAMES=3` z `on_button` (Jurek: czyściłby ekran przy wyjściu z 16 Levels).
+
+Dowody: `docs/logs/ag6/20261118_033602_v2_b_b1/lcd.png` — aligator/ARP widoczny przy trzymanym SHIFT+B1; `...033607_v2_e_b1x2/lcd.png` — MUTATOR i `FRZ OFF` pod B3; `...033758_sm_t2/lcd.png` — `HOLD: ON` widoczne od razu, nakładka ostrа mimo playheada. Wszystkie 13 katalogów `v2_*`/`sm_*` ma komplet 3 plików 1200×950.
 
 ## Kryteria akceptacji finalnego 0.0.6.0
 
