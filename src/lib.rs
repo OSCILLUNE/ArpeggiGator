@@ -554,7 +554,6 @@ impl Mod for ArpeggiGator {
             // is pull-based; without a request the old frame stays until SHIFT
             // is released and native firmware paints again. on_button runs on
             // the owning UI thread, so this satisfies the SDK repaint contract.
-            CLEAR_FRAMES.store(3, Ordering::Release);
             draw::repaint_painted();
         }
         probe::button_event(
