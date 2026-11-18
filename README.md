@@ -1,81 +1,160 @@
+<div align="center">
+
+<img src="assets/arpeggigator-logo.svg" alt="ArpeggiGator logo" width="360">
+
 # ArpeggiGator 🐊
 
-![ArpeggiGator mascot](assets/arpeggigator-logo.svg)
+**Five musical engines for the AKAI MPC Sample — all hidden inside 16 Levels.**
 
-**Standalone arpeggiator mod for the AKAI MPC Sample.**
+`ARP` · `MELODY` · `MUTATOR` · `ACORDATOR` · `ORBITATOR`
 
-**Version 0.0.7.1 — native audio engine, firmware-guarded SD autorun package with the first-pad fix.**
+**Latest release: [v0.0.7.1](https://github.com/OSCILLUNE/ArpeggiGator/releases/tag/v0.0.7.1)** — native audio engine and the first-pad fix.
 
-ArpeggiGator targets stock MPC Sample firmware **1.3.0.12**. It is independent of SampQOL.
+[⬇️ SD-card ZIP for MPC](https://github.com/OSCILLUNE/ArpeggiGator/releases/tag/v0.0.7.1) · [⬇️ Emulator `.so` for QA/DEV](https://github.com/OSCILLUNE/ArpeggiGator/releases/tag/v0.0.7.1)
 
-## Controls
+[Installation](#installation) · [Interface](#interface-tree) · [Shortcuts](#shortcuts) · [Parameters](#parameters) · [Modes](#modes) · [Procedures](#procedures) · [Download](#download)
 
-In 16 Levels mode:
+</div>
 
-| Shortcut | Action |
-|---|---|
-| SHIFT + B1 | ARP on/off |
-| SHIFT + B2 | Cycle pattern |
-| SHIFT + B3 | Cycle additional-note setting (+0, +1, +2, +3; default +0) |
+---
 
-B1, B2 and B3 are the three soft keys above the display. Their custom labels appear only while SHIFT is held in 16 Levels. The ordinary Sample and 16 Levels screens remain visible by default.
+## ⚠️ BETA SOFTWARE — USE AT YOUR OWN RISK
 
-## Patterns
+> **ArpeggiGator is BETA software.** It is unofficial, experimental and provided **“AS IS”**, without warranties of any kind. You install and use it **entirely at your own risk**.
+>
+> Bugs or incompatibilities may cause crashes, unexpected behaviour, loss of work, damaged or corrupted project files, SD-card data loss, or other software or device problems. **Back up your projects and the entire original SD card (including any existing `autorun/` folder) before installation.**
+>
+> **To the maximum extent permitted by applicable law, OSCILLUNE and the project's authors and contributors accept no liability for any loss, damage, data loss, device malfunction or other consequences arising from installing or using ArpeggiGator.** Nothing in this notice excludes rights or liabilities that cannot legally be excluded.
 
-UP · DOWN · UP/DOWN · DOWN/UP · CONVERGE · DIVERGE · RANDOM · PLAYED
+**This mod does not replace or flash the stock MPC Sample firmware.** It adds optional functionality within **16 Levels** while preserving the normal MPC workflow. However, that does not eliminate all risks of running experimental software.
 
-The pure Rust engine tracks the held-pad set and strike velocities. Unit tests cover all main pattern directions and edge cases.
+---
 
-## Current development status
+## What it is
 
-The opt-in emulator audio build generates arpeggios, including HOLD, rate and pattern selection, and up to three additional octave notes. The standard hardware package does not enable experimental audio.
+ArpeggiGator is an unofficial, performance-focused mod for **Akai MPC Sample** firmware **1.3.0.12**. It adds five optional musical engines **inside the existing 16 Levels mode**. Play evolving arpeggios, melodies, chords or orbital patterns using your own samples, with hands-on controls for rate, patterns and HOLD.
 
-Committed now:
-- SDK integration pinned to a specific revision.
-- SHIFT+B1/B2/B3 controls scoped to 16 Levels, with temporary custom softkey captions.
-- An on-demand pixel gator overlay when ARP is enabled.
-- Eight-pattern engine and host tests.
-- Host-testable timing engine for 1/4, 1/8, 1/8T, 1/16, 1/16T and 1/32 rates, with gate control and paired note events.
-- Read-only BPM discovery from the active working project file.
-- Experimental native audio retriggering, HOLD and additional octave notes in the opt-in emulator build.
-- Firmware-guarded build/package script and GitHub Actions CI.
+**Your MPC stays your MPC.** The mod loads from the SD card at startup, copies its library to volatile `/run` and leaves the verified firmware untouched. Outside the mod's controls you can keep using the MPC Sample as usual.
 
-Still pending:
-- Connecting the chewing animation to actual arpeggiated note events; the current motion is a visual preview.
-- Validating the additional-note pitch limits and recording behaviour on the emulator and hardware.
-- Aligning the arpeggiator clock and recording behaviour with the transport and stock NOTE REPEAT.
-- Validation that the temporary project file updates immediately when unsaved sequence or global tempo changes are made.
-- Hardware verification of the clock and note lifecycle.
+- **Five engines:** classic patterns, melodic phrases, evolving mutations, expressive chords and generative ambient movement.
+- **Hands-on controls:** three soft keys, the DATA encoder and your pads.
+- **Original visuals:** a pixel gator and a different scene for every mode.
 
-The emulator audio build is experimental and is not a hardware audio release.
+## Interface tree
 
-## Build
+```
+MPC Sample (firmware)
+└── SAMPLE screen
+    └── 16 LEVELS
+        └── [SHIFT held OR engine enabled] → ArpeggiGator overlay
+            ├── left: animation (a different gator for each mode)
+            ├── top right: MODE + parameters + RATE + HOLD
+            └── bottom: B1 / B2 / B3 captions (only while SHIFT is held)
+```
 
-The SDK requires Rust 1.97+, Zig, LLVM binutils, Python 3 and zip. Run:
+## Shortcuts
 
-    sh scripts/build.sh
+All shortcuts work **only in 16 Levels** (exceptions: STOP and PLAY).
 
-This produces `build/arpeggigator.zip`, a firmware-guarded SD autorun package. The MPC
-loads it on each boot while that card remains inserted. The library itself is copied to
-`/run`, so it does not modify the verified firmware.
+| Button | Without SHIFT | With SHIFT |
+|:--|:--|:--|
+| **B1** (SCREEN 1) | — | **Change mode**: Off → ARP → MELODY → MUTATOR → ACORDATOR → ORBITATOR → Off |
+| **B2** (SCREEN 2) | — | **Parameter 1** — depends on the mode |
+| **B3** (SCREEN 3) | — | **Parameter 2** — depends on the mode |
+| **DATA** (knob) | turn = **RATE**, press = **HOLD on/off** | no action |
+| **16 LEVELS** | enter/exit the view | does not exit the view |
+| **PAD 1…16** | feeds notes into the engine | firmware shortcut, not a note |
+| **STOP** | single press = native behaviour; **double press within ≤650 ms** = full reset | — |
+| **PLAY** | the mod only reads the firmware transport | — |
 
-When the virtual MPC is running with the matching ArpeggiGator autorun card,
-the build also updates its module on that card. If the card is unavailable,
-the build prints a warning; run `python3 scripts/sync-emulator-autorun.py`
-after starting the emulator to update it. Restart the MPC to load the update.
+The three **B** buttons are the soft keys immediately above the MPC display.
 
-The 0.0.4.9 autorun package installs a systemd post-stop helper that sends
-pad-off SysEx to the ALSA `Surface` device. Shutdown and restart were tested in
-the emulator; physical hardware and environments without that device are not
-verified. The cleanup requires the autorun service integration.
+## Parameters
 
-## Technical notes
+| Mode | B2 — parameter 1 | B3 — parameter 2 |
+|:--|:--|:--|
+| **ARP** | Pattern: UP, DOWN, UP/DOWN, DOWN/UP, CONVERGE, DIVERGE, RANDOM, PLAYED | Additional octaves: `+0` → `+1` → `+2` → `+3` |
+| **MELODY** | Phrase length: `2BAR` → `4BAR` → `8BAR` → `16BAR` | Preset phrase: `MEL1` … `MEL9` |
+| **MUTATOR** | Mutation intensity: SUBTLE → WILD → CHAOS | Freeze: `FRZ OFF` ⇄ `FRZ ON` |
+| **ACORDATOR** | Chord mood: WARM → SAD → SPACE → CINEMA | Style: STRUM → PULSE → WAVE |
+| **ORBITATOR** | Atmosphere: AMBIENT → SPACE → DARK → RHYTHM | Dynamics: CALM → FLOW → WILD |
 
-- docs/manual/index.html — User Manual (GUI, modes, screenshots from v0.0.6.0)
-- docs/RESEARCH.md — verified API contracts
-- docs/IMPLEMENTATION.md — runtime design
-- docs/ROADMAP.md — milestones
+## Modes
 
-## License
+| Mode | What it does |
+|:--|:--|
+| **ARP** | Accumulates held pads and plays them back in the selected pattern. HOLD toggles individual pad bits (XOR). |
+| **MELODY** | Plays ready-made melodic phrases from a single root pad; a new pad takes over the voice. |
+| **MUTATOR** | Evolves the buffer every phrase pass; Freeze keeps the next loops identical. |
+| **ACORDATOR** | Turns one pad into flowing chord voicings; mood sets the intervals, style sets the articulation. |
+| **ORBITATOR** | Generative notes drifting across a scale; dynamics set the wandering radius. |
 
-The project license is still to be selected.
+**Tip:** start with **ORBITATOR → AMBIENT → CALM** for evolving soundscapes, or **ACORDATOR → WARM → WAVE** for lush harmonic movement.
+
+| Mode | Without SHIFT | With SHIFT |
+|:--|:--|:--|
+| **ARP** | <img src="docs/manual/screens/01_ARP_plain.png" width="300" alt="ARP without SHIFT"> | <img src="docs/manual/screens/01_ARP_shift.png" width="300" alt="ARP with SHIFT"> |
+| **MELODY** | <img src="docs/manual/screens/02_MELODY_plain.png" width="300" alt="MELODY without SHIFT"> | <img src="docs/manual/screens/02_MELODY_shift.png" width="300" alt="MELODY with SHIFT"> |
+| **MUTATOR** | <img src="docs/manual/screens/03_MUTATOR_plain.png" width="300" alt="MUTATOR without SHIFT"> | <img src="docs/manual/screens/03_MUTATOR_shift.png" width="300" alt="MUTATOR with SHIFT"> |
+| **ACORDATOR** | <img src="docs/manual/screens/04_ACCORDATOR_plain.png" width="300" alt="ACCORDATOR without SHIFT"> | <img src="docs/manual/screens/04_ACCORDATOR_shift.png" width="300" alt="ACCORDATOR with SHIFT"> |
+| **ORBITATOR** | <img src="docs/manual/screens/05_ORBITATOR_plain.png" width="300" alt="ORBITATOR without SHIFT"> | <img src="docs/manual/screens/05_ORBITATOR_shift.png" width="300" alt="ORBITATOR with SHIFT"> |
+
+Screenshots: DEV, build `34a9ec26…`, 18 Nov 2026. The interface is unchanged in v0.0.7.1.
+
+## Procedures
+
+1. **Enable the mod:** open **Sample** → **16 LEVELS**, hold **SHIFT**, then use **SHIFT + B1** to pick a mode and **SHIFT + B2/B3** for its parameters.
+2. **HOLD and notes:** press **DATA** to toggle HOLD. In melodic/generative modes a tapped pad becomes a latch (green) and a new pad takes over the voice. In ARP, HOLD XORs pad bits.
+3. **Freeze (MUTATOR):** hold SHIFT and tap **B3** to toggle `FRZ ON/OFF`; subsequent loops play identically.
+4. **Swap samples while playing (test-confirmed):** set MELODY + HOLD with the sequence running, go back to the **Sample** tab — the music does **not** stop — tap pads to change one sample for the whole sequence, then return to 16 Levels.
+5. **STOP:** a double press within about 650 ms clears engines, HOLD, the active sample and the LEDs.
+
+## Installation
+
+> **Compatibility:** designed for AKAI MPC Sample firmware **1.3.0.12**. This is an early-stage mod tested primarily in the emulator; physical-device compatibility has not yet been fully verified. A downloadable ZIP is available in the **v0.0.7.1** release, but this is still **BETA software** — back up everything before installing.
+
+1. **Back up your entire SD card** to your computer before making any changes.
+2. **MOVE / COPY / BACK UP your existing `autorun/` folder.** If the SD card already has an `autorun/` folder, move it to your computer — or copy it there, verify the backup, and then **remove the original `autorun/` folder from the SD card**. The card must have **no existing `autorun/` folder** before installing ArpeggiGator. **NEVER merge the new files into an existing `autorun/` folder.**
+3. **Download `arpeggigator-v0.0.7.1.zip`** from the [v0.0.7.1 release](https://github.com/OSCILLUNE/ArpeggiGator/releases/tag/v0.0.7.1).
+4. **Extract the ZIP.** You should see a new `autorun/` folder inside.
+5. **Copy the NEW `autorun/` folder to the root of the SD card**, preserving all files and subfolders. The card should contain `autorun/autorun.sh` — not a ZIP file placed on the card.
+6. **Safely eject the SD card**, power off the MPC Sample, insert the card and power it on.
+7. **Open Sample → 16 Levels** and use the controls above.
+
+**Already using another mod?** ArpeggiGator's `autorun/` folder **replaces** the previous one on that card; it is **not** merged with it. Keep the old `autorun/` backup safe so you can restore it later. Running multiple autorun mods together is not supported or verified.
+
+**Uninstall / restore:** power off the MPC, remove the ArpeggiGator card or restore your original backed-up `autorun/` folder, then restart.
+
+## Preview
+
+<div align="center">
+
+**Running in the MPC Sample emulator**
+
+<img src="docs/images/led-1-running.jpg" alt="ArpeggiGator running on the MPC Sample" width="760">
+
+</div>
+
+## Download
+
+Version **0.0.7.1** — one codebase, two delivery profiles. Both artifacts are published under the [v0.0.7.1 release](https://github.com/OSCILLUNE/ArpeggiGator/releases/tag/v0.0.7.1).
+
+| Artifact | Purpose | SHA-256 |
+|:--|:--|:--|
+| `arpeggigator-v0.0.7.1.zip` | SD card → physical MPC Sample 1.3.0.12. Unzip and copy `autorun/` to the card. | `66846aaaf73b06b218ebc63c9ecea8606e97c14e7f9aecd677bc1aea8f4678e9` |
+| `arpeggigator-v0.0.7.1-lab.so` | Emulator / QA-DEV via `python3 lab.py preload …`. **This is not an SD-card package.** | `66e4c6cbd5125c15af83da06b29d7f6cc94e157f1cdfaa0fe847f13899ab6df8` |
+
+The `arpeggigator-v0.0.7.1.zip.sha256` sidecar is in the same release. Verify before inserting the card:
+
+```
+shasum -a 256 -c arpeggigator-v0.0.7.1.zip.sha256
+```
+
+- **Verified environment:** firmware-targeted aarch64 MPC Sample emulator. **Physical hardware testing is still required.**
+- **Independent project:** not affiliated with, endorsed by or supported by AKAI Professional.
+
+## Development notes
+
+Interested in the implementation? See the [release record](docs/RELEASE-0.0.7.1.md), [implementation notes](docs/IMPLEMENTATION.md), [development setup](docs/DEVELOPMENT.md) and the [roadmap](docs/ROADMAP.md).
+
+Built by **OSCILLUNE** · [Changelog](CHANGELOG.md) · [License](LICENSE)
