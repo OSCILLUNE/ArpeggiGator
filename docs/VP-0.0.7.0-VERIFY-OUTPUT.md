@@ -1,7 +1,7 @@
 # VP 0.0.7.0 — 20 kontroli integralności i bezpieczeństwa paczki
 
 Wygenerowane przez `python3 scripts/verify-v070.py`. Paczka: `/Users/fafi/Downloads/ArpeggiGator/build/arpeggigator.zip`
-SHA-256 paczki: `66846aaaf73b06b218ebc63c9ecea8606e97c14e7f9aecd677bc1aea8f4678e9`
+SHA-256 paczki: `a882223bfea2d9e96e4e1d8d2067974c35952ad688526fe24122354fe1936fba`
 
 | # | Kontrola | Wynik | Szczegół (PROVEN) |
 |---:|---|---|---|
@@ -21,7 +21,7 @@ SHA-256 paczki: `66846aaaf73b06b218ebc63c9ecea8606e97c14e7f9aecd677bc1aea8f4678e
 | 14 | Wątek tempo ma stop | PASS | stop_monitor() + MONITOR_STOP |
 | 15 | Drop wygasza wątek i głosy | PASS | stop_monitor + panic + extinguish_pads |
 | 16 | Wszystkie moduły źródłowe podłączone | PASS | 15 plików, 15 deklaracji mod; brak: [] |
-| 17 | Wersja 0.0.7-1 w manifestach | PASS | Cargo.toml + Cargo.lock |
+| 17 | Wersja 0.0.7-2 w manifestach | PASS | Cargo.toml + Cargo.lock |
 | 18 | Stage gates WYŁĄCZONE | PASS | build.sh ustawia wyłącznie MPC_MOD_FEATURES=native-audio |
 | 19 | SDK bez ukrytego fixu | PASS | git diff HEAD -- vendor/mpc-sample-sdk → czyste |
 | 20 | Handoff dla kolejnej AI w paczce | PASS | HANDOFF-PRZED-WLOZENIEM-0.0.7.1.md |
