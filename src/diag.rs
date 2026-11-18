@@ -5,7 +5,11 @@
 //! size-capped rotating file under /tmp. No allocation or file I/O on RT paths.
 
 use core::sync::atomic::{AtomicI64, AtomicU32, AtomicU64, AtomicU8, Ordering};
+use std::sync::Mutex;
 use std::time::{SystemTime, UNIX_EPOCH};
+
+// tick() is called from both on_paint (UI) and the tempo monitor thread.
+static FILE_LOCK: Mutex<()> = Mutex::new(());
 
 const LOG_PATH: &str = "/tmp/arpeggigator-6-events.log";
 const MAX_LOG_BYTES: u64 = 128 * 1024;
@@ -83,6 +87,7 @@ pub fn tick() {
 }
 
 fn append_rotated(line: &str) {
+    let _guard = FILE_LOCK.lock().unwrap_or_else(|poisoned| poisoned.into_inner());
     let result = (|| {
         if let Ok(meta) = std::fs::metadata(LOG_PATH) {
             if meta.len() >= MAX_LOG_BYTES {

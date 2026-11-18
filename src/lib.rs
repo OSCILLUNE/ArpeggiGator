@@ -59,6 +59,7 @@ static SHIFT_ACTIVE: AtomicBool = AtomicBool::new(false);
 pub(crate) static IN_16_LEVELS_ACTIVE: AtomicBool = AtomicBool::new(false);
 pub(crate) static BACKGROUND_PLAYBACK_ACTIVE: AtomicBool = AtomicBool::new(false);
 static LAST_STOP_MS: AtomicI64 = AtomicI64::new(0);
+static LAST_UI_REPAINT_MS: AtomicI64 = AtomicI64::new(0);
 static IS_PAINTING: AtomicBool = AtomicBool::new(false);
 static IS_DISPATCHING_EVENT: AtomicBool = AtomicBool::new(false);
 
@@ -549,6 +550,12 @@ impl Mod for ArpeggiGator {
 
         if action != 0 {
             DASHBOARD_REFRESH_UNTIL_MS.store(clock::now_ms() + 500, Ordering::Release);
+            // Stage 6.0.1: SHIFT+B1..B3 change engine state but the paint loop
+            // is pull-based; without a request the old frame stays until SHIFT
+            // is released and native firmware paints again. on_button runs on
+            // the owning UI thread, so this satisfies the SDK repaint contract.
+            CLEAR_FRAMES.store(3, Ordering::Release);
+            draw::repaint_painted();
         }
         probe::button_event(
             event.code,
@@ -727,6 +734,16 @@ impl Mod for ArpeggiGator {
                 self.mutator_frozen,
                 now as u64,
             )
+        }
+        // Keep our overlay painted over the firmware's moving playhead. The
+        // request stays on the UI thread (on_paint) and is throttled to ~30 Hz;
+        // no background repaint thread is reintroduced (see 6.0-c/core).
+        if show_shift_menu || show_overlay {
+            let last = LAST_UI_REPAINT_MS.load(Ordering::Relaxed);
+            if now.saturating_sub(last) >= 33 {
+                LAST_UI_REPAINT_MS.store(now, Ordering::Relaxed);
+                draw::repaint_painted();
+            }
         }
     }
 }
