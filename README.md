@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="assets/arpeggigator-logo.svg" alt="ArpeggiGator logo" width="360">
+<img src="assets/readme-user-banner.webp" alt="ArpeggiGator — original gator artwork in purple and gold" width="500">
 
 # ArpeggiGator 🐊
 
