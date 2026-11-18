@@ -6,9 +6,11 @@
 
 **Five musical engines for the AKAI MPC Sample — all hidden inside 16 Levels.**
 
-`ARP` · `MELODY` · `MUTATOR` · `ACORDATOR` · `ORBITATOR`
+`ARP` · `MELODY` · `MUTATOR` · `ACCORDATOR` · `ORBITATOR`
 
-**Latest release: [v0.0.7.1](https://github.com/OSCILLUNE/ArpeggiGator/releases/tag/v0.0.7.1)** — native audio engine and the first-pad fix.
+**Latest published release: [v0.0.7.1](https://github.com/OSCILLUNE/ArpeggiGator/releases/tag/v0.0.7.1)** — native audio engine and the first-pad fix.
+
+**In development: 0.0.7.2** — the chord mode is now labelled `ACCORDATOR` and the panel reads `MODE: ACCORD`. No v0.0.7.2 release has been published yet; the download links and hashes below still point to v0.0.7.1.
 
 [⬇️ SD-card ZIP for MPC](https://github.com/OSCILLUNE/ArpeggiGator/releases/tag/v0.0.7.1) · [⬇️ Emulator `.so` for QA/DEV](https://github.com/OSCILLUNE/ArpeggiGator/releases/tag/v0.0.7.1)
 
@@ -58,7 +60,7 @@ All shortcuts work **only in 16 Levels** (exceptions: STOP and PLAY).
 
 | Button | Without SHIFT | With SHIFT |
 |:--|:--|:--|
-| **B1** (SCREEN 1) | — | **Change mode**: Off → ARP → MELODY → MUTATOR → ACORDATOR → ORBITATOR → Off |
+| **B1** (SCREEN 1) | — | **Change mode**: Off → ARP → MELODY → MUTATOR → ACCORDATOR → ORBITATOR → Off |
 | **B2** (SCREEN 2) | — | **Parameter 1** — depends on the mode |
 | **B3** (SCREEN 3) | — | **Parameter 2** — depends on the mode |
 | **DATA** (knob) | turn = **RATE**, press = **HOLD on/off** | no action |
@@ -76,7 +78,7 @@ The three **B** buttons are the soft keys immediately above the MPC display.
 | **ARP** | Pattern: UP, DOWN, UP/DOWN, DOWN/UP, CONVERGE, DIVERGE, RANDOM, PLAYED | Additional octaves: `+0` → `+1` → `+2` → `+3` |
 | **MELODY** | Phrase length: `2BAR` → `4BAR` → `8BAR` → `16BAR` | Preset phrase: `MEL1` … `MEL9` |
 | **MUTATOR** | Mutation intensity: SUBTLE → WILD → CHAOS | Freeze: `FRZ OFF` ⇄ `FRZ ON` |
-| **ACORDATOR** | Chord mood: WARM → SAD → SPACE → CINEMA | Style: STRUM → PULSE → WAVE |
+| **ACCORDATOR** | Chord mood: WARM → SAD → SPACE → CINEMA | Style: STRUM → PULSE → WAVE |
 | **ORBITATOR** | Atmosphere: AMBIENT → SPACE → DARK → RHYTHM | Dynamics: CALM → FLOW → WILD |
 
 ## Modes
@@ -86,20 +88,20 @@ The three **B** buttons are the soft keys immediately above the MPC display.
 | **ARP** | Accumulates held pads and plays them back in the selected pattern. HOLD toggles individual pad bits (XOR). |
 | **MELODY** | Plays ready-made melodic phrases from a single root pad; a new pad takes over the voice. |
 | **MUTATOR** | Evolves the buffer every phrase pass; Freeze keeps the next loops identical. |
-| **ACORDATOR** | Turns one pad into flowing chord voicings; mood sets the intervals, style sets the articulation. |
+| **ACCORDATOR** | Turns one pad into flowing chord voicings; mood sets the intervals, style sets the articulation. |
 | **ORBITATOR** | Generative notes drifting across a scale; dynamics set the wandering radius. |
 
-**Tip:** start with **ORBITATOR → AMBIENT → CALM** for evolving soundscapes, or **ACORDATOR → WARM → WAVE** for lush harmonic movement.
+**Tip:** start with **ORBITATOR → AMBIENT → CALM** for evolving soundscapes, or **ACCORDATOR → WARM → WAVE** for lush harmonic movement.
 
 | Mode | Without SHIFT | With SHIFT |
 |:--|:--|:--|
 | **ARP** | <img src="docs/manual/screens/01_ARP_plain.png" width="300" alt="ARP without SHIFT"> | <img src="docs/manual/screens/01_ARP_shift.png" width="300" alt="ARP with SHIFT"> |
 | **MELODY** | <img src="docs/manual/screens/02_MELODY_plain.png" width="300" alt="MELODY without SHIFT"> | <img src="docs/manual/screens/02_MELODY_shift.png" width="300" alt="MELODY with SHIFT"> |
 | **MUTATOR** | <img src="docs/manual/screens/03_MUTATOR_plain.png" width="300" alt="MUTATOR without SHIFT"> | <img src="docs/manual/screens/03_MUTATOR_shift.png" width="300" alt="MUTATOR with SHIFT"> |
-| **ACORDATOR** | <img src="docs/manual/screens/04_ACCORDATOR_plain.png" width="300" alt="ACCORDATOR without SHIFT"> | <img src="docs/manual/screens/04_ACCORDATOR_shift.png" width="300" alt="ACCORDATOR with SHIFT"> |
+| **ACCORDATOR** | <img src="docs/manual/screens/04_ACCORDATOR_plain.png" width="300" alt="ACCORDATOR without SHIFT"> | <img src="docs/manual/screens/04_ACCORDATOR_shift.png" width="300" alt="ACCORDATOR with SHIFT"> |
 | **ORBITATOR** | <img src="docs/manual/screens/05_ORBITATOR_plain.png" width="300" alt="ORBITATOR without SHIFT"> | <img src="docs/manual/screens/05_ORBITATOR_shift.png" width="300" alt="ORBITATOR with SHIFT"> |
 
-Screenshots: DEV, build `34a9ec26…`, 18 Nov 2026. The interface is unchanged in v0.0.7.1.
+Screenshots: DEV, build `34a9ec26…`, 18 Nov 2026. The interface is unchanged in v0.0.7.1; v0.0.7.2 only renames the chord-mode label to `ACCORDATOR` / `MODE: ACCORD`.
 
 ## Procedures
 
@@ -137,7 +139,7 @@ Screenshots: DEV, build `34a9ec26…`, 18 Nov 2026. The interface is unchanged i
 
 ## Download
 
-Version **0.0.7.1** — one codebase, two delivery profiles. Both artifacts are published under the [v0.0.7.1 release](https://github.com/OSCILLUNE/ArpeggiGator/releases/tag/v0.0.7.1).
+Documentation version **0.0.7.2 (in progress)** — one codebase, two delivery profiles. The published artifacts below are still from the [v0.0.7.1 release](https://github.com/OSCILLUNE/ArpeggiGator/releases/tag/v0.0.7.1); they will be replaced with the 0.0.7.2 build and fresh hashes once that release is published.
 
 | Artifact | Purpose | SHA-256 |
 |:--|:--|:--|
