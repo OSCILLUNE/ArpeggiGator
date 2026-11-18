@@ -20,8 +20,8 @@
 | Krok | **12** |
 | UTC | 2026-11-17 ~23:45 |
 | Branch | `release/0.0.6.0` |
-| HEAD kodu/buildu | `2ccefd4` (final: FREEZE w nakładce Mutatora i w heartbeat) |
-| HEAD repozytorium | `4b6a332` (dokumenty i narzędzia; tag `v0.0.6.0` wskazuje na ten commit) |
+| HEAD kodu/buildu | `55b9aec` (poprawki UI 0.0.1; build `d76837d4…`) |
+| HEAD repozytorium | `0a1638f` (dokumenty; tag `v0.0.6.0` wskazuje na ten commit) |
 | Testy | 82/82 |
 | Wdrożone na DEV | **final**, SHA `c1a330eecb64b3429542914c821ef0e928db8753934f15afa75495c0c8647f6d` |
 | Artefakt w `build/arpeggigator.so` | ten sam `c1a330ee…` |
