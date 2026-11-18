@@ -1,9 +1,8 @@
-# ArpeggiGator — User Manual / GUI v0.0.7.2 (in progress)
-
-**Version described:** `0.0.7.2` (in progress; label-only change from `v0.0.7.1`)
+# ArpeggiGator — User Manual / GUI v0.0.7.2
+**Version described:** `0.0.7.2` (released; spelling fixes on the native audio engine)
 **UI baseline:** tag `v0.0.6.0`, commit `b912eed1028c9b9c54a166b36433cd349e782be0`
 **Build used for screenshots:** `34a9ec26949b98c7a3ec83562aea94af9ba7d9f35771687db0d3e929841a5b7b`
-**Sources:** code at tag `v0.0.6.0`, the `v0.0.7.1` release (native audio engine and first-pad fix) and the in-progress 0.0.7.2 label change: `ACCORDATOR`, `MODE: ACCORD` and the simplified MUTATOR caption `SUBTLE FRZ:OFF`.
+**Sources:** code at tag `v0.0.6.0`, the `v0.0.7.2` release (native audio engine, first-pad fix and caption fixes): `ACCORDATOR`, `MODE: ACCORD` and the simplified MUTATOR caption `SUBTLE FRZ:OFF`.
 **Purpose:** a user manual. AI test procedures remain in internal QA documentation only and are not part of this public version.
 
 ---
@@ -128,18 +127,18 @@ The discs are unchanged: a voice already sounding is not retuned; the change app
 
 ## 6. Download
 
-Documentation version **0.0.7.2 (in progress)** — one codebase, two delivery profiles. The published artifacts below are still under the
-[v0.0.7.1](https://github.com/OSCILLUNE/ArpeggiGator/releases/tag/v0.0.7.1) tag; fresh 0.0.7.2 files and hashes will replace them after release.
+Version **0.0.7.2** — one codebase, two delivery profiles. Both artifacts are published under the
+[v0.0.7.2](https://github.com/OSCILLUNE/ArpeggiGator/releases/tag/v0.0.7.2) tag.
 
 | Artifact | Purpose | SHA-256 |
 |---|---|---|
-| `arpeggigator-v0.0.7.1.zip` | SD card → physical MPC Sample 1.3.0.12. After unpacking, copy the `autorun/` folder to the card. [Download from the release](https://github.com/OSCILLUNE/ArpeggiGator/releases/tag/v0.0.7.1). | `66846aaaf73b06b218ebc63c9ecea8606e97c14e7f9aecd677bc1aea8f4678e9` |
-| `arpeggigator-v0.0.7.1-lab.so` | Emulator / QA-DEV: `python3 lab.py preload …`. **This is not an SD-card package.** [Download from the release](https://github.com/OSCILLUNE/ArpeggiGator/releases/tag/v0.0.7.1). | `66e4c6cbd5125c15af83da06b29d7f6cc94e157f1cdfaa0fe847f13899ab6df8` |
+| `arpeggigator-v0.0.7.2.zip` | SD card → physical MPC Sample 1.3.0.12. After unpacking, copy the `autorun/` folder to the card. [Download from the release](https://github.com/OSCILLUNE/ArpeggiGator/releases/tag/v0.0.7.2). | `a882223bfea2d9e96e4e1d8d2067974c35952ad688526fe24122354fe1936fba` |
+| `arpeggigator-v0.0.7.2-lab.so` | Emulator / QA-DEV: `python3 lab.py preload …`. **This is not an SD-card package.** [Download from the release](https://github.com/OSCILLUNE/ArpeggiGator/releases/tag/v0.0.7.2). | `3e2fac83cc4a9c5fe3421b2e58b4ec47f1943be60d1988cec01ef013d785aca8` |
 
-The `arpeggigator-v0.0.7.1.zip.sha256` sidecar is in the same release. Verify the package before inserting the card:
+The `arpeggigator-v0.0.7.2.zip.sha256` sidecar is in the same release. Verify the package before inserting the card:
 
 ```
-shasum -a 256 -c arpeggigator-v0.0.7.1.zip.sha256
+shasum -a 256 -c arpeggigator-v0.0.7.2.zip.sha256
 ```
 
 ---
