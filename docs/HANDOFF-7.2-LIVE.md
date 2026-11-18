@@ -26,7 +26,7 @@ Tylko 3 napisy + testy + aktualizacja strony. Zero zmian w audio, logice i bezpi
 | Flint-3 (src/splash.rs + testy) | 🔄 w toku | raport `docs/RAPORT-FLINT-3-NAPISY-072.md` |
 | Heniek (README, manual, gh-pages, checklista) | 🔄 w toku | `docs/CHECKLIST-7.2.md`, gh-pages push |
 | Czesiek-3 (plan wizualny) | 🔄 w toku | `docs/WERYFIKACJA-WIZUALNA-0.0.7.2.md` |
-| Build + 20/20 verify | ⏳ przed | Jurek-3 do powołania po Flincie |
+| Build + 20/20 verify | ✅ 20/20 PASS | Jurek-3: ZIP `a882223b…`, lab `.so` `3e2fac83…`, `cmp=0`; log `docs/logs/build-072.log`; raport `docs/RAPORT-JUREK-3-BUILD-072.md` |
 | A/B wizualne na QA (10×) | ⏳ przed | Krystyna-3 po buildzie |
 | Tag + Release (EN) | ⏳ przed | ja przez UI |
 | Karta SD | ⏳ tylko na życzenie fafi | — |

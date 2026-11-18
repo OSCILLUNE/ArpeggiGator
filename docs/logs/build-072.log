@@ -1,0 +1,193 @@
+=== BUILD 0.0.7.2 start — 2026-11-18T22:04:32Z ===
+== cargo build (arpeggigator) ==
+   Compiling mpc-sample-sdk v0.5.3 (/Users/fafi/Downloads/ArpeggiGator/vendor/mpc-sample-sdk)
+   Compiling arpeggigator v0.0.7-2 (/Users/fafi/Downloads/ArpeggiGator)
+warning: unused import: `page`
+  --> src/lib.rs:37:33
+   |
+37 |     platform::{clock, lighting, page},
+   |                                 ^^^^
+   |
+   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: function `draw_boot_splash` is never used
+    --> src/splash.rs:1287:15
+     |
+1287 | pub unsafe fn draw_boot_splash(graphics: &mut Graphics) {
+     |               ^^^^^^^^^^^^^^^^
+     |
+     = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: struct `ColorGroup` is never constructed
+ --> src/splash_art.rs:4:19
+  |
+4 | pub(crate) struct ColorGroup {
+  |                   ^^^^^^^^^^
+
+warning: struct `Rect16` is never constructed
+  --> src/splash_art.rs:10:19
+   |
+10 | pub(crate) struct Rect16 {
+   |                   ^^^^^^
+
+warning: static `GATOR_RECTS_0` is never used
+  --> src/splash_art.rs:17:8
+   |
+17 | static GATOR_RECTS_0: [Rect16; 41] = [
+   |        ^^^^^^^^^^^^^
+
+warning: static `GATOR_RECTS_1` is never used
+  --> src/splash_art.rs:61:8
+   |
+61 | static GATOR_RECTS_1: [Rect16; 26] = [
+   |        ^^^^^^^^^^^^^
+
+warning: static `GATOR_RECTS_2` is never used
+  --> src/splash_art.rs:90:8
+   |
+90 | static GATOR_RECTS_2: [Rect16; 105] = [
+   |        ^^^^^^^^^^^^^
+
+warning: static `GATOR_RECTS_3` is never used
+   --> src/splash_art.rs:198:8
+    |
+198 | static GATOR_RECTS_3: [Rect16; 40] = [
+    |        ^^^^^^^^^^^^^
+
+warning: static `GATOR_RECTS_4` is never used
+   --> src/splash_art.rs:241:8
+    |
+241 | static GATOR_RECTS_4: [Rect16; 30] = [
+    |        ^^^^^^^^^^^^^
+
+warning: static `GATOR_RECTS_5` is never used
+   --> src/splash_art.rs:274:8
+    |
+274 | static GATOR_RECTS_5: [Rect16; 80] = [
+    |        ^^^^^^^^^^^^^
+
+warning: static `GATOR_RECTS_6` is never used
+   --> src/splash_art.rs:357:8
+    |
+357 | static GATOR_RECTS_6: [Rect16; 56] = [
+    |        ^^^^^^^^^^^^^
+
+warning: static `GATOR_RECTS_7` is never used
+   --> src/splash_art.rs:416:8
+    |
+416 | static GATOR_RECTS_7: [Rect16; 46] = [
+    |        ^^^^^^^^^^^^^
+
+warning: static `GATOR_RECTS_8` is never used
+   --> src/splash_art.rs:465:8
+    |
+465 | static GATOR_RECTS_8: [Rect16; 57] = [
+    |        ^^^^^^^^^^^^^
+
+warning: static `GATOR_RECTS_9` is never used
+   --> src/splash_art.rs:525:8
+    |
+525 | static GATOR_RECTS_9: [Rect16; 31] = [
+    |        ^^^^^^^^^^^^^
+
+warning: static `GATOR_RECTS_10` is never used
+   --> src/splash_art.rs:559:8
+    |
+559 | static GATOR_RECTS_10: [Rect16; 49] = [
+    |        ^^^^^^^^^^^^^^
+
+warning: static `GATOR_RECTS_11` is never used
+   --> src/splash_art.rs:611:8
+    |
+611 | static GATOR_RECTS_11: [Rect16; 62] = [
+    |        ^^^^^^^^^^^^^^
+
+warning: static `GATOR_RECTS_12` is never used
+   --> src/splash_art.rs:676:8
+    |
+676 | static GATOR_RECTS_12: [Rect16; 86] = [
+    |        ^^^^^^^^^^^^^^
+
+warning: static `GATOR_RECTS_13` is never used
+   --> src/splash_art.rs:765:8
+    |
+765 | static GATOR_RECTS_13: [Rect16; 50] = [
+    |        ^^^^^^^^^^^^^^
+
+warning: static `GATOR_RECTS_14` is never used
+   --> src/splash_art.rs:818:8
+    |
+818 | static GATOR_RECTS_14: [Rect16; 16] = [
+    |        ^^^^^^^^^^^^^^
+
+warning: static `GATOR_RECTS_15` is never used
+   --> src/splash_art.rs:837:8
+    |
+837 | static GATOR_RECTS_15: [Rect16; 42] = [
+    |        ^^^^^^^^^^^^^^
+
+warning: static `GATOR_RECTS_16` is never used
+   --> src/splash_art.rs:882:8
+    |
+882 | static GATOR_RECTS_16: [Rect16; 40] = [
+    |        ^^^^^^^^^^^^^^
+
+warning: static `GATOR_RECTS_17` is never used
+   --> src/splash_art.rs:925:8
+    |
+925 | static GATOR_RECTS_17: [Rect16; 57] = [
+    |        ^^^^^^^^^^^^^^
+
+warning: static `GATOR_RECTS_18` is never used
+   --> src/splash_art.rs:985:8
+    |
+985 | static GATOR_RECTS_18: [Rect16; 29] = [
+    |        ^^^^^^^^^^^^^^
+
+warning: static `GATOR_RECTS_19` is never used
+    --> src/splash_art.rs:1017:8
+     |
+1017 | static GATOR_RECTS_19: [Rect16; 67] = [
+     |        ^^^^^^^^^^^^^^
+
+warning: static `GATOR_RECTS_20` is never used
+    --> src/splash_art.rs:1087:8
+     |
+1087 | static GATOR_RECTS_20: [Rect16; 48] = [
+     |        ^^^^^^^^^^^^^^
+
+warning: static `GATOR_RECTS_21` is never used
+    --> src/splash_art.rs:1138:8
+     |
+1138 | static GATOR_RECTS_21: [Rect16; 48] = [
+     |        ^^^^^^^^^^^^^^
+
+warning: static `GATOR_RECTS_22` is never used
+    --> src/splash_art.rs:1189:8
+     |
+1189 | static GATOR_RECTS_22: [Rect16; 34] = [
+     |        ^^^^^^^^^^^^^^
+
+warning: static `GATOR_RECTS_23` is never used
+    --> src/splash_art.rs:1226:8
+     |
+1226 | static GATOR_RECTS_23: [Rect16; 68] = [
+     |        ^^^^^^^^^^^^^^
+
+warning: static `GATOR_GROUPS` is never used
+    --> src/splash_art.rs:1297:19
+     |
+1297 | pub(crate) static GATOR_GROUPS: [ColorGroup; 24] = [
+     |                   ^^^^^^^^^^^^
+
+warning: `arpeggigator` (lib) generated 29 warnings (run `cargo fix --lib -p arpeggigator` to apply 1 suggestion)
+    Finished `release` profile [optimized] target(s) in 5.07s
+== symbol map ==
+== unresolved imports ==
+glibc symbol versions: highest GLIBC_2.30 (device has 2.39)
+== autorun package ==
+built /Users/fafi/Downloads/ArpeggiGator/build/arpeggigator.zip
+built /Users/fafi/Downloads/ArpeggiGator/build/arpeggigator.so (  565504 bytes)
+map: /Users/fafi/Downloads/ArpeggiGator/build/arpeggigator.map
+Emulator autorun updated: 3e2fac83cc4a9c5fe3421b2e58b4ec47f1943be60d1988cec01ef013d785aca8  /media/MPCSAMPLE/autorun/arpeggigator.so
+=== BUILD EXIT=0 — 2026-11-18T22:04:38Z ===

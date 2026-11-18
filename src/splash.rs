@@ -17,6 +17,11 @@ const SHADOW: u32 = 0xff075c39;
 const MID: u32 = 0xff18a852;
 const HIGHLIGHT: u32 = 0xffa8ed67;
 
+// Exact captions for the 0.0.7.2 spelling fixes; kept as constants so the
+// unit tests can assert the literals rather than a re-typed copy.
+const MODE_ACCORD: &str = "MODE: ACCORD";
+const ACCORDATOR_TITLE: &str = "ACCORDATOR";
+
 /// Paint custom B1/B2/B3 captions while SHIFT is held and active overlay for
 /// ARP or MELODY engine modes.
 ///
@@ -174,10 +179,20 @@ unsafe fn draw_melody_view(
     }
 }
 
+/// Build the MUTATOR B2 caption. The intensity label already carries the
+/// freeze motif (e.g. "FRZ OFF"), so appending `FRZ:*` again would print it
+/// twice. Kept separate from rendering so the exact literal is testable.
+fn mutator_param_line(intensity_label: &str, freeze: bool) -> String {
+    format!(
+        "{intensity_label} FRZ:{}",
+        if freeze { "ON" } else { "OFF" }
+    )
+}
+
 unsafe fn draw_mutator_view(
     graphics: &mut Graphics,
     intensity_label: &str,
-    motif_label: &str,
+    _motif_label: &str,
     held_pads: u8,
     hold: bool,
     rate: &str,
@@ -191,10 +206,7 @@ unsafe fn draw_mutator_view(
 
         // Right side info panel. The native firmware repaints the B3 softkey
         // caption ("Filter"), so surface freeze here where it stays visible.
-        let param_str = format!(
-            "{intensity_label}  {motif_label}  FRZ:{}",
-            if freeze { "ON" } else { "OFF" }
-        );
+        let param_str = mutator_param_line(intensity_label, freeze);
         draw_engine_right_panel(
             graphics,
             "MODE: MUTATOR",
@@ -268,7 +280,7 @@ unsafe fn draw_acordator_view(
         let param_str = format!("{mood_label}  {style_label}");
         draw_engine_right_panel(
             graphics,
-            "MODE: ACORD",
+            MODE_ACCORD,
             &param_str,
             hold,
             rate,
@@ -1367,7 +1379,9 @@ unsafe fn draw_shift_labels(
             }
             EngineMode::Acordator => {
                 graphics.colour(INK);
-                graphics.text("ACORDATOR", 13, 8, 88, 19, 12.0);
+                // One character wider than the old "ACORDATOR"; size trimmed
+                // 12.0 -> 11.0 so it still fits the same 88px B1 cell.
+                graphics.text(ACCORDATOR_TITLE, 13, 8, 88, 19, 11.0);
             }
             EngineMode::Orbitator => {
                 graphics.colour(0xffffffff);
@@ -1625,5 +1639,26 @@ unsafe fn draw_note(graphics: &mut Graphics, x: i32, chewing: bool) {
             graphics.colour(CREAM);
             graphics.rect(187, y - 3, 2, 2);
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{ACCORDATOR_TITLE, MODE_ACCORD, mutator_param_line};
+
+    #[test]
+    fn mutator_freeze_off_is_not_duplicated() {
+        assert_eq!(mutator_param_line("SUBTLE", false), "SUBTLE FRZ:OFF");
+    }
+
+    #[test]
+    fn mutator_freeze_on_keeps_the_single_suffix() {
+        assert_eq!(mutator_param_line("WILD", true), "WILD FRZ:ON");
+    }
+
+    #[test]
+    fn accord_captions_have_the_correct_spelling() {
+        assert_eq!(MODE_ACCORD, "MODE: ACCORD");
+        assert_eq!(ACCORDATOR_TITLE, "ACCORDATOR");
     }
 }

@@ -160,7 +160,7 @@ check(16, "Wszystkie moduły źródłowe podłączone", set(srcmods) <= set(mods
 # 17 — version
 ct = (ROOT / "Cargo.toml").read_text()
 cl = (ROOT / "Cargo.lock").read_text()
-check(17, "Wersja 0.0.7-1 w manifestach", "0.0.7-1" in ct and "0.0.7-1" in cl,
+check(17, "Wersja 0.0.7-2 w manifestach", "0.0.7-2" in ct and "0.0.7-2" in cl,
       "Cargo.toml + Cargo.lock")
 
 # 18 — stage gates off
