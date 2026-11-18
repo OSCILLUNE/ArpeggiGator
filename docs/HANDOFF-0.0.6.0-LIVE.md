@@ -98,7 +98,7 @@ Firmware nadpisuje softkey B3 (`Filter` zostaje na ekranie mimo naszego `FRZ OFF
 
 Właściciel zgłosił: (a) pod SHIFT-em ekran moda nie przełącza się aż do puszczenia SHIFT-a, (b) animację smuży przesuwający się playhead i HOLD nie widać do ruchu linii, (c) pod B3 nie widać naszego podpisu. Cwaniak znalazł poprzednika (a) w `docs/HANDOFF-RESPONSE-REC-0.0.4.2.md:61`.
 
-Poprawki: `draw::repaint_painted()` przy `action!=0` w `on_button` (UI thread), throttlowany (33 ms, `LAST_UI_REPAINT_MS`) repaint z `on_paint` gdy nakładka/menu widoczne, `FILE_LOCK` w `diag.rs` dla rotacji logu. Wycofano odroczony `CLEAR_FRAMES=3` z `on_button` (Jurek: czyściłby ekran przy wyjściu z 16 Levels).
+Poprawki: `draw::repaint_painted()` przy `action!=0` w `on_button` (UI thread), throttlowany (33 ms, `LAST_UI_REPAINT_MS`) repaint z `on_paint` gdy nakładka/menu widoczne, `FILE_LOCK` w `diag.rs` dla rotacji logu. Wycofano `CLEAR_FRAMES.store(3)` wyłącznie z gałęzi `action!=0` w `on_button` (Jurek: odkładał czyszczenie i czyściłby ekran przy wyjściu z 16 Levels). Pozostałe użycia `CLEAR_FRAMES` — wyjście z 16 Levels (`lib.rs:290`, `:415`) i dekrement w `on_paint` — są nienaruszone.
 
 Dowody: `docs/logs/ag6/20261118_033602_v2_b_b1/lcd.png` — aligator/ARP widoczny przy trzymanym SHIFT+B1; `...033607_v2_e_b1x2/lcd.png` — MUTATOR i `FRZ OFF` pod B3; `...033758_sm_t2/lcd.png` — `HOLD: ON` widoczne od razu, nakładka ostrа mimo playheada. Wszystkie 13 katalogów `v2_*`/`sm_*` ma komplet 3 plików 1200×950.
 
