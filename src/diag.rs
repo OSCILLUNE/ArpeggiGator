@@ -1,0 +1,109 @@
+//! Low-volume diagnostics for the staged 0.0.6 test builds.
+//!
+//! Audio threads only bump atomics. The once-per-second summary is emitted from
+//! `on_paint` (UI thread) to stderr (captured in the guest journal) and to a
+//! size-capped rotating file under volatile /run. No allocation or file I/O
+//! on RT paths. /run is a tmpfs on the MPC: nothing survives a reboot.
+
+use core::sync::atomic::{AtomicI64, AtomicU32, AtomicU64, AtomicU8, Ordering};
+use std::sync::Mutex;
+use std::time::{SystemTime, UNIX_EPOCH};
+
+// tick() is called from both on_paint (UI) and the tempo monitor thread.
+static FILE_LOCK: Mutex<()> = Mutex::new(());
+
+const LOG_PATH: &str = "/run/arpeggigator-6-events.log";
+const MAX_LOG_BYTES: u64 = 128 * 1024;
+
+static STEPS: AtomicU64 = AtomicU64::new(0);
+static LAST_PAD: AtomicU32 = AtomicU32::new(0xff);
+static LAST_NOTE: AtomicU32 = AtomicU32::new(0);
+static LAST_PITCH: AtomicI64 = AtomicI64::new(0);
+static LAST_ACTIVITY_MS: AtomicI64 = AtomicI64::new(0);
+static LAST_LOG_MS: AtomicI64 = AtomicI64::new(0);
+static CTX_MODE: AtomicU8 = AtomicU8::new(0);
+static CTX_ENABLED: AtomicU8 = AtomicU8::new(0);
+static CTX_HOLD: AtomicU8 = AtomicU8::new(0);
+static CTX_L16: AtomicU8 = AtomicU8::new(0);
+static CTX_FRZ: AtomicU8 = AtomicU8::new(0);
+
+/// Published from `on_paint` (UI thread) so the heartbeat can show whether
+/// mode switching and HOLD were actually registered by the mod.
+pub fn set_context(mode: u8, enabled: bool, hold: bool, l16: bool, freeze: bool) {
+    CTX_MODE.store(mode, Ordering::Relaxed);
+    CTX_ENABLED.store(u8::from(enabled), Ordering::Relaxed);
+    CTX_HOLD.store(u8::from(hold), Ordering::Relaxed);
+    CTX_L16.store(u8::from(l16), Ordering::Relaxed);
+    CTX_FRZ.store(u8::from(freeze), Ordering::Relaxed);
+}
+
+fn now_ms() -> i64 {
+    SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map_or(0, |duration| duration.as_millis() as i64)
+}
+
+/// Called from the audio render path. Cheap atomics only.
+pub fn note_on(pad: u8, note: u8, pitch: i8) {
+    let now_ms = now_ms();
+    STEPS.fetch_add(1, Ordering::Relaxed);
+    LAST_PAD.store(u32::from(pad), Ordering::Relaxed);
+    LAST_NOTE.store(u32::from(note), Ordering::Relaxed);
+    LAST_PITCH.store(i64::from(pitch), Ordering::Relaxed);
+    LAST_ACTIVITY_MS.store(now_ms, Ordering::Relaxed);
+}
+
+/// Called from `on_paint`. Emits at most one line per second.
+pub fn tick() {
+    let now_ms = now_ms();
+    let last = LAST_LOG_MS.load(Ordering::Relaxed);
+    if last == 0 {
+        // First heartbeat: anchor idle time to startup instead of the Unix epoch.
+        LAST_ACTIVITY_MS.store(now_ms, Ordering::Relaxed);
+    }
+    if now_ms.saturating_sub(last) < 1_000 {
+        return;
+    }
+    if LAST_LOG_MS
+        .compare_exchange(last, now_ms, Ordering::Relaxed, Ordering::Relaxed)
+        .is_err()
+    {
+        return;
+    }
+    let idle = now_ms.saturating_sub(LAST_ACTIVITY_MS.load(Ordering::Relaxed));
+    let line = format!(
+        "[AG6] t={now_ms} steps={} last_pad={} note={} pitch={} idle_ms={idle} mode={} en={} hold={} l16={} frz={}\n",
+        STEPS.load(Ordering::Relaxed),
+        LAST_PAD.load(Ordering::Relaxed),
+        LAST_NOTE.load(Ordering::Relaxed),
+        LAST_PITCH.load(Ordering::Relaxed),
+        CTX_MODE.load(Ordering::Relaxed),
+        CTX_ENABLED.load(Ordering::Relaxed),
+        CTX_HOLD.load(Ordering::Relaxed),
+        CTX_L16.load(Ordering::Relaxed),
+        CTX_FRZ.load(Ordering::Relaxed),
+    );
+    eprintln!("{}", line.trim_end());
+    append_rotated(&line);
+}
+
+fn append_rotated(line: &str) {
+    let _guard = FILE_LOCK.lock().unwrap_or_else(|poisoned| poisoned.into_inner());
+    let result = (|| {
+        if let Ok(meta) = std::fs::metadata(LOG_PATH) {
+            if meta.len() >= MAX_LOG_BYTES {
+                let _ = std::fs::remove_file(format!("{LOG_PATH}.3"));
+                let _ = std::fs::rename(format!("{LOG_PATH}.2"), format!("{LOG_PATH}.3"));
+                let _ = std::fs::rename(format!("{LOG_PATH}.1"), format!("{LOG_PATH}.2"));
+                let _ = std::fs::rename(LOG_PATH, format!("{LOG_PATH}.1"));
+            }
+        }
+        use std::io::Write;
+        let mut file = std::fs::OpenOptions::new()
+            .create(true)
+            .append(true)
+            .open(LOG_PATH)?;
+        file.write_all(line.as_bytes())
+    })();
+    let _ = result;
+}

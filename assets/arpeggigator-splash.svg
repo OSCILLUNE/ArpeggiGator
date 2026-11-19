@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">ArpeggiGator</title>
+  <desc id="desc">A cheerful green alligator wearing violet headphones and sunglasses above four sampler pads.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#10072d"/><stop offset="1" stop-color="#27084b"/></linearGradient>
+    <linearGradient id="green" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9aff28"/><stop offset=".55" stop-color="#37d52e"/><stop offset="1" stop-color="#16883b"/></linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe96c"/><stop offset="1" stop-color="#f7a91e"/></linearGradient>
+  </defs>
+  <rect x="18" y="18" width="476" height="476" rx="48" fill="url(#bg)" stroke="#d63cff" stroke-width="12"/>
+  <circle cx="256" cy="229" r="174" fill="#351067" stroke="#8c22de" stroke-width="8"/>
+  <path d="M119 213c-20-109 38-174 137-174s157 65 137 174" fill="none" stroke="#f12acb" stroke-width="24" stroke-linecap="round"/>
+  <path d="M133 205c-8-83 37-139 123-139s131 56 123 139" fill="none" stroke="#8724d8" stroke-width="12" stroke-linecap="round"/>
+  <path d="M108 189c-21 0-38 17-38 38v53c0 21 17 38 38 38h31V189z" fill="#e92acb" stroke="#18082e" stroke-width="12"/>
+  <path d="M404 189c21 0 38 17 38 38v53c0 21-17 38-38 38h-31V189z" fill="#e92acb" stroke="#18082e" stroke-width="12"/>
+  <path d="M140 225c24-71 77-109 153-106 62 2 105 41 116 95 8 37-5 73-31 96-30 27-76 33-122 28-77-8-128-48-116-113z" fill="url(#green)" stroke="#13082c" stroke-width="14" stroke-linejoin="round"/>
+  <path d="M170 285c59-24 119-31 191-17 40 8 66 32 72 59 8 34-20 61-61 65l-186 2c-57-4-90-36-82-71 5-19 28-31 66-38z" fill="url(#gold)" stroke="#16082f" stroke-width="14" stroke-linejoin="round"/>
+  <path d="M176 310c52-13 121-15 197-1" fill="none" stroke="#16082f" stroke-width="12" stroke-linecap="round"/>
+  <path d="M224 309l13 22 14-21 12 24 16-21 13 22 14-18 15 17 12-12" fill="#fff4dc" stroke="#16082f" stroke-width="8" stroke-linejoin="round"/>
+  <path d="M198 217c23-25 58-28 86-6l-4 35c-31 18-62 13-84-5z" fill="#25084e" stroke="#12072c" stroke-width="10"/>
+  <path d="M294 211c26-22 58-16 77 8l-6 30c-23 17-53 19-76-1z" fill="#25084e" stroke="#12072c" stroke-width="10"/>
+  <path d="M211 220l42 20M308 220l39 19" stroke="#d7a5ff" stroke-width="8" stroke-linecap="round"/>
+  <path d="M278 243l19-5" stroke="#ff38d0" stroke-width="11" stroke-linecap="round"/>
+  <path d="M244 385v33m24-33v33m24-33v33" stroke="#f4b52b" stroke-width="14" stroke-linecap="round"/>
+  <path d="M174 416c32-22 132-24 167 0l16 26H155z" fill="#37c830" stroke="#15082c" stroke-width="12"/>
+  <g stroke="#19082f" stroke-width="8" stroke-linejoin="round">
+    <rect x="103" y="442" width="68" height="46" rx="9" fill="#8b2ae4"/>
+    <rect x="181" y="442" width="68" height="46" rx="9" fill="#ec28c5"/>
+    <rect x="259" y="442" width="68" height="46" rx="9" fill="#ffcc32"/>
+    <rect x="337" y="442" width="68" height="46" rx="9" fill="#db24bb"/>
+  </g>
+  <g fill="#ffe36c"><path d="M70 97l9 26 27 9-27 9-9 27-9-27-27-9 27-9z"/><path d="M430 82l8 22 23 8-23 8-8 23-8-23-22-8 22-8z"/></g>
+  <g fill="#f4b8ff"><circle cx="113" cy="365" r="5"/><circle cx="404" cy="355" r="5"/><circle cx="377" cy="133" r="4"/></g>
+</svg>
