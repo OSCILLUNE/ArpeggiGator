@@ -147,10 +147,10 @@ Version **0.0.7.2** — one codebase, two delivery profiles. Both artifacts are 
 | `arpeggigator-v0.0.7.2.zip` | SD card → physical MPC Sample 1.3.0.12. After unpacking, copy the `autorun/` folder to the card. [Download from the release](https://github.com/OSCILLUNE/ArpeggiGator/releases/tag/v0.0.7.2). | `79d7db740ef1d27ac5250c33c27fc186beaa7129f8890ccbd295515da2924f2b` |
 | `arpeggigator-v0.0.7.2-lab.so` | Emulator / QA-DEV: `python3 lab.py preload …`. **This is not an SD-card package.** [Download from the release](https://github.com/OSCILLUNE/ArpeggiGator/releases/tag/v0.0.7.2). | `3e2fac83cc4a9c5fe3421b2e58b4ec47f1943be60d1988cec01ef013d785aca8` |
 
-The `arpeggigator-v0.0.7.2.zip.sha256` sidecar is in the same release. Verify the package before inserting the card:
+Verify the package before inserting the card. The expected SHA-256 is the value in the table above:
 
 ```
-shasum -a 256 -c arpeggigator-v0.0.7.2.zip.sha256
+shasum -a 256 arpeggigator-v0.0.7.2.zip
 ```
 
 ---

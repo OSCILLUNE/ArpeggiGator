@@ -166,13 +166,13 @@ Version **0.0.7.2** — one codebase, two delivery profiles. Both artifacts are 
 
 | Artifact | Purpose | SHA-256 |
 |:--|:--|:--|
-| `arpeggigator-v0.0.7.2.zip` | SD card → physical MPC Sample 1.3.0.12. Unzip and copy `autorun/` to the card. | `a882223bfea2d9e96e4e1d8d2067974c35952ad688526fe24122354fe1936fba` |
+| `arpeggigator-v0.0.7.2.zip` | SD card → physical MPC Sample 1.3.0.12. Unzip and copy `autorun/` to the card. | `79d7db740ef1d27ac5250c33c27fc186beaa7129f8890ccbd295515da2924f2b` |
 | `arpeggigator-v0.0.7.2-lab.so` | Emulator / QA-DEV via `python3 lab.py preload …`. **This is not an SD-card package.** | `3e2fac83cc4a9c5fe3421b2e58b4ec47f1943be60d1988cec01ef013d785aca8` |
 
-The `arpeggigator-v0.0.7.2.zip.sha256` sidecar is in the same release. Verify before inserting the card:
+Verify the package before inserting the card. The expected SHA-256 is the value in the table above:
 
 ```
-shasum -a 256 -c arpeggigator-v0.0.7.2.zip.sha256
+shasum -a 256 arpeggigator-v0.0.7.2.zip
 ```
 
 - **Verified environment:** firmware-targeted aarch64 MPC Sample emulator. **Physical hardware testing is still required.**
