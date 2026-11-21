@@ -1,0 +1,71 @@
+name: Bug report
+description: Report a problem with ArpeggiGator
+title: "[BUG]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve ArpeggiGator. Please fill in as much as you can.
+        This project is early stage — reports are welcome.
+  - type: input
+    id: firmware
+    attributes:
+      label: Firmware version
+      description: MPC Sample firmware shown on the device
+      placeholder: "1.3.0.12"
+    validations:
+      required: true
+  - type: input
+    id: mod_version
+    attributes:
+      label: ArpeggiGator version
+      description: Release or build you are running
+      placeholder: "0.0.7.2"
+    validations:
+      required: true
+  - type: dropdown
+    id: setup
+    attributes:
+      label: Setup
+      description: Where did you see the problem?
+      options:
+        - Physical MPC Sample
+        - Emulator / QA lab
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: mode
+    attributes:
+      label: Mode used
+      description: ARP / MELODY / MUTATOR / ACCORDATOR / ORBITATOR, and B2/B3 settings if relevant
+      placeholder: "ORBITATOR, B2 AMBIENT, B3 CALM"
+    validations:
+      required: false
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: What did you press, in what order?
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behaviour
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behaviour
+    validations:
+      required: true
+  - type: textarea
+    id: extra
+    attributes:
+      label: Anything else
+      description: Screenshots, video, notes, or messages shown on the device
+    validations:
+      required: false
