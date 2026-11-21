@@ -5,6 +5,7 @@ edition = "2024"
 rust-version = "1.97"
 description = "Standalone arpeggiator mod for the AKAI MPC Sample"
 repository = "https://github.com/OSCILLUNE/ArpeggiGator"
+license = "GPL-3.0-only"
 
 [features]
 # Native audio path for the MPC Sample 1.3.0.12. This is the real note engine,
