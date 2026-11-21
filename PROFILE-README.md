@@ -40,9 +40,9 @@ firmware-guarded SD-card autorun, stock workflow preserved.
 **Latest videos — [OSCILLUNE on YouTube](https://www.youtube.com/@oscillune)**
 
 <table><tr>
-<td align="center"><a href="https://www.youtube.com/watch?v=QQElaCId-1s"><img src="https://i.ytimg.com/vi/QQElaCId-1s/hqdefault.jpg" alt="YAMAHA TG55 + SAMPQOL v0.2.0 AKAI MPC SAMPLE - LIVE TECHNO JAM 🔥" width="180"><br><sub>YAMAHA TG55 + SAMPQOL v0.2.0 AKAI MPC SAMPLE - LIVE TE</sub></a></td>
-<td align="center"><a href="https://www.youtube.com/watch?v=Zmeh49mNXOw"><img src="https://i.ytimg.com/vi/Zmeh49mNXOw/hqdefault.jpg" alt="SAMPQOL v0.2.0 – SAMPLING LOOPS TO SEQUENCE from YAMAHA TG55 - AKAI MPC SAMPLE - OSCILLUNE" width="180"><br><sub>SAMPQOL v0.2.0 – SAMPLING LOOPS TO SEQUENCE from YAMAH</sub></a></td>
-<td align="center"><a href="https://www.youtube.com/watch?v=Y2fwY0CjcFU"><img src="https://i.ytimg.com/vi/Y2fwY0CjcFU/hqdefault.jpg" alt="Percussive Ambient Jam on AKAI MPC Sample" width="180"><br><sub>Percussive Ambient Jam on AKAI MPC Sample</sub></a></td>
+<td align="center"><a href="https://www.youtube.com/watch?v=QfljdW24p6g"><img src="https://i.ytimg.com/vi/QfljdW24p6g/hqdefault.jpg" alt="NEW! ArpeggiGator — MOD for AKAI MPC Sample 🧩" width="180"><br><sub>NEW! ArpeggiGator — MOD for AKAI MPC Sample 🧩</sub></a></td>
+<td align="center"><a href="https://www.youtube.com/watch?v=d4QMyxIAiHQ"><img src="https://i.ytimg.com/vi/d4QMyxIAiHQ/hqdefault.jpg" alt="NEW! ArpeggiGator ARP — MOD for AKAI MPC Sample 🔥" width="180"><br><sub>NEW! ArpeggiGator ARP — MOD for AKAI MPC Sample 🔥</sub></a></td>
+<td align="center"><a href="https://www.youtube.com/watch?v=9_MLI1Jp-Dc"><img src="https://i.ytimg.com/vi/9_MLI1Jp-Dc/hqdefault.jpg" alt="NEW! ArpeggiGator MELODY — MOD for AKAI MPC Sample 🔥" width="180"><br><sub>NEW! ArpeggiGator MELODY — MOD for AKAI MPC Sample 🔥</sub></a></td>
 </tr></table>
 <!-- YT-WIDGET:END -->
 

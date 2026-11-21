@@ -1,0 +1,44 @@
+name: Update YouTube widget
+
+on:
+  schedule:
+    # Daily at 06:17 UTC. GitHub schedules can be delayed under load.
+    - cron: "17 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: youtube-widget
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Refresh widget from public YouTube RSS
+        run: python3 scripts/update-youtube-widget.py . 3
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Commit only if the widget changed
+        run: |
+          git add README.md PROFILE-README.md docs/index.html
+          if git diff --cached --quiet; then
+            echo "No widget changes."
+            exit 0
+          fi
+          git commit -m "chore: refresh YouTube widget from RSS"
+          git push
