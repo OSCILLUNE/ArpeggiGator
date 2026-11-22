@@ -1,3 +1,9 @@
+## 0.0.7.4
+
+- Fix: przywrócenie natywnego podświetlenia padów po wyjściu z 16 Levels / Sample do MUTE — zamiast wymuszania czerni (`extinguish_pads`) mod teraz odtwarza zapamiętane kolory natywne (`restore_pad_rgbs`). Pady aktywnych ścieżek nie gasną już w widoku MUTE.
+- Dodatkowy test jednostkowy `mutator_mute_sample_pad_lighting_restoration`; pełny zestaw 88/88 testów przechodzi.
+- Zweryfikowano na emulatorach DEV/QA oraz na fizycznym AKAI MPC Sample (firmware 1.3.0.12).
+
 # Changelog
 
 ## 0.0.7.3

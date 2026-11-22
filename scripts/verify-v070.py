@@ -20,7 +20,7 @@ import zipfile
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 PKG = pathlib.Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "build/arpeggigator.zip"
 GUARD = "44507c7a7d3029c411b2e3780ea286ca3e08b7e3ffd7b5047d52f73bf5299d1f"
-HANDOFF_NAME = "HANDOFF-PRZED-WLOZENIEM-0.0.7.3.md"
+HANDOFF_NAME = "HANDOFF-PRZED-WLOZENIEM-0.0.7.4.md"
 OUT = ROOT / "docs/VP-0.0.7.0-VERIFY-OUTPUT.md"
 
 lines: list[str] = []
@@ -148,8 +148,8 @@ lib = (ROOT / "src/lib.rs").read_text()
 drop_m = re.search(r"impl Drop for ArpeggiGator \{(.*?)\n\}", lib, re.S)
 drop = drop_m.group(1) if drop_m else ""
 check(15, "Drop wygasza wątek i głosy",
-      "crate::tempo::stop_monitor()" in drop and "panic()" in drop and "extinguish_pads()" in drop,
-      "stop_monitor + panic + extinguish_pads")
+      "crate::tempo::stop_monitor()" in drop and "panic()" in drop and "restore_pad_rgbs()" in drop,
+      "stop_monitor + panic + restore_pad_rgbs")
 
 # 16 — all modules linked
 mods = re.findall(r"^\s*(?:pub\(crate\) )?mod (\w+);", lib, re.M)
@@ -160,7 +160,7 @@ check(16, "Wszystkie moduły źródłowe podłączone", set(srcmods) <= set(mods
 # 17 — version
 ct = (ROOT / "Cargo.toml").read_text()
 cl = (ROOT / "Cargo.lock").read_text()
-check(17, "Wersja 0.0.7-3 w manifestach", "0.0.7-3" in ct and "0.0.7-3" in cl,
+check(17, "Wersja 0.0.7-4 w manifestach", "0.0.7-4" in ct and "0.0.7-4" in cl,
       "Cargo.toml + Cargo.lock")
 
 # 18 — stage gates off

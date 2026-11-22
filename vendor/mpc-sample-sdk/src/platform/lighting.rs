@@ -162,7 +162,8 @@ pub fn observe(sender: usize, pad: u8, native: u64) {
 /// The `PadLight` a pad should use, or `None` to keep the native one.
 ///
 /// Called by the SDK's native lighting hook.
-pub(crate) fn override_light(pad: u8) -> Option<u64> {
+#[must_use]
+pub fn override_light(pad: u8) -> Option<u64> {
     let index = usize::from(pad);
     if index >= PADS {
         return None;

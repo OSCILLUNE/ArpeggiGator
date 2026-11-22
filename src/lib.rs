@@ -266,7 +266,7 @@ impl ArpeggiGator {
         BACKGROUND_PLAYBACK_ACTIVE.store(false, Ordering::Release);
         LAST_STOP_MS.store(0, Ordering::Release);
         native_audio::set_active_sample_pad(0xff, 36);
-        extinguish_pads();
+        lighting::restore_pad_rgbs();
         self.led_mask = 0;
         CLEAR_FRAMES.store(3, Ordering::Release);
     }
@@ -292,6 +292,7 @@ impl ArpeggiGator {
                         draw::repaint_painted();
                         if self.should_continue_in_background() {
                             BACKGROUND_PLAYBACK_ACTIVE.store(true, Ordering::Release);
+                            lighting::restore_pad_rgbs();
                         } else {
                             self.reset_engine_state();
                             BACKGROUND_PLAYBACK_ACTIVE.store(false, Ordering::Release);
@@ -308,15 +309,6 @@ impl ArpeggiGator {
         }
         IN_16_LEVELS_ACTIVE.store(self.is_16_levels_active(), Ordering::Release);
     }
-}
-
-// Send the off state before releasing overrides: clearing them alone does not
-// update the panel, which retains the last colour it received.
-fn extinguish_pads() {
-    for pad in 0..16 {
-        let _ = lighting::send_pad_light(pad, 0, 0.0);
-    }
-    lighting::clear_pad_rgbs();
 }
 
 impl Mod for ArpeggiGator {
@@ -419,6 +411,7 @@ impl Mod for ArpeggiGator {
                         draw::repaint_painted();
                         if self.should_continue_in_background() {
                             BACKGROUND_PLAYBACK_ACTIVE.store(true, Ordering::Release);
+                            lighting::restore_pad_rgbs();
                         } else {
                             self.reset_engine_state();
                             BACKGROUND_PLAYBACK_ACTIVE.store(false, Ordering::Release);
@@ -773,7 +766,7 @@ impl Drop for ArpeggiGator {
         crate::tempo::stop_monitor();
         #[cfg(feature = "native-audio")]
         crate::native_audio::panic();
-        extinguish_pads();
+        lighting::restore_pad_rgbs();
     }
 }
 
@@ -1539,6 +1532,81 @@ mod animation_input_tests {
         assert!(!BACKGROUND_PLAYBACK_ACTIVE.load(Ordering::Acquire));
         assert!(!module.enabled);
         assert_eq!(module.mode, EngineMode::Off);
+
+        lighting::reset_lighting();
+    }
+
+    #[test]
+    fn mutator_mute_sample_pad_lighting_restoration() {
+        let _guard = INPUT_TEST_LOCK.lock().unwrap();
+        LAST_STOP_MS.store(0, Ordering::Release);
+        BACKGROUND_PLAYBACK_ACTIVE.store(false, Ordering::Release);
+        lighting::reset_lighting();
+        let mut module = ArpeggiGator::default();
+        module.on_start();
+
+        let sample_color = u64::from(1.0_f32.to_bits()) << 32 | 0x0003_0f14;
+        let unlit = u64::from(0.0_f32.to_bits()) << 32 | 0x00ff_ffff;
+        let p1_lit = u64::from(1.0_f32.to_bits()) << 32 | 0x000a_000f;
+        let p15_lit = u64::from(1.0_f32.to_bits()) << 32 | 0x0096_00ef;
+
+        lighting::observe(0x2000, 0, sample_color);
+        for pad in 1..16 {
+            lighting::observe(0x2000, pad, unlit);
+        }
+
+        // 1. Enter 16 Levels
+        module.on_button(button_ev(button::LEVELS, true, false));
+        assert!(module.in_16_levels);
+        lighting::observe(0x2000, 1, p1_lit);
+        lighting::observe(0x2000, 15, p15_lit);
+        assert!(module.is_16_levels_active());
+
+        // Cycle to Mutator (3x SHIFT+B1: ARP -> MELODY -> MUTATOR)
+        for _ in 0..3 {
+            module.on_button(button_ev(BUTTON_B1, true, true));
+            module.on_button(button_ev(BUTTON_B1, false, true));
+        }
+        assert_eq!(module.mode, EngineMode::Mutator);
+
+        // Turn on HOLD
+        module.on_button(button_ev(button::DATA, true, false));
+        module.on_button(button_ev(button::DATA, false, false));
+        assert_ne!(PREVIEW_STATE.load(Ordering::Acquire) & HOLD_ENABLED, 0);
+
+        // Latch pad 1
+        observe_surface(surface(1, 0x99, 100));
+        observe_surface(surface(1, 0x89, 0));
+
+        // 2. Exit 16 Levels to SAMPLE (live background playback)
+        module.on_button(button_ev(button::LEVELS, true, false));
+        lighting::observe(0x2000, 1, unlit);
+        lighting::observe(0x2000, 15, unlit);
+        assert!(!module.is_16_levels_active());
+        assert!(BACKGROUND_PLAYBACK_ACTIVE.load(Ordering::Acquire));
+
+        // Verify: background playback is active and overrides are cleared
+        for pad in 0..16 {
+            assert_eq!(lighting::override_light(pad), None);
+        }
+
+        // 3. Enter MUTE mode
+        module.on_button(button_ev(BUTTON_MUTE, true, false));
+        assert_eq!(module.current_screen, Screen::Other);
+        assert!(!module.enabled);
+        assert_eq!(module.mode, EngineMode::Off);
+
+        // Verify: all pad overrides are cleared and pads are NOT blacked out!
+        for pad in 0..16 {
+            assert_eq!(lighting::override_light(pad), None);
+        }
+
+        // 4. Return to SAMPLE screen
+        module.on_button(button_ev(BUTTON_SAMPLE, true, false));
+        assert_eq!(module.current_screen, Screen::Sample);
+        for pad in 0..16 {
+            assert_eq!(lighting::override_light(pad), None);
+        }
 
         lighting::reset_lighting();
     }

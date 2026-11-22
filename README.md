@@ -8,13 +8,13 @@
 
 `ARP` · `MELODY` · `MUTATOR` · `ACCORDATOR` · `ORBITATOR`
 
-**Latest published release: [v0.0.7.3](https://github.com/OSCILLUNE/ArpeggiGator/releases/tag/v0.0.7.3)** — native audio engine, first-pad fix, and dashboard repaint fix on STOP.
+**Latest published release: [v0.0.7.4](https://github.com/OSCILLUNE/ArpeggiGator/releases/tag/v0.0.7.4)** — native audio engine, first-pad fix, STOP repaint fix, and native pad LED restoration.
 
-**Current release: 0.0.7.3** — adds STOP (code 81) repaint and dashboard refresh fix in 16 Levels (eliminates screen freeze). Both artifacts are attached to the release linked below.
+**Current release: 0.0.7.4** — restores native pad LED colours on screen/mode exits (no blackout in MUTE) on top of the STOP repaint fix. Both artifacts are attached to the release linked below.
 
 ❤️ SPONSOR: <a href="https://github.com/sponsors/OSCILLUNE"><img src="assets/github-red.svg" alt="GITHUB" width="62" height="16"></a> / <a href="https://ko-fi.com/arpeggigator"><img src="assets/kofi-red.svg" alt="KOFI" width="39" height="16"></a> ☕
 
-**<span style="color:#2563eb">DOWNLOAD</span>** · [⬇️ SD-card ZIP for MPC](https://github.com/OSCILLUNE/ArpeggiGator/releases/download/v0.0.7.3/arpeggigator-v0.0.7.3.zip) · [⬇️ Emulator `.so` for QA/DEV](https://github.com/OSCILLUNE/ArpeggiGator/releases/download/v0.0.7.3/arpeggigator-v0.0.7.3-lab.so)
+**<span style="color:#2563eb">DOWNLOAD</span>** · [⬇️ SD-card ZIP for MPC](https://github.com/OSCILLUNE/ArpeggiGator/releases/download/v0.0.7.4/arpeggigator-v0.0.7.4.zip) · [⬇️ Emulator `.so` for QA/DEV](https://github.com/OSCILLUNE/ArpeggiGator/releases/download/v0.0.7.4/arpeggigator-v0.0.7.4-lab.so)
 
 ❤️ SPONSOR: <a href="https://github.com/sponsors/OSCILLUNE"><img src="assets/github-red.svg" alt="GITHUB" width="62" height="16"></a> / <a href="https://ko-fi.com/arpeggigator"><img src="assets/kofi-red.svg" alt="KOFI" width="39" height="16"></a> ☕
 
@@ -126,11 +126,11 @@ Screenshots: DEV, build `34a9ec26…`, 18 Nov 2026. The screenshots show the ori
 
 ## Installation
 
-> **Compatibility:** designed for AKAI MPC Sample firmware **1.3.0.12**. Tested in the virtual emulator and confirmed on physical hardware (30–60 min test session). A downloadable ZIP is available in the **v0.0.7.3** release, but this is still **BETA software** — back up everything before installing.
+> **Compatibility:** designed for AKAI MPC Sample firmware **1.3.0.12**. Tested in the virtual emulator and confirmed on physical hardware (30–60 min test session). A downloadable ZIP is available in the **v0.0.7.4** release, but this is still **BETA software** — back up everything before installing.
 
 1. **Back up your entire SD card** to your computer before making any changes.
 2. **MOVE / COPY / BACK UP your existing `autorun/` folder.** If the SD card already has an `autorun/` folder, move it to your computer — or copy it there, verify the backup, and then **remove the original `autorun/` folder from the SD card**. The card must have **no existing `autorun/` folder** before installing ArpeggiGator. **NEVER merge the new files into an existing `autorun/` folder.**
-3. **Download `arpeggigator-v0.0.7.3.zip`** from the [v0.0.7.3 release](https://github.com/OSCILLUNE/ArpeggiGator/releases/download/v0.0.7.3/arpeggigator-v0.0.7.3.zip).
+3. **Download `arpeggigator-v0.0.7.4.zip`** from the [v0.0.7.4 release](https://github.com/OSCILLUNE/ArpeggiGator/releases/download/v0.0.7.4/arpeggigator-v0.0.7.4.zip).
 4. **Extract the ZIP.** You should see a new `autorun/` folder inside.
 5. **Copy the NEW `autorun/` folder to the root of the SD card**, preserving all files and subfolders. The card should contain `autorun/autorun.sh` — not a ZIP file placed on the card.
 6. **Safely eject the SD card**, power off the MPC Sample, insert the card and power it on.
@@ -152,7 +152,7 @@ Screenshots: DEV, build `34a9ec26…`, 18 Nov 2026. The screenshots show the ori
 
 > ### ⚠️ Compatibility — read before you insert the card
 >
-> **TESTED:** ArpeggiGator **v0.0.7.3** was developed and tested in the virtual MPC Sample emulator (QA/DEV) and confirmed on physical AKAI MPC Sample hardware, on **firmware 1.3.0.12** (guard `44507c7a7d3029c411b2e3780ea286ca3e08b7e3ffd7b5047d52f73bf5299d1f`). The 0.0.7.x package ships a `native-audio` build targeted at firmware 1.3.0.12 with hook-signature verification. Emulator audio (`MPC_MOD_FEATURES=emulator-audio`) was used only in experimental phases; the release build uses native audio and is firmware-guarded.
+> **TESTED:** ArpeggiGator **v0.0.7.4** was developed and tested in the virtual MPC Sample emulator (QA/DEV) and confirmed on physical AKAI MPC Sample hardware, on **firmware 1.3.0.12** (guard `44507c7a7d3029c411b2e3780ea286ca3e08b7e3ffd7b5047d52f73bf5299d1f`). The 0.0.7.x package ships a `native-audio` build targeted at firmware 1.3.0.12 with hook-signature verification. Emulator audio (`MPC_MOD_FEATURES=emulator-audio`) was used only in experimental phases; the release build uses native audio and is firmware-guarded.
 >
 > **NOT TESTED:** **No other firmware version**, **no other MPC model**, and **no other operating system or environment** has been tested. Compatibility outside the tested emulator + firmware 1.3.0.12 combination is **unknown and unverified**.
 >
@@ -162,17 +162,17 @@ Screenshots: DEV, build `34a9ec26…`, 18 Nov 2026. The screenshots show the ori
 
 ## Download
 
-Version **0.0.7.3** — one codebase, two delivery profiles. Both artifacts are published under the [v0.0.7.3 release](https://github.com/OSCILLUNE/ArpeggiGator/releases/tag/v0.0.7.3).
+Version **0.0.7.4** — one codebase, two delivery profiles. Both artifacts are published under the [v0.0.7.4 release](https://github.com/OSCILLUNE/ArpeggiGator/releases/tag/v0.0.7.4).
 
 | Artifact | Purpose | SHA-256 |
 |:--|:--|:--|
-| [`arpeggigator-v0.0.7.3.zip`](https://github.com/OSCILLUNE/ArpeggiGator/releases/download/v0.0.7.3/arpeggigator-v0.0.7.3.zip) | SD card → physical MPC Sample 1.3.0.12. Unzip and copy `autorun/` to the card. | `1d1a884cfbe8afaf92e47b64567a4d0f7de5110a99c20319ec42a617ddaf4369` |
-| [`arpeggigator-v0.0.7.3-lab.so`](https://github.com/OSCILLUNE/ArpeggiGator/releases/download/v0.0.7.3/arpeggigator-v0.0.7.3-lab.so) | Emulator / QA-DEV via `python3 lab.py preload …`. **This is not an SD-card package.** | `4799d4a0279ee47269ca7a45ec9497a891b611953104c75023179e5b0da6b3e7` |
+| [`arpeggigator-v0.0.7.4.zip`](https://github.com/OSCILLUNE/ArpeggiGator/releases/download/v0.0.7.4/arpeggigator-v0.0.7.4.zip) | SD card → physical MPC Sample 1.3.0.12. Unzip and copy `autorun/` to the card. | `b2b2ba68077d556fb65f8f556f2ba1a188ccb2e8f8f031d4c3c5b08a6bd176af` |
+| [`arpeggigator-v0.0.7.4-lab.so`](https://github.com/OSCILLUNE/ArpeggiGator/releases/download/v0.0.7.4/arpeggigator-v0.0.7.4-lab.so) | Emulator / QA-DEV via `python3 lab.py preload …`. **This is not an SD-card package.** | `60b1cbed5a74def68873fb6ef898946e66619a9ad8198aaf9d9da458375f50ad` |
 
 Verify the package before inserting the card. The expected SHA-256 is the value in the table above:
 
 ```
-shasum -a 256 arpeggigator-v0.0.7.3.zip
+shasum -a 256 arpeggigator-v0.0.7.4.zip
 ```
 
 - **Verified environment:** firmware-targeted aarch64 MPC Sample emulator and physical MPC Sample hardware.
