@@ -268,6 +268,7 @@ impl ArpeggiGator {
         native_audio::set_active_sample_pad(0xff, 36);
         extinguish_pads();
         self.led_mask = 0;
+        CLEAR_FRAMES.store(3, Ordering::Release);
     }
 
     fn sync_navigation(&mut self, sample_page: bool, chop_mode: bool) {
@@ -367,6 +368,8 @@ impl Mod for ArpeggiGator {
                 LAST_STOP_MS.store(0, Ordering::Release);
                 self.reset_engine_state();
             }
+            DASHBOARD_REFRESH_UNTIL_MS.store(now + 500, Ordering::Release);
+            draw::repaint_painted();
         }
         if event.code == button::SHIFT {
             SHIFT_ACTIVE.store(event.pressed, Ordering::Release);
@@ -695,6 +698,14 @@ impl Mod for ArpeggiGator {
         let show_shift_menu = self.is_16_levels_active() && shift_active;
         let show_overlay = self.is_16_levels_active() && self.enabled;
         if !show_shift_menu && !show_overlay {
+            let frames = CLEAR_FRAMES.load(Ordering::Acquire);
+            if frames > 0 {
+                CLEAR_FRAMES.store(frames - 1, Ordering::Release);
+                unsafe {
+                    graphics.colour(0xff000000);
+                    graphics.rect(14, 48, 292, 30);
+                }
+            }
             return;
         }
         let b2_label = match self.mode {
@@ -1326,9 +1337,10 @@ mod animation_input_tests {
         assert_eq!(module.on_button(button_ev(74, true, false)), ButtonFlow::Forward);
         assert!(module.loop_audition_active);
 
-        // 2. Pressing STOP (81) turns off loop audition state.
+        // 2. Pressing STOP (81) turns off loop audition state and schedules dashboard refresh.
         assert_eq!(module.on_button(button_ev(81, true, false)), ButtonFlow::Forward);
         assert!(!module.loop_audition_active);
+        assert!(DASHBOARD_REFRESH_UNTIL_MS.load(Ordering::Acquire) >= clock::now_ms());
 
         // 3. Toggling LOOP on again, then entering 16 Levels (40): cancels loop audition.
         assert_eq!(module.on_button(button_ev(74, true, false)), ButtonFlow::Forward);

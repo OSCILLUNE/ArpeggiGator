@@ -20,7 +20,7 @@ import zipfile
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 PKG = pathlib.Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "build/arpeggigator.zip"
 GUARD = "44507c7a7d3029c411b2e3780ea286ca3e08b7e3ffd7b5047d52f73bf5299d1f"
-HANDOFF_NAME = "HANDOFF-PRZED-WLOZENIEM-0.0.7.2.md"
+HANDOFF_NAME = "HANDOFF-PRZED-WLOZENIEM-0.0.7.3.md"
 OUT = ROOT / "docs/VP-0.0.7.0-VERIFY-OUTPUT.md"
 
 lines: list[str] = []
@@ -160,7 +160,7 @@ check(16, "Wszystkie moduły źródłowe podłączone", set(srcmods) <= set(mods
 # 17 — version
 ct = (ROOT / "Cargo.toml").read_text()
 cl = (ROOT / "Cargo.lock").read_text()
-check(17, "Wersja 0.0.7-2 w manifestach", "0.0.7-2" in ct and "0.0.7-2" in cl,
+check(17, "Wersja 0.0.7-3 w manifestach", "0.0.7-3" in ct and "0.0.7-3" in cl,
       "Cargo.toml + Cargo.lock")
 
 # 18 — stage gates off

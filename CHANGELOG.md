@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.0.7.3
+
+- Fix: Odświeżanie dashboardu i czyszczenie ramki interfejsu (Repaint fix) po naciśnięciu przycisku STOP (kod 81) w 16 Levels — zapobiega zamrażaniu ekranu i pozostawaniu artefaktów nakładki.
+- Zweryfikowano działanie na emulatorze DEV/QA oraz potwierdzono stabilność na fizycznym sprzęcie AKAI MPC Sample (30–60 min sesja testowa).
+
 ## 0.0.7.2
 
 - Kosmetyczne poprawki napisów: `ACORDATOR` → `ACCORDATOR`, `MODE: ACORD` → `MODE: ACCORD`, oraz usunięcie podwójnego freeze w panelu MUTATOR (`SUBTLE FRZ OFF FRZ: OFF` → `SUBTLE FRZ:OFF`).
