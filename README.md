@@ -14,7 +14,7 @@
 
 ❤️ SPONSOR: <a href="https://github.com/sponsors/OSCILLUNE"><img src="assets/github-red.svg" alt="GITHUB" width="62" height="16"></a> / <a href="https://ko-fi.com/arpeggigator"><img src="assets/kofi-red.svg" alt="KOFI" width="39" height="16"></a> ☕
 
-**<span style="color:#2563eb">DOWNLOAD</span>** · [⬇️ SD-card ZIP for MPC](https://github.com/OSCILLUNE/ArpeggiGator/releases/tag/v0.0.7.3) · [⬇️ Emulator `.so` for QA/DEV](https://github.com/OSCILLUNE/ArpeggiGator/releases/tag/v0.0.7.3)
+**<span style="color:#2563eb">DOWNLOAD</span>** · [⬇️ SD-card ZIP for MPC](https://github.com/OSCILLUNE/ArpeggiGator/releases/download/v0.0.7.3/arpeggigator-v0.0.7.3.zip) · [⬇️ Emulator `.so` for QA/DEV](https://github.com/OSCILLUNE/ArpeggiGator/releases/download/v0.0.7.3/arpeggigator-v0.0.7.3-lab.so)
 
 ❤️ SPONSOR: <a href="https://github.com/sponsors/OSCILLUNE"><img src="assets/github-red.svg" alt="GITHUB" width="62" height="16"></a> / <a href="https://ko-fi.com/arpeggigator"><img src="assets/kofi-red.svg" alt="KOFI" width="39" height="16"></a> ☕
 
@@ -130,7 +130,7 @@ Screenshots: DEV, build `34a9ec26…`, 18 Nov 2026. The screenshots show the ori
 
 1. **Back up your entire SD card** to your computer before making any changes.
 2. **MOVE / COPY / BACK UP your existing `autorun/` folder.** If the SD card already has an `autorun/` folder, move it to your computer — or copy it there, verify the backup, and then **remove the original `autorun/` folder from the SD card**. The card must have **no existing `autorun/` folder** before installing ArpeggiGator. **NEVER merge the new files into an existing `autorun/` folder.**
-3. **Download `arpeggigator-v0.0.7.3.zip`** from the [v0.0.7.3 release](https://github.com/OSCILLUNE/ArpeggiGator/releases/tag/v0.0.7.3).
+3. **Download `arpeggigator-v0.0.7.3.zip`** from the [v0.0.7.3 release](https://github.com/OSCILLUNE/ArpeggiGator/releases/download/v0.0.7.3/arpeggigator-v0.0.7.3.zip).
 4. **Extract the ZIP.** You should see a new `autorun/` folder inside.
 5. **Copy the NEW `autorun/` folder to the root of the SD card**, preserving all files and subfolders. The card should contain `autorun/autorun.sh` — not a ZIP file placed on the card.
 6. **Safely eject the SD card**, power off the MPC Sample, insert the card and power it on.
@@ -166,8 +166,8 @@ Version **0.0.7.3** — one codebase, two delivery profiles. Both artifacts are 
 
 | Artifact | Purpose | SHA-256 |
 |:--|:--|:--|
-| `arpeggigator-v0.0.7.3.zip` | SD card → physical MPC Sample 1.3.0.12. Unzip and copy `autorun/` to the card. | `1d1a884cfbe8afaf92e47b64567a4d0f7de5110a99c20319ec42a617ddaf4369` |
-| `arpeggigator-v0.0.7.3-lab.so` | Emulator / QA-DEV via `python3 lab.py preload …`. **This is not an SD-card package.** | `4799d4a0279ee47269ca7a45ec9497a891b611953104c75023179e5b0da6b3e7` |
+| [`arpeggigator-v0.0.7.3.zip`](https://github.com/OSCILLUNE/ArpeggiGator/releases/download/v0.0.7.3/arpeggigator-v0.0.7.3.zip) | SD card → physical MPC Sample 1.3.0.12. Unzip and copy `autorun/` to the card. | `1d1a884cfbe8afaf92e47b64567a4d0f7de5110a99c20319ec42a617ddaf4369` |
+| [`arpeggigator-v0.0.7.3-lab.so`](https://github.com/OSCILLUNE/ArpeggiGator/releases/download/v0.0.7.3/arpeggigator-v0.0.7.3-lab.so) | Emulator / QA-DEV via `python3 lab.py preload …`. **This is not an SD-card package.** | `4799d4a0279ee47269ca7a45ec9497a891b611953104c75023179e5b0da6b3e7` |
 
 Verify the package before inserting the card. The expected SHA-256 is the value in the table above:
 

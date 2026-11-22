@@ -144,8 +144,8 @@ Version **0.0.7.3** — one codebase, two delivery profiles. Both artifacts are 
 
 | Artifact | Purpose | SHA-256 |
 |---|---|---|
-| `arpeggigator-v0.0.7.3.zip` | SD card → physical MPC Sample 1.3.0.12. After unpacking, copy the `autorun/` folder to the card. [Download from the release](https://github.com/OSCILLUNE/ArpeggiGator/releases/tag/v0.0.7.3). | `1d1a884cfbe8afaf92e47b64567a4d0f7de5110a99c20319ec42a617ddaf4369` |
-| `arpeggigator-v0.0.7.3-lab.so` | Emulator / QA-DEV: `python3 lab.py preload …`. **This is not an SD-card package.** [Download from the release](https://github.com/OSCILLUNE/ArpeggiGator/releases/tag/v0.0.7.3). | `4799d4a0279ee47269ca7a45ec9497a891b611953104c75023179e5b0da6b3e7` |
+| [`arpeggigator-v0.0.7.3.zip`](https://github.com/OSCILLUNE/ArpeggiGator/releases/download/v0.0.7.3/arpeggigator-v0.0.7.3.zip) | SD card → physical MPC Sample 1.3.0.12. After unpacking, copy the `autorun/` folder to the card. [Direct download](https://github.com/OSCILLUNE/ArpeggiGator/releases/download/v0.0.7.3/arpeggigator-v0.0.7.3.zip). | `1d1a884cfbe8afaf92e47b64567a4d0f7de5110a99c20319ec42a617ddaf4369` |
+| [`arpeggigator-v0.0.7.3-lab.so`](https://github.com/OSCILLUNE/ArpeggiGator/releases/download/v0.0.7.3/arpeggigator-v0.0.7.3-lab.so) | Emulator / QA-DEV: `python3 lab.py preload …`. **This is not an SD-card package.** [Direct download](https://github.com/OSCILLUNE/ArpeggiGator/releases/download/v0.0.7.3/arpeggigator-v0.0.7.3-lab.so). | `4799d4a0279ee47269ca7a45ec9497a891b611953104c75023179e5b0da6b3e7` |
 
 Verify the package before inserting the card. The expected SHA-256 is the value in the table above:
 
