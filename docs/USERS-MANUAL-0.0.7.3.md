@@ -1,4 +1,6 @@
-# ArpeggiGator — User Manual / GUI v0.0.7.3
+# ArpeggiGator — User Manual / GUI v0.0.7.3 (ARCHIVED)
+
+> **Archived documentation.** This manual describes v0.0.7.3 and is superseded by the [v0.0.7.4 manual](USERS-MANUAL-0.0.7.4.md). Do not use it for the current release.
 **Version described:** `0.0.7.3` (released; Repaint fix after STOP on the native audio engine)
 **UI baseline:** tag `v0.0.6.0`, commit `b912eed1028c9b9c54a166b36433cd349e782be0`
 **Build used for screenshots:** `34a9ec26949b98c7a3ec83562aea94af9ba7d9f35771687db0d3e929841a5b7b`
@@ -11,7 +13,7 @@
 >
 > **TESTED:** ArpeggiGator **v0.0.7.3** was developed and tested in the virtual MPC Sample emulator (QA/DEV) and confirmed on physical AKAI MPC Sample hardware, on **firmware 1.3.0.12** (guard `44507c7a7d3029c411b2e3780ea286ca3e08b7e3ffd7b5047d52f73bf5299d1f`). The 0.0.7.x package ships a `native-audio` build targeted at firmware 1.3.0.12 with hook-signature verification. Emulator audio (`MPC_MOD_FEATURES=emulator-audio`) was used only in experimental phases; the release build uses native audio and is firmware-guarded.
 >
-> **NOT TESTED:** **Physical MPC Sample hardware** — no hardware confirmation exists; the author tests in the emulator only. **No other firmware version**, **no other MPC model**, and **no other operating system or environment** has been tested. Compatibility outside the tested emulator + firmware 1.3.0.12 combination is **unknown and unverified**.
+> **NOT TESTED:** **No other firmware version**, **no other MPC model**, and **no other operating system or environment** has been tested. Compatibility outside the tested emulator + firmware 1.3.0.12 combination is **unknown and unverified**.
 >
 > **BEFORE YOU INSERT THE CARD:** make a complete backup of your **entire original SD card** and **all your projects** to a computer. Verify the backup, then install. If the card already has an `autorun/` folder, back it up and remove it first — do not merge.
 >

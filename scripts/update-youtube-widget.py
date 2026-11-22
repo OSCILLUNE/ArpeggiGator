@@ -19,7 +19,7 @@ NS = {"a": "http://www.w3.org/2005/Atom", "yt": "http://www.youtube.com/xml/sche
 START = "<!-- YT-WIDGET:START -->"
 END = "<!-- YT-WIDGET:END -->"
 
-root = pathlib.Path(sys.argv[1]) if len(sys.argv) > 1 else pathlib.Path("/Users/fafi/Downloads/ArpeggiGator-Public")
+root = pathlib.Path(sys.argv[1]) if len(sys.argv) > 1 else pathlib.Path(__file__).resolve().parents[1]
 n = int(sys.argv[2]) if len(sys.argv) > 2 else 3
 
 with urllib.request.urlopen(RSS, timeout=20) as r:
