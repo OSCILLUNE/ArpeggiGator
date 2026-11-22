@@ -1,21 +1,21 @@
+# Changelog
+
 ## 0.0.7.4
 
-- Fix: przywrócenie natywnego podświetlenia padów po wyjściu z 16 Levels / Sample do MUTE — zamiast wymuszania czerni (`extinguish_pads`) mod teraz odtwarza zapamiętane kolory natywne (`restore_pad_rgbs`). Pady aktywnych ścieżek nie gasną już w widoku MUTE.
-- Dodatkowy test jednostkowy `mutator_mute_sample_pad_lighting_restoration`; pełny zestaw 88/88 testów przechodzi.
-- Zweryfikowano na emulatorach DEV/QA oraz na fizycznym AKAI MPC Sample (firmware 1.3.0.12).
-
-# Changelog
+- Fix: restore native pad LEDs when leaving 16 Levels / Sample for MUTE. The previous code forced all 16 pads to black via `extinguish_pads()`; the mod now calls `lighting::restore_pad_rgbs()`, which re-sends the MPC's remembered native colours. Pads of active tracks no longer go dark in the MUTE view.
+- Added unit test `mutator_mute_sample_pad_lighting_restoration`; the full suite passes 88/88.
+- Verified on the DEV/QA emulators and on physical AKAI MPC Sample hardware (firmware 1.3.0.12).
 
 ## 0.0.7.3
 
-- Fix: Odświeżanie dashboardu i czyszczenie ramki interfejsu (Repaint fix) po naciśnięciu przycisku STOP (kod 81) w 16 Levels — zapobiega zamrażaniu ekranu i pozostawaniu artefaktów nakładki.
-- Zweryfikowano działanie na emulatorze DEV/QA oraz potwierdzono stabilność na fizycznym sprzęcie AKAI MPC Sample (30–60 min sesja testowa).
+- Fix: dashboard refresh and stale-frame cleanup after STOP (code 81) in 16 Levels — prevents the LCD from freezing on the last frame and removes leftover overlay artefacts.
+- Verified on the DEV/QA emulators and confirmed stable on physical AKAI MPC Sample hardware (30-60 min test session).
 
 ## 0.0.7.2
 
-- Kosmetyczne poprawki napisów: `ACORDATOR` → `ACCORDATOR`, `MODE: ACORD` → `MODE: ACCORD`, oraz usunięcie podwójnego freeze w panelu MUTATOR (`SUBTLE FRZ OFF FRZ: OFF` → `SUBTLE FRZ:OFF`).
-- Napisy wydzielone do testowalnych stałych/funkcji; dodane testy jednostkowe.
-- Aktualizacja wszystkich publicznych powierzchni (README, manual, gh-pages) do nowych nazw. Bez zmian w audio, `Playback`, dropinach i guardzie firmware'u.
+- Cosmetic caption fixes: `ACORDATOR` to `ACCORDATOR`, `MODE: ACORD` to `MODE: ACCORD`, and removal of the duplicated freeze suffix in the MUTATOR panel (`SUBTLE FRZ OFF FRZ: OFF` to `SUBTLE FRZ:OFF`).
+- Captions moved into testable constants/functions; unit tests added.
+- All public surfaces updated (README, manual, GitHub Pages) to the new names. No changes to audio, `Playback`, drop-ins or the firmware guard.
 
 ## 0.0.7.1
 

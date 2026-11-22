@@ -957,7 +957,7 @@ unsafe fn draw_mutator_gator(graphics: &mut Graphics, active: bool, now_ms: u64)
         graphics.colour(0xffff1a35);
         graphics.rect(h2x - 7, h2y + 13, 4, 14);
 
-        // --- BOTH HANDS DOWN ON THE TURNTABLES ("obie ręce na płytach, w dole") ---
+        // --- BOTH HANDS DOWN ON THE TURNTABLES ("both hands down on the turntables") ---
         // Left turntable is at x: 34, y: 140
         let left_scratch = if active { ((now_ms / 85) % 4) as i32 - 1 } else { 0 };
 
@@ -1167,7 +1167,7 @@ unsafe fn draw_orbitator_gator(graphics: &mut Graphics, active: bool, now_ms: u6
         graphics.colour(0xff0b3d91);
         graphics.rect(gx + 40, gy + 43, 4, 3);
 
-        // --- NASA ASTRONAUT HELMET (Hełm Kosmiczny) ---
+        // --- NASA ASTRONAUT HELMET (Cosmic Helmet) ---
         // Neck ring / collar seal (Anodized NASA red locking ring)
         graphics.colour(0xff161a26);
         graphics.rect(gx + 12, gy + 32, 42, 6);
@@ -1197,7 +1197,7 @@ unsafe fn draw_orbitator_gator(graphics: &mut Graphics, active: bool, now_ms: u6
         graphics.rect(gx + 16, gy + 9, 22, 2);
         graphics.rect(gx + 38, gy + 15, 18, 2);
 
-        // Apollo Gold Visor (Słynna złota osłona przeciwsłoneczna)
+        // Apollo Gold Visor (famous gold sun visor)
         graphics.colour(0xff161a26); // Visor frame
         graphics.rect(gx + 20, gy + 15, 46, 17);
         graphics.colour(0xffc48200); // Gold visor shadow
