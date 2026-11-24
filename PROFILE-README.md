@@ -40,9 +40,9 @@ firmware-guarded SD-card autorun, stock workflow preserved.
 **Latest videos — [OSCILLUNE on YouTube](https://www.youtube.com/@oscillune)**
 
 <table><tr>
+<td align="center"><a href="https://www.youtube.com/watch?v=mTeVYvCqEWQ"><img src="https://i.ytimg.com/vi/mTeVYvCqEWQ/hqdefault.jpg" alt="This Mod Makes AKAI MPC Sample Play Music for You — ArpeggiGator Explained #mpc #Arpeggiator #akai" width="180"><br><sub>This Mod Makes AKAI MPC Sample Play Music for You — Ar</sub></a></td>
 <td align="center"><a href="https://www.youtube.com/watch?v=QfljdW24p6g"><img src="https://i.ytimg.com/vi/QfljdW24p6g/hqdefault.jpg" alt="NEW! ArpeggiGator — MOD for AKAI MPC Sample 🧩" width="180"><br><sub>NEW! ArpeggiGator — MOD for AKAI MPC Sample 🧩</sub></a></td>
 <td align="center"><a href="https://www.youtube.com/watch?v=d4QMyxIAiHQ"><img src="https://i.ytimg.com/vi/d4QMyxIAiHQ/hqdefault.jpg" alt="NEW! ArpeggiGator ARP — MOD for AKAI MPC Sample 🔥" width="180"><br><sub>NEW! ArpeggiGator ARP — MOD for AKAI MPC Sample 🔥</sub></a></td>
-<td align="center"><a href="https://www.youtube.com/watch?v=9_MLI1Jp-Dc"><img src="https://i.ytimg.com/vi/9_MLI1Jp-Dc/hqdefault.jpg" alt="NEW! ArpeggiGator MELODY — MOD for AKAI MPC Sample 🔥" width="180"><br><sub>NEW! ArpeggiGator MELODY — MOD for AKAI MPC Sample 🔥</sub></a></td>
 </tr></table>
 <!-- YT-WIDGET:END -->
 
